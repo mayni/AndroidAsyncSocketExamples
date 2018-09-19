@@ -24,6 +24,7 @@ public class Server {
 
         try {
             asyncDatagramSocket = AsyncServer.getDefault().openDatagram(host, true);
+            System.out.println("[Server]"+asyncDatagramSocket);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -34,21 +35,21 @@ public class Server {
                 System.out.println("[Server] Received Message " + new String(bb.getAllByteArray()));
             }
         });
-
-        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
-            @Override
-            public void onCompleted(Exception ex) {
-                if (ex != null) throw new RuntimeException(ex);
-                System.out.println("[Server] Successfully closed connection");
-            }
-        });
-
-        asyncDatagramSocket.setEndCallback(new CompletedCallback() {
-            @Override
-            public void onCompleted(Exception ex) {
-                if (ex != null) throw new RuntimeException(ex);
-                System.out.println("[Server] Successfully end connection");
-            }
-        });
+//
+//        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
+//            @Override
+//            public void onCompleted(Exception ex) {
+//                if (ex != null) throw new RuntimeException(ex);
+//                System.out.println("[Server] Successfully closed connection");
+//            }
+//        });
+//
+//        asyncDatagramSocket.setEndCallback(new CompletedCallback() {
+//            @Override
+//            public void onCompleted(Exception ex) {
+//                if (ex != null) throw new RuntimeException(ex);
+//                System.out.println("[Server] Successfully end connection");
+//            }
+//        });
     }
 }
