@@ -16,33 +16,37 @@ public class Client {
     public Client(String host, int port) {
         this.host = new InetSocketAddress(host, port);
         setup();
+
     }
 
     private void setup() {
         try {
             asyncDatagramSocket = AsyncServer.getDefault().connectDatagram(host);
+            System.out.println("[Client] Setup" + asyncDatagramSocket);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
-            @Override
-            public void onCompleted(Exception ex) {
-                if(ex != null) throw new RuntimeException(ex);
-                System.out.println("[Client] Successfully closed connection");
-            }
-        });
-
-        asyncDatagramSocket.setEndCallback(new CompletedCallback() {
-            @Override
-            public void onCompleted(Exception ex) {
-                if(ex != null) throw new RuntimeException(ex);
-                System.out.println("[Client] Successfully end connection");
-            }
-        });
+//        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
+//            @Override
+//            public void onCompleted(Exception ex) {
+//                if(ex != null) throw new RuntimeException(ex);
+//                System.out.println("[Client] Successfully closed connection");
+//            }
+//        });
+//
+//        asyncDatagramSocket.setEndCallback(new CompletedCallback() {
+//            @Override
+//            public void onCompleted(Exception ex) {
+//                if(ex != null) throw new RuntimeException(ex);
+//                System.out.println("[Client] Successfully end connection");
+//            }
+//        });
     }
 
     public void send(String msg) {
-        asyncDatagramSocket.send(host, ByteBuffer.wrap(msg.getBytes()));
+        System.out.println("[Client] Message" + msg);
+//        asyncDatagramSocket.send(host, ByteBuffer.wrap(msg.getBytes()));
+        System.out.println("[Client]  Send");
     }
 }
