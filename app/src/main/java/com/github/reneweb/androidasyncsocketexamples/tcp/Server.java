@@ -1,7 +1,8 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
-import android.widget.TextView;
+import android.app.Activity;
 
+import com.github.reneweb.androidasyncsocketexamples.MainActivity;
 import com.koushikdutta.async.*;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
@@ -14,18 +15,22 @@ public class Server {
 
     private InetAddress host;
     private int port;
-    private TextView tv_server;
 
-    public Server(String host, int port ,TextView tv_server) {
+    public Server(String host, int port) throws UnknownHostException {
+
         try {
             this.host = InetAddress.getByName(host);
+            System.out.println("[Server]" + host);
+
         } catch (UnknownHostException e) {
+            System.out.println("[Server] Not Connected" );
             throw new RuntimeException(e);
         }
-        this.tv_server = tv_server;
+
         this.port = port;
 
         setup();
+
     }
 
     private void setup() {
@@ -36,24 +41,27 @@ public class Server {
             public void onAccepted(final AsyncSocket socket) {
                 handleAccept(socket);
             }
-
             @Override
             public void onListening(AsyncServerSocket socket) {
                 System.out.println("[Server] Server started listening for connections");
-                tv_server.setText("Server started listening for connections");
             }
 
             @Override
             public void onCompleted(Exception ex) {
-                if(ex != null) throw new RuntimeException(ex);
-                System.out.println("[Server] Successfully shutdown server");
+                if(ex != null) {
+                    System.out.println("[Server] Successfully shutdown server");
+//                    throw new RuntimeException(ex);
+                }else {
+
+                }
+
             }
         });
     }
 
     private void handleAccept(final AsyncSocket socket) {
         System.out.println("[Server] New Connection " + socket.toString());
-        System.out.println("[Server]"+socket);
+
         socket.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
@@ -64,6 +72,7 @@ public class Server {
                     public void onCompleted(Exception ex) {
                         if (ex != null) throw new RuntimeException(ex);
                         System.out.println("[Server] Successfully wrote message");
+
                     }
                 });
             }

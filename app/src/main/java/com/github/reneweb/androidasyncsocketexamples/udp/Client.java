@@ -2,6 +2,7 @@ package com.github.reneweb.androidasyncsocketexamples.udp;
 
 import com.koushikdutta.async.AsyncDatagramSocket;
 import com.koushikdutta.async.AsyncServer;
+import com.koushikdutta.async.Util;
 import com.koushikdutta.async.callback.CompletedCallback;
 
 import java.io.IOException;
@@ -45,8 +46,9 @@ public class Client {
     }
 
     public void send(String msg) {
+
         System.out.println("[Client] Message" + msg);
-//        asyncDatagramSocket.send(host, ByteBuffer.wrap(msg.getBytes()));
+        asyncDatagramSocket.send(host, ByteBuffer.wrap(msg.getBytes()));
         System.out.println("[Client]  Send");
     }
 }

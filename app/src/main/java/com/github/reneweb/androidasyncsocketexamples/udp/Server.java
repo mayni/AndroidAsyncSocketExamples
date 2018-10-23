@@ -9,6 +9,7 @@ import com.koushikdutta.async.callback.DataCallback;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.nio.channels.DatagramChannel;
 
 public class Server {
@@ -17,6 +18,7 @@ public class Server {
     private AsyncDatagramSocket asyncDatagramSocket;
 
     public Server(String host, int port) {
+
         this.host = new InetSocketAddress(host, port);
 
         setup();
@@ -31,12 +33,13 @@ public class Server {
             throw new RuntimeException(e);
         }
 
-//        asyncDatagramSocket.setDataCallback(new DataCallback() {
-//            @Override
-//            public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
-//                System.out.println("[Server] Received Message " + new String(bb.getAllByteArray()));
-//            }
-//        });
+        asyncDatagramSocket.setDataCallback(new DataCallback() {
+            @Override
+            public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
+                System.out.println("[Server]" + emitter);
+                System.out.println("[Server] Received Message " + new String(bb.getAllByteArray()));
+            }
+        });
 //
 //        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
 //            @Override

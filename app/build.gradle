@@ -41,4 +41,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:21.0.0'
     implementation 'com.koushikdutta.async:androidasync:2.1.7'
+
 }
