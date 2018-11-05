@@ -1,8 +1,5 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
-import android.app.Activity;
-
-import com.github.reneweb.androidasyncsocketexamples.MainActivity;
 import com.koushikdutta.async.*;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
@@ -14,6 +11,7 @@ import java.net.UnknownHostException;
 public class Server {
 
     private InetAddress host;
+
     private int port;
 
     public Server(String host, int port) throws UnknownHostException {
@@ -29,11 +27,11 @@ public class Server {
 
         this.port = port;
 
-        setup();
+//        setup();
 
     }
 
-    private void setup() {
+    public String setup() {
 
         AsyncServer.getDefault().listen(host, port, new ListenCallback() {
 
@@ -57,6 +55,7 @@ public class Server {
 
             }
         });
+        return "finish" ;
     }
 
     private void handleAccept(final AsyncSocket socket) {
@@ -94,4 +93,5 @@ public class Server {
             }
         });
     }
+
 }

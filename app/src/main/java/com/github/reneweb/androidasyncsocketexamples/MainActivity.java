@@ -1,31 +1,39 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.view.ViewGroup;
+
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import java.net.UnknownHostException;
+
+import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
-    private TextView status;
-    private EditText ipaddress,port,message;
-    ListView listView;
+public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+    private TextView status ,textView;
+    private EditText ipaddressServer,portServer,messageServer,message,ipaddress,port;
+    String text;
+    ListView listView,ListView1;
     private static MainActivity instance;
+    Button rightwork,leftwork,bothwork;
     List<String> list = new ArrayList<String>();
 
+    private Button ServerBtn;
 
 
 
@@ -35,35 +43,92 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         status = (TextView) findViewById(R.id.status);
+        ServerBtn = (Button) findViewById(R.id.connect);
+        textView = (TextView) findViewById(R.id.textview);
+
+        rightwork = (Button) findViewById(R.id.rightwork);
+        leftwork = (Button) findViewById(R.id.leftwork);
+        bothwork = (Button) findViewById(R.id.bothwork);
+
+        rightwork.setOnClickListener(this);
+        leftwork.setOnClickListener(this);
+        bothwork.setOnClickListener(this);
+
+        message = (EditText) findViewById(R.id.message);
+
         instance = this;
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
+        System.out.println("Createeeeeeeeeeeeeeeeeeeee");
 
-                //TCP client and server (Client will automatically send welcome message after setup and server will respond)
-                try {
-                    new com.github.reneweb.androidasyncsocketexamples.tcp.Server("10.80.123.168", 7000);
-                    status.setText("connected");
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+        Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
+
+//        String action = intent.getAction();
+//        String type = intent.getType();
+//        if (Intent.ACTION_SEND.equals(action) && type != null) {
+//            if ("text/plain".equals(type)) {
+//                String text = intent.getStringExtra(Intent.EXTRA_TEXT);
 //
-//                //UDP client and server (Here the client explicitly sends a message)
-////                new com.github.reneweb.androidasyncsocketexamples.udp.Server("10.80.121.55", 7001);
-////                new com.github.reneweb.androidasyncsocketexamples.udp.Client("10.80.121.55", 7001).send("haloooo");
-                return null;
-            }
-
-        }.execute();
+//                textView.setText(text);
+//
+//                System.out.println(text);
+//            } else if (type.startsWith("image/")) {
+//                Uri uri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+//
+//            }
+//        }
 
     }
     public static MainActivity getInstance() {
         return instance;
     }
-    @Override
+    protected void onStart(){
+        super.onStart();
+        System.out.println("Starttttttttttttttttttttttttt" + text);
+    }
+    protected  void onResume(){
+        super.onResume();
+
+//        ServerBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ipaddressServer = (EditText) findViewById(R.id.ip);
+//                portServer = (EditText) findViewById(R.id.port);
+//                new AsyncTask<String, Void, String>() {
+//                    @Override
+//                    protected String doInBackground(String... params) {
+//                        try {
+//                            Server server = new Server(ipaddressServer.getText().toString(), Integer.parseInt(portServer.getText().toString()));
+//
+//                        try {
+//                            text = server.setup();
+//
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+////                            new com.github.reneweb.androidasyncsocketexamples.tcp.Server(ipaddressServer.getText().toString(), Integer.parseInt(portServer.getText().toString()));
+//
+//                        } catch (UnknownHostException e) {
+//                            e.printStackTrace();
+//                        }
+////                //UDP client and server (Here the client explicitly sends a message)
+//////                new com.github.reneweb.androidasyncsocketexamples.udp.Server("10.80.121.55", 7001);
+//////                new com.github.reneweb.androidasyncsocketexamples.udp.Client("10.80.121.55", 7001).send("haloooo");
+//                        return "connected";
+//                    }
+//                    protected void onPostExecute (String voids){
+//                        status.setText(voids);
+//                    }
+//                }.execute();
+//
+//            }
+//        });
+
+
+        System.out.println("Resumeeeeeeeeeeeeeeeee");
+    }
     protected void onStop(){
         super.onStop();
-        System.out.println("Stopppppppppppp");
+
+        System.out.println("Stopppppppppppp" + text);
     }
     protected void onDestroy(){
         super.onDestroy();
@@ -94,25 +159,33 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
+//
     public void ClickToConnect(View view) {
-
         message = (EditText) findViewById(R.id.message);
         final String m = message.getText().toString();
-
-//        list.add(m);
         list.add(0,m);
-
         ipaddress = (EditText) findViewById(R.id.ip);
         final String ip = ipaddress.getText().toString();
         port = (EditText) findViewById(R.id.port);
         final int p = Integer.parseInt(port.getText().toString());
-        new AsyncTask<Void,Void,Void>(){
+
+        new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                new com.github.reneweb.androidasyncsocketexamples.tcp.Client(ip, p ,m);
+                Client client = new Client(ip, p ,m);
+                client.setListener(new Client.clientMessageRecListener() {
 
+                    @Override
+                    public void recMessage(String mes) {
+//                        textView.setText(mes);
+
+                        System.out.println("[Main]"+mes);
+                    }
+                });
                 return null;
             }
+
+
         }.execute();
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, list);
@@ -122,15 +195,20 @@ public class MainActivity extends ActionBarActivity {
         message.setText("");
     }
 
-//    public void ClickToSend(View view){
-//        new AsyncTask<Void,Void,Void>(){
-//            @Override
-//            protected Void doInBackground(Void... voids) {
-//
-//                return null;
-//            }
-//        }.execute();
-//    }
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == rightwork.getId()){
+            String right = "42 63   00 42 63   00";
+            message.setText(right);
+        }else if(view.getId() == leftwork.getId()){
+            String left = "82 93   00 82 93   00";
+            message.setText(left);
+        }else if(view.getId() == bothwork.getId()){
+            String both = "42 03   00 82 93   00";
+            message.setText(both);
+        }
+    }
+
 
 
 

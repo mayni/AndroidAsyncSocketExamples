@@ -28,21 +28,21 @@ public class Client {
             throw new RuntimeException(e);
         }
 
-//        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
-//            @Override
-//            public void onCompleted(Exception ex) {
-//                if(ex != null) throw new RuntimeException(ex);
-//                System.out.println("[Client] Successfully closed connection");
-//            }
-//        });
-//
-//        asyncDatagramSocket.setEndCallback(new CompletedCallback() {
-//            @Override
-//            public void onCompleted(Exception ex) {
-//                if(ex != null) throw new RuntimeException(ex);
-//                System.out.println("[Client] Successfully end connection");
-//            }
-//        });
+        asyncDatagramSocket.setClosedCallback(new CompletedCallback() {
+            @Override
+            public void onCompleted(Exception ex) {
+                if(ex != null) throw new RuntimeException(ex);
+                System.out.println("[Client] Successfully closed connection");
+            }
+        });
+
+        asyncDatagramSocket.setEndCallback(new CompletedCallback() {
+            @Override
+            public void onCompleted(Exception ex) {
+                if(ex != null) throw new RuntimeException(ex);
+                System.out.println("[Client] Successfully end connection");
+            }
+        });
     }
 
     public void send(String msg) {

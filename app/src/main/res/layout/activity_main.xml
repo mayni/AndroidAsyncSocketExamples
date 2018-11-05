@@ -17,19 +17,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.65"
             android:hint="IP Address"
-            android:text="10.80.123.168"/>
+            android:text="10.0.0.177"/>
         <EditText
             android:id="@+id/port"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:hint="Port"
-            android:text="7000"/>
+            android:text="1234"/>
         <Button
+            android:id="@+id/connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.05"
             android:text="connect"
+
             />
     </LinearLayout>
     <LinearLayout
@@ -64,15 +66,61 @@
             android:text="send"
             android:layout_weight="0.05"
             android:onClick="ClickToConnect"/>
+
     </LinearLayout>
-    <ListView
-        android:id="@+id/listview"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stackFromBottom="false"
-        >
+        android:gravity="center">
+        <Button
+            android:id="@+id/rightwork"
+            android:layout_width="wrap_content"
+            android:layout_margin="20px"
+            android:layout_height="wrap_content"
+            android:text="right"/>
+        <Button
+            android:id="@+id/leftwork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20px"
+            android:text="left"/>
+        <Button
+            android:id="@+id/bothwork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20px"
+            android:text="both"/>
 
-    </ListView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="2">
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stackFromBottom="false"
+            android:layout_weight="1">
+        </ListView>
+        <ListView
+            android:id="@+id/textview1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+        </ListView>
+
+    </LinearLayout>
+
+
+
 
 
 
