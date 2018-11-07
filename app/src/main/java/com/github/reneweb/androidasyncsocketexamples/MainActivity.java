@@ -1,24 +1,28 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private Button ServerBtn;
 
+    WifiManager wifi;
+
+    ///// ------------------------------------ NETWORK CREDENTIALS
+//    String networkSSID = "TP-Link_1316";
+//    String networkPass = "60177094";
+    String networkSSID = "Bns";
+    String networkPass = "04062539";
+    WifiManager wifiManager ;
+
+    TextView textX, textY, textZ;
+    SensorManager sensorManager;
+    Sensor sensor;
+
 
 
     @SuppressLint("StaticFieldLeak")
@@ -42,6 +59,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         status = (TextView) findViewById(R.id.status);
         ServerBtn = (Button) findViewById(R.id.connect);
         textView = (TextView) findViewById(R.id.textview);
@@ -56,10 +75,42 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         message = (EditText) findViewById(R.id.message);
 
+        //////--------------------------------- Sensor
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+//        textX = findViewById(R.id.textX);
+//        textY = findViewById(R.id.textY);
+//        textZ = findViewById(R.id.textZ);
+
         instance = this;
         System.out.println("Createeeeeeeeeeeeeeeeeeeee");
 
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
+
+
+        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        if (!wifi.isWifiEnabled()) {
+            Toast.makeText(getApplicationContext(),
+                    "wifi is disabled..making it enabled", Toast.LENGTH_LONG)
+                    .show();
+            wifi.setWifiEnabled(true);
+        }
+
+        ///// ---------------------------- Connecting Code
+        WifiConfiguration conf = new WifiConfiguration();
+        conf.SSID = "\"" + networkSSID + "\"";
+
+        conf.preSharedKey = "\""+ networkPass +"\"";
+
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            wifiManager.addNetwork(conf);
+        }
+
+        dialogConnect();
+
+
 
 //        String action = intent.getAction();
 //        String type = intent.getType();
@@ -77,6 +128,28 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 //        }
 
     }
+
+    private void dialogConnect() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("Connect Wifi " + networkSSID);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+                for( WifiConfiguration i : list ) {
+                    if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+                        wifiManager.disconnect();
+                        wifiManager.enableNetwork(i.networkId, true);
+                        wifiManager.reconnect();
+
+                        break;
+                    }
+                }
+            }
+        });
+        builder.show();
+
+    }
+
     public static MainActivity getInstance() {
         return instance;
     }
