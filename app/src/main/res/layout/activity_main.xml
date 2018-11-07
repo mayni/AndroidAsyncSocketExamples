@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,14 +18,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.65"
             android:hint="IP Address"
-            android:text="10.0.0.177"/>
+            android:text="10.80.66.113"/>
         <EditText
             android:id="@+id/port"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:hint="Port"
-            android:text="1234"/>
+            android:text="7000"/>
         <Button
             android:id="@+id/connect"
             android:layout_width="wrap_content"
@@ -61,6 +62,7 @@
             android:hint="Message"
             />
         <Button
+            android:id="@+id/sending"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="send"
@@ -92,30 +94,67 @@
             android:text="both"/>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textview"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <Button
+            android:id="@+id/rightwork"
+            android:layout_width="wrap_content"
+            android:layout_margin="20px"
+            android:layout_height="wrap_content"
+            android:text="right"/>
+        <Button
+            android:id="@+id/leftwork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20px"
+            android:text="left"/>
+        <Button
+            android:id="@+id/bothwork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20px"
+            android:text="both"/>
+
+    </LinearLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="2">
-        <ListView
-            android:id="@+id/listview"
+        <android.support.v7.widget.RecyclerView
+            tools:listitem="@layout/list_item"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stackFromBottom="false"
+            android:layout_height="match_parent"
             android:layout_weight="1">
-        </ListView>
-        <ListView
-            android:id="@+id/textview1"
+        </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView1"
+            android:layout_weight="1"
+            tools:listitem="@layout/list_item"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
 
-        </ListView>
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+        <!--<ListView-->
+            <!--android:id="@+id/listview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:stackFromBottom="false"-->
+            <!--android:layout_weight="1">-->
+        <!--</ListView>-->
+        <!--<ListView-->
+            <!--android:id="@+id/textview1"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1">-->
+
+        <!--</ListView>-->
 
     </LinearLayout>
 

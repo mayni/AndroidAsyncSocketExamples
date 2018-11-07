@@ -18,10 +18,7 @@ public class Client {
 
 
     public interface clientMessageRecListener{
-
         void recMessage(String mes);
-
-
     }
     public void setListener(clientMessageRecListener listener) {
         this.listener = listener;
@@ -41,7 +38,6 @@ public class Client {
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
                handleConnectCompleted(ex,socket);
-
             }
         });
 
@@ -50,6 +46,7 @@ public class Client {
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
 
         if(ex != null) {
+            ///////////////////////////////////////////////////////
             System.out.println("[Client] Faillllllllllllllllll" );
             throw new RuntimeException(ex);
         }
@@ -68,13 +65,7 @@ public class Client {
                 System.out.println("[Client]" + emitter);
                 mes = new String(bb.getAllByteArray());
                 System.out.println("[Client] Received Message " + mes);
-
-                System.out.println("[Client1] Received Message " + mes);
-
                 listener.recMessage(mes);
-
-
-
             }
         });
 

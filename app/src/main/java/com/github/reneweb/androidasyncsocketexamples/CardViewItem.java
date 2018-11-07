@@ -1,20 +1,11 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
-public class CardViewtem extends BaseItem{
-    private int cardViewImage;
+public class CardViewItem extends BaseItem{
+//    private int cardViewImage;
     private String cardViewText;
 
     public CardViewItem() {
         super(ViewType.TYPE_CARD_VIEW);
-    }
-
-    public int getImage() {
-        return cardViewImage;
-    }
-
-    public CardViewItem setImage(int cardViewImage) {
-        this.cardViewImage = cardViewImage;
-        return this;
     }
 
     public String getText() {
@@ -25,4 +16,6 @@ public class CardViewtem extends BaseItem{
         this.cardViewText = cardViewText;
         return this;
     }
+
+
 }

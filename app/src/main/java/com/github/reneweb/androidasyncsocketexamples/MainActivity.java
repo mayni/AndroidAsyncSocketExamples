@@ -4,36 +4,34 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView status ,textView;
     private EditText ipaddressServer,portServer,messageServer,message,ipaddress,port;
     String text;
-    ListView listView,ListView1;
     private static MainActivity instance;
     Button rightwork,leftwork,bothwork;
-    List<String> list = new ArrayList<String>();
 
-    private Button ServerBtn;
+    private RecyclerView recyclerView , recyclerViewRec;
+    private MainAdapter adapter , adapterRec;
+    private List<BaseItem> itemList , itemListRec;
+
+
 
 
 
@@ -43,12 +41,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         status = (TextView) findViewById(R.id.status);
-        ServerBtn = (Button) findViewById(R.id.connect);
-        textView = (TextView) findViewById(R.id.textview);
+
 
         rightwork = (Button) findViewById(R.id.rightwork);
         leftwork = (Button) findViewById(R.id.leftwork);
         bothwork = (Button) findViewById(R.id.bothwork);
+
 
         rightwork.setOnClickListener(this);
         leftwork.setOnClickListener(this);
@@ -57,26 +55,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         message = (EditText) findViewById(R.id.message);
 
         instance = this;
+
+        itemList = new ArrayList<>();
+        itemListRec = new ArrayList<>();
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        adapter = new MainAdapter();
+
+        recyclerViewRec = findViewById(R.id.recyclerView1);
+        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        adapterRec = new MainAdapter();
+
+
+
         System.out.println("Createeeeeeeeeeeeeeeeeeeee");
 
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
-
-//        String action = intent.getAction();
-//        String type = intent.getType();
-//        if (Intent.ACTION_SEND.equals(action) && type != null) {
-//            if ("text/plain".equals(type)) {
-//                String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-//
-//                textView.setText(text);
-//
-//                System.out.println(text);
-//            } else if (type.startsWith("image/")) {
-//                Uri uri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
-//
-//            }
-//        }
-
     }
+
+
     public static MainActivity getInstance() {
         return instance;
     }
@@ -159,26 +157,44 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
 
-//
+
     public void ClickToConnect(View view) {
+
         message = (EditText) findViewById(R.id.message);
         final String m = message.getText().toString();
-        list.add(0,m);
+//        list.add(0,m);
         ipaddress = (EditText) findViewById(R.id.ip);
         final String ip = ipaddress.getText().toString();
         port = (EditText) findViewById(R.id.port);
         final int p = Integer.parseInt(port.getText().toString());
+
+        itemList.add(0,new CardViewItem()
+                .setText(m));
+        adapter.setItemList(itemList);
+        recyclerView.setAdapter(adapter);
+
 
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
                 Client client = new Client(ip, p ,m);
                 client.setListener(new Client.clientMessageRecListener() {
-
                     @Override
-                    public void recMessage(String mes) {
-//                        textView.setText(mes);
-
+                    public void recMessage(final String mes) {
+                        new AsyncTask<Void, Void, String>(){
+                            @Override
+                            protected String doInBackground(Void... voids) {
+                                return String.valueOf(mes);
+                            }
+                            @Override
+                            protected void onPostExecute(String mes) {
+                                super.onPostExecute(mes);
+                                itemListRec.add(0,new CardViewItem()
+                                        .setText(mes));
+                                adapterRec.setItemList(itemListRec);
+                                recyclerViewRec.setAdapter(adapterRec);
+                            }
+                        }.execute();
                         System.out.println("[Main]"+mes);
                     }
                 });
@@ -187,12 +203,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
         }.execute();
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, list);
 
-        listView = (ListView) findViewById(R.id.listview);
-        listView.setAdapter(itemsAdapter);
-        message.setText("");
+//
+//        ArrayAdapter<String> itemsAdapter =
+//                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, list);
+//
+//        listView = (ListView) findViewById(R.id.listview);
+//        listView.setAdapter(itemsAdapter);
+//        message.setText("");
     }
 
     @Override
