@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -14,14 +12,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
@@ -31,31 +26,33 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private TextView status ,textView;
-    private EditText ipaddressServer,portServer,messageServer,message,ipaddress,port;
+
+    private EditText message, ipaddress, port;
     String text;
     private static MainActivity instance;
-    Button rightwork,leftwork,bothwork;
+    Button rightwork, leftwork, bothwork ,checkmodework , clearwork;
 
-    private RecyclerView recyclerView , recyclerViewRec;
-    private MainAdapter adapter , adapterRec;
-    private List<BaseItem> itemList , itemListRec;
+    private RecyclerView recyclerView, recyclerViewRec;
+    private MainAdapter adapter, adapterRec;
+    private List<BaseItem> itemList, itemListRec;
 
-
-
+    private static final int sizeOfIntInHalfBytes = 8;
+    private static final int numberOfBitsInAHalfByte = 4;
+    private static final int halfByte = 0x0F;
+    private static final char[] hexDigits = {
+            '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+    String[] CLUBS = {"45 minute","1 hour","1 hour 30 minute","2 hours"};
     WifiManager wifi;
+    String mSelected;
 
     ///// ------------------------------------ NETWORK CREDENTIALS
 //    String networkSSID = "TP-Link_1316";
 //    String networkPass = "60177094";
-    String networkSSID = "Bns";
-    String networkPass = "04062539";
-    WifiManager wifiManager ;
-
-    TextView textX, textY, textZ;
-    SensorManager sensorManager;
-    Sensor sensor;
-
+    String networkSSID = "nanearnano";
+    String networkPass = "yok37491";
+    WifiManager wifiManager;
 
 
     @SuppressLint("StaticFieldLeak")
@@ -65,26 +62,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
 
-        status = (TextView) findViewById(R.id.status);
+
 
 
         rightwork = (Button) findViewById(R.id.rightwork);
         leftwork = (Button) findViewById(R.id.leftwork);
         bothwork = (Button) findViewById(R.id.bothwork);
+        checkmodework = findViewById(R.id.checkmode);
+        clearwork = findViewById(R.id.clear);
 
 
         rightwork.setOnClickListener(this);
         leftwork.setOnClickListener(this);
         bothwork.setOnClickListener(this);
+        checkmodework.setOnClickListener(this);
+        clearwork.setOnClickListener(this);
 
         message = (EditText) findViewById(R.id.message);
 
-        //////--------------------------------- Sensor
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-//        textX = findViewById(R.id.textX);
-//        textY = findViewById(R.id.textY);
-//        textZ = findViewById(R.id.textZ);
+
 
         instance = this;
 
@@ -96,21 +92,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter = new MainAdapter();
 
         recyclerViewRec = findViewById(R.id.recyclerView1);
-        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapterRec = new MainAdapter();
 
 
-
         System.out.println("Createeeeeeeeeeeeeeeeeeeee");
+        System.out.println(decToHex(6900));
 
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
-    }
 
 
 
-        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifi =(WifiManager)
 
-        if (!wifi.isWifiEnabled()) {
+        getApplicationContext().
+
+        getSystemService(Context.WIFI_SERVICE);
+
+            if(!wifi.isWifiEnabled())
+
+        {
             Toast.makeText(getApplicationContext(),
                     "wifi is disabled..making it enabled", Toast.LENGTH_LONG)
                     .show();
@@ -119,35 +120,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ///// ---------------------------- Connecting Code
         WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = "\"" + networkSSID + "\"";
+        conf.SSID ="\""+networkSSID +"\"";
 
-        conf.preSharedKey = "\""+ networkPass +"\"";
+        conf.preSharedKey ="\""+networkPass +"\"";
 
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager != null) {
+        wifiManager =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if(wifiManager !=null)
+
+        {
             wifiManager.addNetwork(conf);
         }
 
         dialogConnect();
 
-
-
-//        String action = intent.getAction();
-//        String type = intent.getType();
-//        if (Intent.ACTION_SEND.equals(action) && type != null) {
-//            if ("text/plain".equals(type)) {
-//                String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-//
-//                textView.setText(text);
-//
-//                System.out.println(text);
-//            } else if (type.startsWith("image/")) {
-//                Uri uri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
-//
-//            }
-//        }
-
     }
+
+
+
+
+
 
     private void dialogConnect() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -254,10 +245,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void ClickToConnect(View view) {
-
         message = (EditText) findViewById(R.id.message);
         final String m = message.getText().toString();
-//        list.add(0,m);
         ipaddress = (EditText) findViewById(R.id.ip);
         final String ip = ipaddress.getText().toString();
         port = (EditText) findViewById(R.id.port);
@@ -299,19 +288,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }.execute();
 
-//
-//        ArrayAdapter<String> itemsAdapter =
-//                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, list);
-//
-//        listView = (ListView) findViewById(R.id.listview);
-//        listView.setAdapter(itemsAdapter);
-//        message.setText("");
+
+        message.setText("");
     }
 
     @Override
     public void onClick(View view) {
+
         if(view.getId() == rightwork.getId()){
             String right = "42 63   00 42 63   00";
+            setTime();
             message.setText(right);
         }else if(view.getId() == leftwork.getId()){
             String left = "82 93   00 82 93   00";
@@ -319,8 +305,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else if(view.getId() == bothwork.getId()){
             String both = "42 03   00 82 93   00";
             message.setText(both);
+        }else if(view.getId() == checkmodework.getId()){
+            String checkmode = "0A FF FF";
+            message.setText(checkmode);
+        }else if(view.getId() == clearwork.getId()){
+            String clear = "0A 00 00";
+            message.setText(clear);
         }
     }
+
+
+    private void setTime() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Set Time");
+        builder.setSingleChoiceItems(CLUBS, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mSelected = CLUBS[which];
+            }
+        });
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // ส่วนนี้สำหรับเซฟค่าลง database หรือ SharedPreferences.
+
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("CANCEL", null);
+        builder.create();
+
+        builder.show();
+
+    }
+
+    public static String decToHex(int dec) {
+        StringBuilder hexBuilder = new StringBuilder(sizeOfIntInHalfBytes);
+        hexBuilder.setLength(sizeOfIntInHalfBytes);
+        for (int i = sizeOfIntInHalfBytes - 1; i >= 0; --i)
+        {
+            int j = dec & halfByte;
+            hexBuilder.setCharAt(i, hexDigits[j]);
+            dec >>= numberOfBitsInAHalfByte;
+        }
+        return hexBuilder.toString();
+    }
+
+
 
 
 

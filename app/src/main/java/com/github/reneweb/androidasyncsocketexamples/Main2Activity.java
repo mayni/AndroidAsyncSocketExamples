@@ -2,11 +2,11 @@ package com.github.reneweb.androidasyncsocketexamples;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class Main2Activity extends ActionBarActivity {
+public class Main2Activity extends AppCompatActivity {
 
     private Button mButtonStart;
 

@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.05"
-            android:text="connect"
+            android:text="detail"
 
             />
     </LinearLayout>
@@ -75,23 +75,18 @@
         android:layout_height="wrap_content"
         android:gravity="center">
         <Button
-            android:id="@+id/rightwork"
+            android:id="@+id/checkmode"
             android:layout_width="wrap_content"
             android:layout_margin="20px"
             android:layout_height="wrap_content"
-            android:text="right"/>
+            android:text="check mode"/>
         <Button
-            android:id="@+id/leftwork"
+            android:id="@+id/clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20px"
-            android:text="left"/>
-        <Button
-            android:id="@+id/bothwork"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20px"
-            android:text="both"/>
+            android:text="clear"/>
+
 
     </LinearLayout>
     <LinearLayout
