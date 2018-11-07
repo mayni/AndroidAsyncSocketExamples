@@ -25,12 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private EditText message, ipaddress, port;
     String text;
     private static MainActivity instance;
     Button rightwork, leftwork, bothwork ,checkmodework , clearwork;
+    String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
 
     private RecyclerView recyclerView, recyclerViewRec;
     private MainAdapter adapter, adapterRec;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] CLUBS = {"45 minute","1 hour","1 hour 30 minute","2 hours"};
     WifiManager wifi;
     String mSelected;
+    Integer time = 0;
 
     ///// ------------------------------------ NETWORK CREDENTIALS
 //    String networkSSID = "TP-Link_1316";
@@ -134,9 +136,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialogConnect();
 
     }
-
-
-
 
 
 
@@ -293,50 +292,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View view) {
-
-        if(view.getId() == rightwork.getId()){
-            String right = "42 63   00 42 63   00";
-            setTime();
-            message.setText(right);
-        }else if(view.getId() == leftwork.getId()){
-            String left = "82 93   00 82 93   00";
-            message.setText(left);
-        }else if(view.getId() == bothwork.getId()){
-            String both = "42 03   00 82 93   00";
-            message.setText(both);
-        }else if(view.getId() == checkmodework.getId()){
-            String checkmode = "0A FF FF";
-            message.setText(checkmode);
-        }else if(view.getId() == clearwork.getId()){
-            String clear = "0A 00 00";
-            message.setText(clear);
+    public void onClick(final View view) {
+        Integer id = view.getId();
+        if(view.getId() == rightwork.getId() || view.getId() == leftwork.getId() || view.getId() == bothwork.getId()){
+            setTime(id);
+        }else if(view.getId() == checkmodework.getId() || view.getId() == clearwork.getId()){
+            if(view.getId() == checkmodework.getId()){
+                String both = "42 03   00 82 93   00";
+                message.setText(both);
+            }else {
+                String clear = "0A 00 00";
+                message.setText(clear);
+            }
         }
+
     }
 
 
-    private void setTime() {
+    private void setTime(final Integer id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Set Time");
         builder.setSingleChoiceItems(CLUBS, 0, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mSelected = CLUBS[which];
+                switch (mSelected){
+                    case "45 minute":
+                        time = 60*45;
+                        break;
+                    case "1 hour":
+                        time = 60*60;
+                        break;
+                    case "1 hour 30 minute":
+                        time = (60*30) + (60*60);
+                        break;
+                    case "2 hours":
+                        time = (120 * 60);
+                        break;
+                }
+                if(id == rightwork.getId()){
+                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
+                    message.setText(right);
+                }else if(id == leftwork.getId()){
+                      String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
+                      message.setText(left);
+                }else if(id == bothwork.getId()){
+                      String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600)+" 0000 0000";
+                    message.setText(both);
+                }
             }
         });
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // ส่วนนี้สำหรับเซฟค่าลง database หรือ SharedPreferences.
 
                 dialog.dismiss();
             }
         });
-
         builder.setNegativeButton("CANCEL", null);
         builder.create();
-
         builder.show();
+//        "45 minute","1 hour","1 hour 30 minute","2 hours"
+
 
     }
 
