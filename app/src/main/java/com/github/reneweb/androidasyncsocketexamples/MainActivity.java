@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Integer id = view.getId();
         if(view.getId() == rightwork.getId() || view.getId() == leftwork.getId() || view.getId() == bothwork.getId()){
             setTime(id);
-        }else if(view.getId() == checkmodework.getId() || view.getId() == clearwork.getId()){
+        }else {
             if(view.getId() == checkmodework.getId()){
                 String checkmode = "0A FF FF";
                 message.setText(checkmode);
