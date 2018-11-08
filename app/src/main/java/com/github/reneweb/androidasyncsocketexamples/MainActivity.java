@@ -329,7 +329,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(this,CalibrateActivity.class);
                 startActivity(intent);
             }
-        }else if (view.getId() == detail.getId() ){
+        }
+        if (view.getId() == detail.getId() ){
             Intent intent = new Intent(MainActivity.this,Main2Activity.class);
             System.out.println("---------------------");
             String min = Integer.toString(time/60);
