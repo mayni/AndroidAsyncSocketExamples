@@ -30,11 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText message, ipaddress, port;
     String text;
     private static MainActivity instance;
-<<<<<<< HEAD
-    Button rightwork, leftwork, bothwork ,checkmodework , clearwork, detail;
-=======
-    Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork;
->>>>>>> 4a6c7f47d98309317636b46aa9b4445dbecee4e1
+    Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail;
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
 
     private RecyclerView recyclerView, recyclerViewRec;
@@ -76,13 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bothwork = (Button) findViewById(R.id.bothwork);
         checkmodework = findViewById(R.id.checkmode);
         clearwork = findViewById(R.id.clear);
-<<<<<<< HEAD
         detail = findViewById(R.id.detail);
-=======
         readpressurework = findViewById(R.id.readpressure);
         emergencywork = findViewById(R.id.emergency);
         calibratework = findViewById(R.id.calibrate);
->>>>>>> 4a6c7f47d98309317636b46aa9b4445dbecee4e1
 
 
         rightwork.setOnClickListener(this);
