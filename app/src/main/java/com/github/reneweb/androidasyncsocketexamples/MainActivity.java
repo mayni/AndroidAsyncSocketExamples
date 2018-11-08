@@ -30,7 +30,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText message, ipaddress, port;
     String text;
     private static MainActivity instance;
+<<<<<<< HEAD
     Button rightwork, leftwork, bothwork ,checkmodework , clearwork, detail;
+=======
+    Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork;
+>>>>>>> 4a6c7f47d98309317636b46aa9b4445dbecee4e1
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
 
     private RecyclerView recyclerView, recyclerViewRec;
@@ -72,7 +76,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bothwork = (Button) findViewById(R.id.bothwork);
         checkmodework = findViewById(R.id.checkmode);
         clearwork = findViewById(R.id.clear);
+<<<<<<< HEAD
         detail = findViewById(R.id.detail);
+=======
+        readpressurework = findViewById(R.id.readpressure);
+        emergencywork = findViewById(R.id.emergency);
+        calibratework = findViewById(R.id.calibrate);
+>>>>>>> 4a6c7f47d98309317636b46aa9b4445dbecee4e1
 
 
         rightwork.setOnClickListener(this);
@@ -80,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bothwork.setOnClickListener(this);
         checkmodework.setOnClickListener(this);
         clearwork.setOnClickListener(this);
+        readpressurework.setOnClickListener(this);
+        emergencywork.setOnClickListener(this);
+        calibratework.setOnClickListener(this);
 
         message = (EditText) findViewById(R.id.message);
 
@@ -299,11 +312,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setTime(id);
         }else if(view.getId() == checkmodework.getId() || view.getId() == clearwork.getId()){
             if(view.getId() == checkmodework.getId()){
-                String both = "42 03   00 82 93   00";
-                message.setText(both);
-            }else {
+                String checkmode = "0A FF FF";
+                message.setText(checkmode);
+            }else if(view.getId() == clearwork.getId()){
                 String clear = "0A 00 00";
                 message.setText(clear);
+            }else if(view.getId() == readpressurework.getId()){
+                String readpress = "01";
+                message.setText(readpress);
+            }else if(view.getId() == emergencywork.getId()){
+                String emerg = "EE";
+                message.setText(emerg);
+            }else if(view.getId() == calibratework.getId()){
+                Intent intent = new Intent(this,CalibrateActivity.class);
+                startActivity(intent);
             }
         }else if (view.getId() == detail.getId() ){
             Intent intent = new Intent(MainActivity.this,Main2Activity.class);
