@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText message, ipaddress, port;
     String text;
     private static MainActivity instance;
-    Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork;
+    Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail;
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
 
     private RecyclerView recyclerView, recyclerViewRec;
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bothwork = (Button) findViewById(R.id.bothwork);
         checkmodework = findViewById(R.id.checkmode);
         clearwork = findViewById(R.id.clear);
+        detail = findViewById(R.id.detail);
         readpressurework = findViewById(R.id.readpressure);
         emergencywork = findViewById(R.id.emergency);
         calibratework = findViewById(R.id.calibrate);
@@ -319,6 +320,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(this,CalibrateActivity.class);
                 startActivity(intent);
             }
+        }else if (view.getId() == detail.getId() ){
+            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+            System.out.println("---------------------");
+            String min = Integer.toString(time/60);
+            intent.putExtra("time",min);
+            startActivity(intent);
         }
 
     }
