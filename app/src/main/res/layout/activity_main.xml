@@ -18,20 +18,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.65"
             android:hint="IP Address"
-            android:text="10.80.66.113"/>
+            android:text="10.0.0.177"/>
         <EditText
             android:id="@+id/port"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:hint="Port"
-            android:text="7000"/>
+            android:text="1234"/>
         <Button
-            android:id="@+id/connect"
+            android:id="@+id/detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.05"
             android:text="detail"
+            android:onClick="onClick"
 
             />
     </LinearLayout>
