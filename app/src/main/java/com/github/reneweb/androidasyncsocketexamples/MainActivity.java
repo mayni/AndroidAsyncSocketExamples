@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String mSelected;
     Integer time = 0;
 
+    String closedPopup = "0";
+
     ///// ------------------------------------ NETWORK CREDENTIALS
 //    String networkSSID = "TP-Link_1316";
 //    String networkPass = "60177094";
@@ -139,8 +141,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             wifiManager.addNetwork(conf);
         }
+        if(getIntent().hasExtra("closed")){
+                closedPopup = getIntent().getStringExtra("closed");
+        }
 
-        dialogConnect();
+        if (closedPopup.equals("0")){
+            dialogConnect();
+        }
+
+
 
     }
 
