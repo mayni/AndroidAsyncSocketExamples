@@ -46,7 +46,6 @@ public class Client {
     }
 
     public void send(String msg) {
-
         System.out.println("[Client] Message" + msg);
         asyncDatagramSocket.send(host, ByteBuffer.wrap(msg.getBytes()));
         System.out.println("[Client]  Send");

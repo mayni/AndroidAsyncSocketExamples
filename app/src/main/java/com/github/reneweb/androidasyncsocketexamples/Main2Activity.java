@@ -18,7 +18,7 @@ public class Main2Activity extends AppCompatActivity {
 
     private Button mButtonTerminate;
     private Button mButtonStart,backto;
-    private EditText mEditTextInput,mEditTextInputHour;
+
     private Button mButtonSet;
     private TextView tvCountdown;
 
@@ -29,67 +29,36 @@ public class Main2Activity extends AppCompatActivity {
     private long mTimeLeftInMillis;
     private long mEndTime;
 
-    private String time;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-//        mEditTextInput = findViewById(R.id.edit_text_input);
-//        mEditTextInputHour = findViewById(R.id.edit_text_input_hour);
+
         mButtonSet = findViewById(R.id.set_btn);
         tvCountdown = findViewById(R.id.countdown_time);
         mButtonStart = findViewById(R.id.countdown_btn);
         mButtonTerminate = findViewById(R.id.emergency_btn);
         backto = findViewById(R.id.back_btn);
-//        getIncomingIntent();
         initView();
-
-        System.out.println("5555555555----"+ getIntent().getStringExtra("time"));
-
-        String input = getIntent().getStringExtra("time");
-//                if (input.length() == 0) {
-//                    Toast.makeText(Main2Activity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-        tvCountdown.setText(input);
-        long millisInput = Long.parseLong(input) * 60000;
-//                if (millisInput == 0) {
-//                    Toast.makeText(Main2Activity.this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-
-        setTime(millisInput);
-
         updateCountDownText();
-
     }
 
     private void initView() {
-//        mButtonSet.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String input = getIntent().getStringExtra("time");
-////                if (input.length() == 0) {
-////                    Toast.makeText(Main2Activity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
-////                    return;
-////                }
-//
-//                long millisInput = Long.parseLong(input) * 60000;
-////                if (millisInput == 0) {
-////                    Toast.makeText(Main2Activity.this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
-////                    return;
-////                }
-//
-//                setTime(millisInput);
-//                mEditTextInput.setText("");
-//            }
-//        });
+        mButtonSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(getIntent().hasExtra("time")){
+                    String input = getIntent().getStringExtra("time");
+                    long millisInput = Long.parseLong(input) * 60000;
+                    setTime(millisInput);
+                }
+
+            }
+        });
         mButtonStart.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
                 if (mTimerRunning) {
                     pauseTimer();
                 } else {
@@ -106,8 +75,6 @@ public class Main2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 pauseTimer();
                 resetTimer();
-
-
             }
         });
 
@@ -120,8 +87,6 @@ public class Main2Activity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
 
     }
 
@@ -142,7 +107,7 @@ public class Main2Activity extends AppCompatActivity {
     private void setTime(long milliseconds) {
         mStartTimeInMillis = milliseconds;
         resetTimer();
-//        closeKeyboard();
+
     }
 
 
@@ -199,25 +164,16 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     private void updateWatchInterface() {
-
-
-
+        if (mTimerRunning) {
+            mButtonStart.setText("Pause");
+        } else {
+            mButtonStart.setText("Start");
             if (mTimeLeftInMillis < mStartTimeInMillis) {
                 mButtonTerminate.setVisibility(View.VISIBLE);
             }
-// else {
-////                mButtonTerminate.setVisibility(View.INVISIBLE);
-//            }
+        }
         }
 
-
-    private void closeKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
 
     @Override
     protected void onStop() {
@@ -236,7 +192,6 @@ public class Main2Activity extends AppCompatActivity {
         if (mCountDownTimer != null) {
             mCountDownTimer.cancel();
         }
-        System.out.println("555555555555555555555");
     }
 
     @Override
@@ -249,28 +204,28 @@ public class Main2Activity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-//        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
-//
-//        mStartTimeInMillis = prefs.getLong("startTimeInMillis", 600000);
-//        mTimeLeftInMillis = prefs.getLong("millisLeft", mStartTimeInMillis);
-//        mTimerRunning = prefs.getBoolean("timerRunning", false);
-//
-//        updateCountDownText();
-//        updateWatchInterface();
-//
-//        if (mTimerRunning) {
-//            mEndTime = prefs.getLong("endTime", 0);
-//            mTimeLeftInMillis = mEndTime - System.currentTimeMillis();
-//
-//            if (mTimeLeftInMillis < 0) {
-//                mTimeLeftInMillis = 0;
-//                mTimerRunning = false;
-//                updateCountDownText();
-//                updateWatchInterface();
-//            } else {
-//                startTimer();
-//            }
-//        }
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+
+        mStartTimeInMillis = prefs.getLong("startTimeInMillis", 600000);
+        mTimeLeftInMillis = prefs.getLong("millisLeft", mStartTimeInMillis);
+        mTimerRunning = prefs.getBoolean("timerRunning", false);
+
+        updateCountDownText();
+        updateWatchInterface();
+
+        if (mTimerRunning) {
+            mEndTime = prefs.getLong("endTime", 0);
+            mTimeLeftInMillis = mEndTime - System.currentTimeMillis();
+
+            if (mTimeLeftInMillis < 0) {
+                mTimeLeftInMillis = 0;
+                mTimerRunning = false;
+                updateCountDownText();
+                updateWatchInterface();
+            } else {
+                startTimer();
+            }
+        }
     }
 
 

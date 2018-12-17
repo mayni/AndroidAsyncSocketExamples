@@ -2,4 +2,5 @@
 <resources>
     <color name="red">#FF0000</color>
     <color name="indigo">#FE3838</color>
+    <color name="lightGreen">#7CFC00</color>
 </resources>
