@@ -22,7 +22,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (!isConnected){
             AsyncServer.getCurrentThreadServer().stop();
-            listener.recMessage("disconnect");
+//            listener.recMessage("disconnect");
         }
     }
 
@@ -50,10 +50,11 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         AsyncServer.getDefault().connectSocket(new InetSocketAddress(host, port), new ConnectCallback() {
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
-                if (socket.isOpen()){
+                if (ex == null && socket.isOpen() ){
+//                    listener.recMessage("portCorrect");
                     handleConnectCompleted(ex,socket);
                 }else {
-                    listener.recMessage("null");
+                    listener.recMessage("portWrong");
                 }
             }
         });
@@ -71,7 +72,10 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         Util.writeAll(socket, message.getBytes(), new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
-                if (ex != null) throw new RuntimeException(ex);
+                if (ex != null){
+                    listener.recMessage("disconnect");
+                }
+//                {throw new RuntimeException(ex);}
                 System.out.println("[Client] Successfully wrote message");
             }
         });
@@ -87,7 +91,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
                 }else {
                     listener.recMessage(mes);
                 }
-                
+
             }
         });
 
@@ -104,7 +108,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             @Override
             public void onCompleted(Exception ex) {
 //                if(ex != null) throw new RuntimeException(ex);
-                listener.recMessage("disconnect");
+//                listener.recMessage("disconnect");
                 System.out.println("[Client] Successfully end connection");
             }
         });

@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,ConnectivityReceiver.ConnectivityReceiverListener {
 
     private EditText message, ipaddress, port;
-    String text;
+    String text,selectIp;
     private static MainActivity instance;
     Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,wifibtn;
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Integer time = 0;
 
     String closedPopup = "0";
+    private List<ScanResult> wifiList;
+    String[] val;
 
     ///// ------------------------------------ NETWORK CREDENTIALS
     String networkSSID = "TP-Link_1316";
@@ -120,10 +123,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (getConnection()){
             wifibtn.setText("disconnect");
             wifiStatus.setText("Connected");
+            bedStatus.setText("Connected");
+            bedStatus.setTextColor(Color.GREEN);
+            findViewById(R.id.sending).setEnabled(true);
         }else {
             wifibtn.setText("connect");
+            findViewById(R.id.sending).setEnabled(false);
             wifiStatus.setText("Disconnect");
-
+            bedStatus.setText("Disconnect");
+            bedStatus.setTextColor(Color.RED);
         }
 
 //        checkConnection();
@@ -135,6 +143,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         wifi =(WifiManager)
         getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        for (ScanResult sx : wifi.getScanResults()) {
+            System.out.println("[Main] : Point - " + sx);
+
+        }
 
 //
 //        if(!wifi.isWifiEnabled()) {
@@ -179,6 +192,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     }
                 }
+            }
+        });
+        builder.show();
+
+    }
+
+    private void dialogIp() {
+        String[] element = new String[wifiList.size()];
+        for (ScanResult sx : this.wifi.getScanResults()) {
+            System.out.println("[Main] : Point - " + sx);
+
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Select Bed's IP Address");
+        builder.setItems(wifiList, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+//                selectIp = String.valueOf(val.indexOf(which));
             }
         });
         builder.show();
@@ -300,16 +332,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             protected void onPostExecute(String mes) {
                                 super.onPostExecute(mes);
-                                itemListRec.add(0,new CardViewItem()
-                                        .setText(mes));
-                                adapterRec.setItemList(itemListRec);
-                                recyclerViewRec.setAdapter(adapterRec);
+
+
                                 if (mes.equals("disconnect")){
                                     bedStatus.setText("Disconnect");
                                     bedStatus.setTextColor(Color.RED);
-                                }else {
+                                    findViewById(R.id.sending).setEnabled(false);
+                                }
+                                else if (mes.equals("portWrong")){
+                                    bedStatus.setText("Disconnect");
+                                    bedStatus.setTextColor(Color.RED);
+                                    findViewById(R.id.sending).setEnabled(false);
+                                }else if (mes.equals("portCorrect")){
                                     bedStatus.setText("Connected");
                                     bedStatus.setTextColor(Color.GREEN);
+                                    findViewById(R.id.sending).setEnabled(true);
+                                }
+                                else {
+                                    bedStatus.setText("Connected");
+                                    findViewById(R.id.sending).setEnabled(true);
+                                    bedStatus.setTextColor(Color.GREEN);
+                                    itemListRec.add(0,new CardViewItem()
+                                            .setText(mes));
+                                    adapterRec.setItemList(itemListRec);
+                                    recyclerViewRec.setAdapter(adapterRec);
                                 }
                             }
                         }.execute();
@@ -350,31 +396,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         if (view.getId() == detail.getId() ){
-            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
-            System.out.println("---------------------");
-            String min = Integer.toString(time/60);
-            intent.putExtra("time",min);
-            startActivity(intent);
+//            dialogIp();
+//            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+//            System.out.println("---------------------");
+//            String min = Integer.toString(time/60);
+//            intent.putExtra("time",min);
+//            startActivity(intent);
         }
         if (view.getId() == wifibtn.getId()){
-
-//            if (wifiStatus.getText().equals("Disconnect")){
                 if (!getConnection()){
+                findViewById(R.id.sending).setEnabled(true);
                 connectWifi();
                 checkConnection();
-//                wifibtn.setText("Disconnect");
-//                connectWifi();
-//                wifiStatus.setText("Connected");
-//                ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//                NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-//
-//                if (mWifi.isConnected()) {
-//
-//                }
 
             }
             else {
                 wifi.setWifiEnabled(false);
+                findViewById(R.id.sending).setEnabled(false);
                 checkConnection();
 
             }
