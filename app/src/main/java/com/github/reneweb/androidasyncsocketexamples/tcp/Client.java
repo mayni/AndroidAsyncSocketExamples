@@ -1,18 +1,16 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
-<<<<<<< HEAD
+
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 
 import com.github.reneweb.androidasyncsocketexamples.ConnectivityReceiver;
 import com.koushikdutta.async.*;
-=======
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncSocket;
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.Util;
->>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
@@ -29,8 +27,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (!isConnected){
-            AsyncServer.getCurrentThreadServer().stop();
-//            listener.recMessage("disconnect");
+            System.out.println("[Main] Closed Wifi");
         }
     }
 
@@ -45,13 +42,8 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         this.listener = listener;
     }
 
-<<<<<<< HEAD
-
 
     public Client(String host, int port, String message) {
-=======
-    public Client(String host, int port,String message) {
->>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
         this.host = host;
         this.port = port;
         this.message = message;
@@ -67,18 +59,15 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
-<<<<<<< HEAD
                 if (ex == null && socket.isOpen() ){
 //                    listener.recMessage("portCorrect");
+                    System.out.println("Client onConnectCompleted ");
                     handleConnectCompleted(ex,socket);
                 }else {
-                    listener.recMessage("portWrong");
+                    listener.recMessage("disconnect");
                 }
-=======
-                System.out.println("Client onConnectCompleted " + socket.toString());
-                    handleConnectCompleted(ex,socket);
-
->>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
+//                System.out.println("Client onConnectCompleted " + socket.toString());
+//                handleConnectCompleted(ex,socket);
             }
         });
     }
@@ -96,9 +85,9 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         Util.writeAll(socket, message.getBytes(), new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
-                if (ex != null){
-                    listener.recMessage("disconnect");
-                }
+//                if (ex != null){
+//                    listener.recMessage("disconnect");
+//                }
 //                {throw new RuntimeException(ex);}
                 System.out.println("[Client] Successfully wrote message");
             }
@@ -109,17 +98,13 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
                 mes = new String(bb.getAllByteArray());
                 System.out.println("[Client] Received Message " + mes);
-<<<<<<< HEAD
-                if (mes.isEmpty()){
-                    listener.recMessage("disconnect");
-                }else {
-                    listener.recMessage(mes);
-                }
-
-=======
+//                if (mes.isEmpty()){
+//                    listener.recMessage("disconnect");
+//                }else {
+//                    listener.recMessage(mes);
+//                }
                 listener.recMessage(mes);
                 socket.close();
->>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
             }
         });
 
@@ -127,7 +112,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             @Override
             public void onCompleted(Exception ex) {
 //                if(ex != null) throw new RuntimeException(ex);
-                listener.recMessage("disconnect");
+//                listener.recMessage("disconnect");
                 System.out.println("[Client] Successfully closed connection");
             }
         });

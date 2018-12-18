@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText message, ipaddress, port;
     String text,selectIp;
     private static MainActivity instance;
-    Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail;
+    Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,
+    wifibtn;
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
     TextView wifiStatus,bedStatus;
 
@@ -219,12 +220,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Select Bed's IP Address");
-        builder.setItems(wifiList, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-//                selectIp = String.valueOf(val.indexOf(which));
-            }
-        });
+//        builder.setItems(wifiList, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+////                selectIp = String.valueOf(val.indexOf(which));
+//            }
+//        });
         builder.show();
 
     }
@@ -347,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             protected String doInBackground(Void... voids) {
 
-
                                 System.out.println("[Main] rec" + mes.trim());
                                 return String.valueOf(mes.trim());
                             }
@@ -363,21 +363,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     bedStatus.setTextColor(Color.RED);
                                     findViewById(R.id.sending).setEnabled(false);
                                 }
-                                else if (mes.equals("portWrong")){
-                                    bedStatus.setText("Disconnect");
-                                    bedStatus.setTextColor(Color.RED);
-                                    findViewById(R.id.sending).setEnabled(false);
-                                }else if (mes.equals("portCorrect")){
-                                    bedStatus.setText("Connected");
-                                    bedStatus.setTextColor(Color.GREEN);
-                                    findViewById(R.id.sending).setEnabled(true);
-                                }
+//                                else if (mes.equals("portWrong")){
+//                                    bedStatus.setText("Disconnect");
+//                                    bedStatus.setTextColor(Color.RED);
+//                                    findViewById(R.id.sending).setEnabled(false);
+//                                }else if (mes.equals("portCorrect")){
+//                                    bedStatus.setText("Connected");
+//                                    bedStatus.setTextColor(Color.GREEN);
+//                                    findViewById(R.id.sending).setEnabled(true);
+//                                }
                                 else {
                                     bedStatus.setText("Connected");
                                     findViewById(R.id.sending).setEnabled(true);
-                                    bedStatus.setTextColor(Color.GREEN);
+                                    bedStatus.setTextColor(getColor(R.color.lightGreen));
                                     itemListRec.add(0,new CardViewItem()
-                                            .setText(mes));
+                                            .setText(dateFormat.format(date),mes));
                                     adapterRec.setItemList(itemListRec);
                                     recyclerViewRec.setAdapter(adapterRec);
 
@@ -619,6 +619,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showConnected(boolean isConnected) {
         if (isConnected) {
             wifiStatus.setText("Disconnect");
+            bedStatus.setText("Disconnect");
+            bedStatus.setTextColor(Color.RED);
             wifibtn.setText("connect");
         } else {
             wifiStatus.setText("Connected");
