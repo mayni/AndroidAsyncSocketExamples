@@ -33,7 +33,7 @@ public class MainAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         BaseItem i = itemList.get(position);
         if (holder instanceof CardViewHolder) {
             CardViewItem cardViewItem = (CardViewItem) i;
-            ((CardViewHolder) holder).setText(cardViewItem.getText());
+            ((CardViewHolder) holder).setText(cardViewItem.getText1(),cardViewItem.getText());
         }
     }
 

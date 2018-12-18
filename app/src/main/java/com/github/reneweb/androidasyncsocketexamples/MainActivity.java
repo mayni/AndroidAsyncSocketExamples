@@ -29,7 +29,10 @@ import android.widget.Toast;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -38,13 +41,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText message, ipaddress, port;
     String text,selectIp;
     private static MainActivity instance;
-    Button calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,wifibtn;
+    Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail;
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
     TextView wifiStatus,bedStatus;
 
-    private RecyclerView recyclerView, recyclerViewRec;
-    private MainAdapter adapter, adapterRec;
-    private List<BaseItem> itemList, itemListRec;
+    private RecyclerView recyclerView, recyclerViewRec ;
+    private MainAdapter adapter, adapterRec ;
+    private List<BaseItem> itemList, itemListRec ;
+
 
     private static final int sizeOfIntInHalfBytes = 8;
     private static final int numberOfBitsInAHalfByte = 4;
@@ -54,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
     String[] CLUBS = {"45 minute","1 hour","1 hour 30 minute","2 hours"};
+    String [] BITS = {"main pump","side pump","Valve main left","Valve main right","Valve side left", "Valve side right"};
+
+    boolean[] Checkbit = new boolean[]{false, false, false, false, false, false};
     WifiManager wifi;
     String mSelected;
     Integer time = 0;
@@ -67,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String networkPass = "60177094";
 //    String networkSSID = "DESKTOP-5HK7N4N 2635";
 //    String networkPass = "580610684";
+//    String networkSSID = "nanearnano";
+//    String networkPass = "yok37491";
     WifiManager wifiManager;
 
 
@@ -84,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rightwork = (Button) findViewById(R.id.rightwork);
         leftwork = (Button) findViewById(R.id.leftwork);
         bothwork = (Button) findViewById(R.id.bothwork);
+        directcontrol = findViewById(R.id.directcontrol);
         checkmodework = findViewById(R.id.checkmode);
         clearwork = findViewById(R.id.clear);
         detail = findViewById(R.id.detail);
@@ -103,6 +113,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         readpressurework.setOnClickListener(this);
         emergencywork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
+        directcontrol.setOnClickListener(this);
+
+
+
+
 
 
         message = (EditText) findViewById(R.id.message);
@@ -135,9 +150,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 //        checkConnection();
-
-        System.out.println("Createeeeeeeeeeeeeeeeeeeee");
-        System.out.println(decToHex(6900));
 
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
 
@@ -304,6 +316,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void ClickToConnect(View view) {
+        final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+
         message = (EditText) findViewById(R.id.message);
         final String m = message.getText().toString();
         ipaddress = (EditText) findViewById(R.id.ip);
@@ -312,25 +327,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final int p = Integer.parseInt(port.getText().toString());
 
         itemList.add(0,new CardViewItem()
-                .setText(m));
+                .setText(dateFormat.format(date),m)
+        );
         adapter.setItemList(itemList);
         recyclerView.setAdapter(adapter);
+
+
+
 
 
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(ip, p ,m);
+                Client client = new Client(ip, p,m);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(final String mes) {
                         new AsyncTask<Void, Void, String>(){
                             @Override
                             protected String doInBackground(Void... voids) {
-                                return String.valueOf(mes);
+
+
+                                System.out.println("[Main] rec" + mes.trim());
+                                return String.valueOf(mes.trim());
                             }
                             @Override
                             protected void onPostExecute(String mes) {
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                Date date = new Date();
                                 super.onPostExecute(mes);
 
 
@@ -356,14 +380,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             .setText(mes));
                                     adapterRec.setItemList(itemListRec);
                                     recyclerViewRec.setAdapter(adapterRec);
+
+                                    itemListRec.add(0,new CardViewItem()
+                                    .setText(dateFormat.format(date),mes));
+                                    adapterRec.setItemList(itemListRec);
+                                    recyclerViewRec.setAdapter(adapterRec);
                                 }
+                               
                             }
                         }.execute();
+
                         System.out.println("[Main]"+mes);
                     }
                 });
                 return null;
             }
+
 
 
         }.execute();
@@ -393,8 +425,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else if(view.getId() == calibratework.getId()){
                 Intent intent = new Intent(this,CalibrateActivity.class);
                 startActivity(intent);
+            }else if(view.getId() ==  directcontrol.getId()){
+                setDirectControl();
             }
         }
+
         if (view.getId() == detail.getId() ){
 //            dialogIp();
 //            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
@@ -419,6 +454,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+    private void setDirectControl() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Set Direct Control");
+
+        builder.setMultiChoiceItems(BITS, Checkbit, new DialogInterface.OnMultiChoiceClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                Checkbit[which] = isChecked;
+
+
+            }
+
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                double res = 0;
+                Integer plus = 2;
+
+                for(int i=0;i<Checkbit.length;i++){
+                    if(Checkbit[i] == true){
+                        if(i>=2) {
+                            res += Math.pow(2,i+plus);
+                        }else{
+                            res += Math.pow(2,i);
+                        }
+
+                    }
+                }
+                Integer dec = (int) res;
+                String Hex = decToHex(dec);
+                message.setText("02 " +  Hex.substring(6) + " FF");
+
+
+//                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("CANCEL", null);
+        builder.create();
+        builder.show();
+
+    }
+
 
     private void setTime(final Integer id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -442,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                 }
                 if(id == rightwork.getId()){
-                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
+                    String right = "0A 04 FF 82 0005 03FF 03FF 93 "+decToHex(time-5).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0010 0000 0000 00 "+decToHex(time-10).substring(4)+" 0000 0000";
                     message.setText(right);
                 }else if(id == leftwork.getId()){
                       String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";

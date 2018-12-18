@@ -1,10 +1,18 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
+<<<<<<< HEAD
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 
 import com.github.reneweb.androidasyncsocketexamples.ConnectivityReceiver;
 import com.koushikdutta.async.*;
+=======
+import com.koushikdutta.async.AsyncServer;
+import com.koushikdutta.async.AsyncSocket;
+import com.koushikdutta.async.ByteBufferList;
+import com.koushikdutta.async.DataEmitter;
+import com.koushikdutta.async.Util;
+>>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
@@ -27,6 +35,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
     }
 
 
+
     public interface clientMessageRecListener{
         void recMessage(String mes);
     }
@@ -36,31 +45,46 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         this.listener = listener;
     }
 
+<<<<<<< HEAD
 
 
     public Client(String host, int port, String message) {
+=======
+    public Client(String host, int port,String message) {
+>>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
         this.host = host;
         this.port = port;
         this.message = message;
         setup();
     }
 
-    private void setup() {
 
+    private void setup() {
+        System.out.println("Client setup " );
+        System.out.println("Client setup " + host);
+        System.out.println("Client setup " + port);
         AsyncServer.getDefault().connectSocket(new InetSocketAddress(host, port), new ConnectCallback() {
+
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
+<<<<<<< HEAD
                 if (ex == null && socket.isOpen() ){
 //                    listener.recMessage("portCorrect");
                     handleConnectCompleted(ex,socket);
                 }else {
                     listener.recMessage("portWrong");
                 }
+=======
+                System.out.println("Client onConnectCompleted " + socket.toString());
+                    handleConnectCompleted(ex,socket);
+
+>>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
             }
         });
     }
 
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
+        System.out.println("Client handleConnectCompleted " + socket.toString());
 
         if(ex != null) {
             ///////////////////////////////////////////////////////
@@ -83,15 +107,19 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         socket.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
-                System.out.println("[Client]" + emitter);
                 mes = new String(bb.getAllByteArray());
                 System.out.println("[Client] Received Message " + mes);
+<<<<<<< HEAD
                 if (mes.isEmpty()){
                     listener.recMessage("disconnect");
                 }else {
                     listener.recMessage(mes);
                 }
 
+=======
+                listener.recMessage(mes);
+                socket.close();
+>>>>>>> 793462a52a02f3e3d6ea25fa8742e0bda82dc7b9
             }
         });
 
