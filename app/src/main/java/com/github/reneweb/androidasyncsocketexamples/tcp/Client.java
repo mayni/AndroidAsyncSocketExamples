@@ -1,8 +1,10 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
-import android.os.AsyncTask;
-import android.widget.ArrayAdapter;
-import com.koushikdutta.async.*;
+import com.koushikdutta.async.AsyncServer;
+import com.koushikdutta.async.AsyncSocket;
+import com.koushikdutta.async.ByteBufferList;
+import com.koushikdutta.async.DataEmitter;
+import com.koushikdutta.async.Util;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
@@ -17,6 +19,7 @@ public class Client {
 
 
 
+
     public interface clientMessageRecListener{
         void recMessage(String mes);
     }
@@ -24,7 +27,7 @@ public class Client {
         this.listener = listener;
     }
 
-    public Client(String host, int port, String message) {
+    public Client(String host, int port,String message) {
         this.host = host;
         this.port = port;
         this.message = message;
@@ -32,18 +35,25 @@ public class Client {
 
     }
 
-    private void setup() {
 
+    private void setup() {
+        System.out.println("Client setup " );
+        System.out.println("Client setup " + host);
+        System.out.println("Client setup " + port);
         AsyncServer.getDefault().connectSocket(new InetSocketAddress(host, port), new ConnectCallback() {
+
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
-               handleConnectCompleted(ex,socket);
+                System.out.println("Client onConnectCompleted " + socket.toString());
+                    handleConnectCompleted(ex,socket);
+
             }
         });
 
 
     }
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
+        System.out.println("Client handleConnectCompleted " + socket.toString());
 
         if(ex != null) {
             ///////////////////////////////////////////////////////
@@ -62,10 +72,10 @@ public class Client {
         socket.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
-                System.out.println("[Client]" + emitter);
                 mes = new String(bb.getAllByteArray());
                 System.out.println("[Client] Received Message " + mes);
                 listener.recMessage(mes);
+                socket.close();
             }
         });
 
