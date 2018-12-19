@@ -115,9 +115,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapter = new MainAdapter();
 
-        recyclerViewRec = findViewById(R.id.recyclerView1);
-        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        adapterRec = new MainAdapter();
+//        recyclerViewRec = findViewById(R.id.recyclerView1);
+//        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+//        adapterRec = new MainAdapter();
 
 
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
@@ -273,15 +273,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         port = (EditText) findViewById(R.id.port);
         final int p = Integer.parseInt(port.getText().toString());
 
+        final String dateSend = dateFormat.format(date);
+
         itemList.add(0,new CardViewItem()
-                .setText(dateFormat.format(date),m)
-        );
+                .setText(m,dateFormat.format(date),"",""));
         adapter.setItemList(itemList);
         recyclerView.setAdapter(adapter);
-
-
-
-
 
         new AsyncTask<Void, Void, Void>(){
             @Override
@@ -293,8 +290,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new AsyncTask<Void, Void, String>(){
                             @Override
                             protected String doInBackground(Void... voids) {
-
-
                                 System.out.println("[Main] rec" + mes.trim());
                                 return String.valueOf(mes.trim());
                             }
@@ -303,10 +298,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                                 Date date = new Date();
                                 super.onPostExecute(mes);
-                                itemListRec.add(0,new CardViewItem()
-                                        .setText(dateFormat.format(date),mes));
-                                adapterRec.setItemList(itemListRec);
-                                recyclerViewRec.setAdapter(adapterRec);
+                                itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
+
+
+
+                                adapter.setItemList(itemList);
+                                recyclerView.setAdapter(adapter);
+//                                itemListRec.add(0,new CardViewItem()
+//                                        .setText1(dateFormat.format(date),mes));
+//                                adapterRec.setItemList(itemListRec);
+//                                recyclerViewRec.setAdapter(adapterRec);
                             }
                         }.execute();
 
@@ -323,6 +324,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         message.setText("");
     }
+
 
     @Override
     public void onClick(final View view) {
