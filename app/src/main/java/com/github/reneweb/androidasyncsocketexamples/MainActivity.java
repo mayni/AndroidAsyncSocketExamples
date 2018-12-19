@@ -126,9 +126,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapter = new MainAdapter();
 
-        recyclerViewRec = findViewById(R.id.recyclerView1);
-        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        adapterRec = new MainAdapter();
+//        recyclerViewRec = findViewById(R.id.recyclerView1);
+//        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+//        adapterRec = new MainAdapter();
 
         if (getConnection()){
             wifibtn.setText("disconnect");
@@ -316,15 +316,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         port = (EditText) findViewById(R.id.port);
         final int p = Integer.parseInt(port.getText().toString());
 
+        final String dateSend = dateFormat.format(date);
+
         itemList.add(0,new CardViewItem()
-                .setText(dateFormat.format(date),m)
-        );
+                .setText(m,dateFormat.format(date),"",""));
         adapter.setItemList(itemList);
         recyclerView.setAdapter(adapter);
-
-
-
-
 
         new AsyncTask<Void, Void, Void>(){
             @Override
@@ -365,11 +362,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     bedStatus.setText("Connected");
                                     findViewById(R.id.sending).setEnabled(true);
                                     bedStatus.setTextColor(getColor(R.color.lightGreen));
+                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
 
-                                    itemListRec.add(0,new CardViewItem()
-                                    .setText(dateFormat.format(date),mes));
-                                    adapterRec.setItemList(itemListRec);
-                                    recyclerViewRec.setAdapter(adapterRec);
+                                    adapter.setItemList(itemList);
+                                    recyclerView.setAdapter(adapter);
+    //                                itemListRec.add(0,new CardViewItem()
+    //                                        .setText1(dateFormat.format(date),mes));
+    //                                adapterRec.setItemList(itemListRec);
+    //                                recyclerViewRec.setAdapter(adapterRec);
                                 }
                                
                             }
@@ -385,6 +385,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         message.setText("");
     }
+
 
     @Override
     public void onClick(final View view) {

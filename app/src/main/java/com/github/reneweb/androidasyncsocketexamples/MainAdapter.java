@@ -31,9 +31,16 @@ public class MainAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
         BaseItem i = itemList.get(position);
+
         if (holder instanceof CardViewHolder) {
             CardViewItem cardViewItem = (CardViewItem) i;
-            ((CardViewHolder) holder).setText(cardViewItem.getText1(),cardViewItem.getText());
+            ((CardViewHolder) holder).setText(cardViewItem.getText());
+            ((CardViewHolder) holder).setText1(cardViewItem.getText1());
+            ((CardViewHolder) holder).setText2(cardViewItem.getText2());
+            ((CardViewHolder) holder).setText3(cardViewItem.getText3());
+
+
+
         }
     }
 
@@ -52,8 +59,9 @@ public class MainAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public void setItemList(List<BaseItem> itemList) {
         this.itemList = itemList;
-
         notifyDataSetChanged();
     }
+
+
 
 }
