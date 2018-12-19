@@ -2,9 +2,11 @@ package com.github.reneweb.androidasyncsocketexamples;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -80,15 +82,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     WifiManager wifiManager;
 
 
-
-
-
     @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         rightwork = (Button) findViewById(R.id.rightwork);
@@ -115,10 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         emergencywork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
         directcontrol.setOnClickListener(this);
-
-
-
-
 
 
         message = (EditText) findViewById(R.id.message);
@@ -150,17 +144,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bedStatus.setTextColor(Color.RED);
         }
 
-//        checkConnection();
-
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
 
         wifi =(WifiManager)
         getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        for (ScanResult sx : wifi.getScanResults()) {
-            System.out.println("[Main] : Point - " + sx);
 
-        }
 
 //
 //        if(!wifi.isWifiEnabled()) {
@@ -191,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+
+
     private void dialogConnect() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage("Connect Wifi " + networkSSID);
@@ -208,16 +199,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         builder.show();
-
     }
 
     private void dialogIp() {
-        String[] element = new String[wifiList.size()];
-        for (ScanResult sx : this.wifi.getScanResults()) {
-            System.out.println("[Main] : Point - " + sx);
-
-        }
-
+//        String[] element = new String[wifiList.size()];
+//        for (ScanResult sx : this.wifi.getScanResults()) {
+//            System.out.println("[Main] : Point - " + sx);
+//
+//        }
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Select Bed's IP Address");
 //        builder.setItems(wifiList, new DialogInterface.OnClickListener() {
@@ -376,10 +365,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     bedStatus.setText("Connected");
                                     findViewById(R.id.sending).setEnabled(true);
                                     bedStatus.setTextColor(getColor(R.color.lightGreen));
-                                    itemListRec.add(0,new CardViewItem()
-                                            .setText(dateFormat.format(date),mes));
-                                    adapterRec.setItemList(itemListRec);
-                                    recyclerViewRec.setAdapter(adapterRec);
 
                                     itemListRec.add(0,new CardViewItem()
                                     .setText(dateFormat.format(date),mes));
@@ -396,10 +381,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return null;
             }
 
-
-
         }.execute();
-
 
         message.setText("");
     }
@@ -431,6 +413,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view.getId() == detail.getId() ){
+            System.out.println("[Main] : click detail");
+            new AsyncTask<Void, Void, ScanResult>() {
+                @Override
+                protected ScanResult doInBackground(Void... voids) {
+                    wifi.startScan();
+                    for (ScanResult sx : wifi.getScanResults()) {
+                        System.out.println("[Main] : Point - " + sx);
+                    }
+                    return null;
+                }
+
+            }.execute();
+
+
 //            dialogIp();
 //            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
 //            System.out.println("---------------------");
