@@ -95,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.95"
-            android:hint="Message"
+            android:hint="Command"
             />
         <Button
             android:id="@+id/sending"
