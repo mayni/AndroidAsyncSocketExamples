@@ -73,10 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] val;
 
     ///// ------------------------------------ NETWORK CREDENTIALS
-//    String networkSSID = "TP-Link_1316";
-//    String networkPass = "60177094";
-    String networkSSID = "DESKTOP-5HK7N4N 2635";
-    String networkPass = "580610684";
+    String networkSSID = "TP-Link_1316";
+    String networkPass = "60177094";
+//    String networkSSID = "DESKTOP-5HK7N4N 2635";
+//    String networkPass = "580610684";
 //    String networkSSID = "nanearnano";
 //    String networkPass = "yok37491";
     WifiManager wifiManager;
