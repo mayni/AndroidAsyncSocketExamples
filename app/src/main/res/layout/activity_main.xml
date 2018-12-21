@@ -104,21 +104,28 @@
         <Button
             android:id="@+id/rightwork"
             android:layout_width="wrap_content"
-            android:layout_margin="20px"
+            android:layout_margin="10px"
             android:layout_height="wrap_content"
             android:text="right"/>
         <Button
             android:id="@+id/leftwork"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20px"
+            android:layout_margin="10px"
             android:text="left"/>
         <Button
             android:id="@+id/bothwork"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20px"
+            android:layout_margin="10px"
             android:text="both"/>
+        <Button
+            android:id="@+id/onwork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/Onwork"
+            android:layout_margin="10px"
+            android:text="on"/>
 
     </LinearLayout>
     <LinearLayout

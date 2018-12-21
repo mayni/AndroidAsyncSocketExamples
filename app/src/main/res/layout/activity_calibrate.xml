@@ -5,24 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context="com.github.reneweb.androidasyncsocketexamples.CalibrateActivity">
-    <TextView
-        android:id="@+id/xPo"
-        android:layout_width="wrap_content"
-        android:textSize="40sp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="x"/>
-    <TextView
-        android:id="@+id/yPo"
+        android:layout_marginLeft="40dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/xPo"
+            android:layout_width="wrap_content"
+            android:textSize="50sp"
+            android:layout_height="wrap_content"
+            android:text="x"/>
+        <TextView
+            android:id="@+id/yPo"
+            android:layout_width="wrap_content"
+            android:textSize="50sp"
+            android:layout_height="wrap_content"
+            android:text="y"/>
+        <TextView
+            android:id="@+id/zPo"
+            android:layout_width="wrap_content"
+            android:textSize="50sp"
+            android:layout_height="wrap_content"
+            android:text="z"/>
+
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/startcalibrate"
         android:layout_width="wrap_content"
-        android:textSize="40sp"
         android:layout_height="wrap_content"
-        android:text="y"/>
-    <TextView
-        android:id="@+id/zPo"
-        android:layout_width="wrap_content"
         android:textSize="40sp"
-        android:layout_height="wrap_content"
-        android:text="z"/>
+        android:text="start" />
+
 
 </LinearLayout>

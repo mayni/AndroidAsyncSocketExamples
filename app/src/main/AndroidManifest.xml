@@ -27,7 +27,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Main2Activity" />
-        <activity android:name=".CalibrateActivity"></activity>
+        <activity android:name=".CalibrateActivity" />
+        <activity android:name=".PressureActivity"></activity>
     </application>
 
 </manifest>

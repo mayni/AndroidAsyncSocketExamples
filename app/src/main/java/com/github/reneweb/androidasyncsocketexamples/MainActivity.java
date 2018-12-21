@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +23,9 @@ import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText message, ipaddress, port;
     String text;
     private static MainActivity instance;
-    Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail;
+    Button onwork, directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail;
+
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
 
     private RecyclerView recyclerView, recyclerViewRec ;
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        rightwork = (Button) findViewById(R.id.rightwork);
-        leftwork = (Button) findViewById(R.id.leftwork);
-        bothwork = (Button) findViewById(R.id.bothwork);
+        rightwork = findViewById(R.id.rightwork);
+        leftwork =  findViewById(R.id.leftwork);
+        bothwork =  findViewById(R.id.bothwork);
         directcontrol = findViewById(R.id.directcontrol);
         checkmodework = findViewById(R.id.checkmode);
         clearwork = findViewById(R.id.clear);
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         readpressurework = findViewById(R.id.readpressure);
         emergencywork = findViewById(R.id.emergency);
         calibratework = findViewById(R.id.calibrate);
+        onwork = findViewById(R.id.onwork);
 
         rightwork.setOnClickListener(this);
         leftwork.setOnClickListener(this);
@@ -97,12 +105,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         emergencywork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
         directcontrol.setOnClickListener(this);
+        onwork.setOnClickListener(this);
 
 
 
 
 
-        message = (EditText) findViewById(R.id.message);
+        message =  findViewById(R.id.message);
 
 
 
@@ -151,8 +160,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (closedPopup.equals("0")){
-            dialogConnect();
+//            dialogConnect();
         }
+
+
 
 
 
@@ -178,6 +189,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.show();
 
     }
+    public void readFile(){
+        try {
+            FileInputStream fileIn=openFileInput("Pressure.txt");
+            InputStreamReader InputRead= new InputStreamReader(fileIn);
+            BufferedReader br = new BufferedReader(InputRead);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            while ((text = br.readLine()) != null){
+                sb.append(text).append("\n");
+            }
+            InputRead.close();
+            ArrayList<String> press = new ArrayList<>();
+            for(String str : sb.toString().split("\\s") ){
+                press.add(str);
+            }
+            PRESSURE_SIDE = press.get(1);
+            PRESSURE_MAIN = press.get(2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static MainActivity getInstance() {
         return instance;
@@ -186,46 +218,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onStart();
         System.out.println("Starttttttttttttttttttttttttt" + text);
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected  void onResume(){
         super.onResume();
 
-//        ServerBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ipaddressServer = (EditText) findViewById(R.id.ip);
-//                portServer = (EditText) findViewById(R.id.port);
-//                new AsyncTask<String, Void, String>() {
-//                    @Override
-//                    protected String doInBackground(String... params) {
-//                        try {
-//                            Server server = new Server(ipaddressServer.getText().toString(), Integer.parseInt(portServer.getText().toString()));
-//
-//                        try {
-//                            text = server.setup();
-//
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-////                            new com.github.reneweb.androidasyncsocketexamples.tcp.Server(ipaddressServer.getText().toString(), Integer.parseInt(portServer.getText().toString()));
-//
-//                        } catch (UnknownHostException e) {
-//                            e.printStackTrace();
-//                        }
-////                //UDP client and server (Here the client explicitly sends a message)
-//////                new com.github.reneweb.androidasyncsocketexamples.udp.Server("10.80.121.55", 7001);
-//////                new com.github.reneweb.androidasyncsocketexamples.udp.Client("10.80.121.55", 7001).send("haloooo");
-//                        return "connected";
-//                    }
-//                    protected void onPostExecute (String voids){
-//                        status.setText(voids);
-//                    }
-//                }.execute();
-//
-//            }
-//        });
-
-
-        System.out.println("Resumeeeeeeeeeeeeeeeee");
     }
     protected void onStop(){
         super.onStop();
@@ -300,8 +296,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 super.onPostExecute(mes);
                                 itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
 
-
-
                                 adapter.setItemList(itemList);
                                 recyclerView.setAdapter(adapter);
 //                                itemListRec.add(0,new CardViewItem()
@@ -330,7 +324,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(final View view) {
         Integer id = view.getId();
         if(view.getId() == rightwork.getId() || view.getId() == leftwork.getId() || view.getId() == bothwork.getId()){
+            readFile();
             setTime(id);
+
         }else {
             if(view.getId() == checkmodework.getId()){
                 String checkmode = "0A FF FF";
@@ -339,8 +335,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String clear = "0A 00 00";
                 message.setText(clear);
             }else if(view.getId() == readpressurework.getId()){
-                String readpress = "01";
-                message.setText(readpress);
+                Intent intent = new Intent(MainActivity.this,PressureActivity.class);
+                startActivity(intent);
             }else if(view.getId() == emergencywork.getId()){
                 String emerg = "EE";
                 message.setText(emerg);
@@ -359,46 +355,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("time",min);
             startActivity(intent);
         }
+        if(view.getId() == onwork.getId()){
+            String on = "0B 01 FF 00 0000 00 0000";
+            message.setText(on);
+        }
 
     }
 
     private void setDirectControl() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Set Direct Control");
 
         builder.setMultiChoiceItems(BITS, Checkbit, new DialogInterface.OnMultiChoiceClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                 Checkbit[which] = isChecked;
-
-
             }
-
         });
-
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 double res = 0;
                 Integer plus = 2;
-
-                for(int i=0;i<Checkbit.length;i++){
-                    if(Checkbit[i] == true){
-                        if(i>=2) {
-                            res += Math.pow(2,i+plus);
-                        }else{
-                            res += Math.pow(2,i);
-                        }
-
+                int count = 0;
+                for(boolean chbit : Checkbit){
+                    if(chbit == false){
+                        count++;
                     }
                 }
-                Integer dec = (int) res;
-                String Hex = decToHex(dec);
-                message.setText("02 " +  Hex.substring(6) + " FF");
+                if(count != Checkbit.length){
+                    for(int i=0;i<Checkbit.length;i++){
+                        if(Checkbit[i] == true){
+                            if(i>=2) {
+                                res += Math.pow(2,i+plus);
+                            }else{
+                                res += Math.pow(2,i);
+                            }
+                        }
+                    }
+                    Integer dec = (int) res;
+                    String Hex = decToHex(dec);
+                    message.setText("02 " +  Hex.substring(6) + " FF");
+                }else{
+                    message.setText("");
+                }
 
+            }
+        });
 
-//                dialog.dismiss();
+        builder.setNeutralButton("Stop All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                message.setText("02 00 FF");
             }
         });
         builder.setNegativeButton("CANCEL", null);
@@ -430,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                 }
                 if(id == rightwork.getId()){
-                    String right = "0A 04 FF 82 0005 03FF 03FF 93 "+decToHex(time-5).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0010 0000 0000 00 "+decToHex(time-10).substring(4)+" 0000 0000";
+                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
                     message.setText(right);
                 }else if(id == leftwork.getId()){
                       String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
@@ -467,6 +475,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return hexBuilder.toString();
     }
+
 
 
 

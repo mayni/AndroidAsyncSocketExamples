@@ -10,11 +10,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Locale;
 
-public class Main2Activity extends AppCompatActivity {
+public class
+
+Main2Activity extends AppCompatActivity {
 
     private Button mButtonTerminate;
     private Button mButtonStart,backto;
