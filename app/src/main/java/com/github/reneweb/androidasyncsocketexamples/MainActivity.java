@@ -2,14 +2,11 @@ package com.github.reneweb.androidasyncsocketexamples;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.DhcpInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -19,7 +16,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +27,9 @@ import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
-import java.lang.reflect.Array;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,ConnectivityReceiver.ConnectivityReceiverListener {
 
+    final List<String> lists = new ArrayList<String>();
     private EditText message, ipaddress, port;
     String text,selectIp;
     private static MainActivity instance;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     };
     String[] CLUBS = {"45 minute","1 hour","1 hour 30 minute","2 hours"};
     String [] BITS = {"main pump","side pump","Valve main left","Valve main right","Valve side left", "Valve side right"};
-
+    String[] ipAddr;
     boolean[] Checkbit = new boolean[]{false, false, false, false, false, false};
     WifiManager wifi;
     String mSelected;
@@ -73,10 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] val;
 
     ///// ------------------------------------ NETWORK CREDENTIALS
-    String networkSSID = "TP-Link_1316";
-    String networkPass = "60177094";
-//    String networkSSID = "DESKTOP-5HK7N4N 2635";
-//    String networkPass = "580610684";
+//    String networkSSID = "TP-Link_1316";
+//    String networkPass = "60177094";
+    String networkSSID = "DESKTOP-5HK7N4N 2635";
+    String networkPass = "580610684";
 //    String networkSSID = "nanearnano";
 //    String networkPass = "yok37491";
     WifiManager wifiManager;
@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         rightwork = (Button) findViewById(R.id.rightwork);
         leftwork = (Button) findViewById(R.id.leftwork);
@@ -113,6 +112,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         emergencywork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
         directcontrol.setOnClickListener(this);
+
+
+        ipaddress = (EditText) findViewById(R.id.ip);
+
+        getipAddress();
+        port = (EditText) findViewById(R.id.port);
 
 
         message = (EditText) findViewById(R.id.message);
@@ -179,6 +184,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void dialogIp(){
+//        for (int i=0;i< lists.size(); i++){
+//            ipAddr[i] = lists.get(i);
+//        }
+        System.out.println("[Main] : ipAddr" + ipAddr);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Select Mattress's ipAddress");
+        builder.setItems(ipAddr, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String selected = ipAddr[which];
+                Toast.makeText(getApplicationContext(),
+                        selected, Toast.LENGTH_LONG).show();
+                ipaddress.setText(selected);
+            }
+        });
+        builder.setNegativeButton("cancel", null);
+        builder.create();
+// สุดท้ายอย่าลืม show() ด้วย
+        builder.show();
+    }
+
 
 
 
@@ -188,8 +215,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-                for( WifiConfiguration i : list ) {
-                    if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+                for (WifiConfiguration i : list) {
+                    if (i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
                         wifiManager.disconnect();
                         wifiManager.enableNetwork(i.networkId, true);
                         wifiManager.reconnect();
@@ -199,24 +226,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         builder.show();
-    }
-
-    private void dialogIp() {
-//        String[] element = new String[wifiList.size()];
-//        for (ScanResult sx : this.wifi.getScanResults()) {
-//            System.out.println("[Main] : Point - " + sx);
-//
-//        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Select Bed's IP Address");
-//        builder.setItems(wifiList, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-////                selectIp = String.valueOf(val.indexOf(which));
-//            }
-//        });
-        builder.show();
-
     }
 
     public static MainActivity getInstance() {
@@ -229,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected  void onResume(){
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this);
-//        checkConnection();
+        checkConnection();
 
 //        ServerBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -414,26 +423,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view.getId() == detail.getId() ){
-            System.out.println("[Main] : click detail");
-            new AsyncTask<Void, Void, ScanResult>() {
-                @Override
-                protected ScanResult doInBackground(Void... voids) {
-                    wifi.startScan();
-                    for (ScanResult sx : wifi.getScanResults()) {
-                        System.out.println("[Main] : Point - " + sx);
-                    }
-                    return null;
-                }
-
-            }.execute();
-
-
-//            dialogIp();
-//            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
-//            System.out.println("---------------------");
-//            String min = Integer.toString(time/60);
-//            intent.putExtra("time",min);
-//            startActivity(intent);
+            Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+            System.out.println("---------------------");
+            String min = Integer.toString(time/60);
+            intent.putExtra("time",min);
+            startActivity(intent);
         }
         if (view.getId() == wifibtn.getId()){
                 if (!getConnection()){
@@ -448,6 +442,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 checkConnection();
 
             }
+        }
+        if (view.getId() == findViewById(R.id.findIp).getId()){
+            System.out.println("[Main] : click detail");
+//            getipAddress();
+            dialogIp();
+            System.out.println("[Main] : " + lists);
+//            ipaddress.setText(lists.get(0));
         }
 
     }
@@ -592,11 +593,93 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-//    public static String getCurrentSsid(Context context) {
-//        String ssid = null;
+    public void getipAddress() {
+        wifiManager =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        final List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        final DhcpInfo dhcpInfo = wifiManager.getDhcpInfo();
+
+        final String address = Formatter.formatIpAddress(dhcpInfo.ipAddress);
+        final int index = address.lastIndexOf(".");
+        final String subnet = address.substring(0,index+1);
+        System.out.println("[Main] : DHCP "+ subnet +" Detail : " +dhcpInfo);
+
+        final int lower = 0;
+        final int upper = 255;
+        final int timeout = 1 ;
+        final String gateway = Formatter.formatIpAddress(dhcpInfo.gateway);
+
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        final int[] ip = {wifiInfo.getIpAddress()};
+        final String ipAddress = Formatter.formatIpAddress(ip[0]);
+//        System.out.println("[Main] : "+ipAddress);
+
+//        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        WifiManager wm = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+//        for( WifiConfiguration i : list ) {
+//            System.out.println("[Main] : SSID "+ i + " , ipAddress " );
+//            WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+//        int ipAddress = connectionInfo.getIpAddress();
+//            int ipAddress = (connectionInfo.getIpAddress());
+//            String ipString = Formatter.formatIpAddress(ipAddress);
+//            System.out.println("[Main] : ipAddress "+ ipString);
+//        }
+                new AsyncTask<Void, String, List<String>>() {
+                    @Override
+                    protected List<String> doInBackground(Void... voids) {
+                        for (int i = lower; i <= upper; i++) {
+                            String host = subnet.concat(String.valueOf(i));
+
+                            try {
+                                InetAddress inetAddress = InetAddress.getByName(host);
+                                boolean reachable = inetAddress.isReachable(timeout);
+                                String hostName = inetAddress.getHostAddress();
+                                System.out.println("[Main] : " + host);
+
+                                if (reachable){
+                                    if (!host.equals(gateway) ){
+                                        if ( !host.equals(address)){
+                                            publishProgress(host);
+//                                            lists.add(host);
+                                            System.out.println("[Main] : Reachable -> "+ hostName + " (" + host +") is Reachable!");
+                                            System.out.println("[Main] : Lists available "+ lists);
+                                        }
+                                    }
+                                }
+                            } catch (UnknownHostException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                       return null;
+                    }
+                    @Override
+                    protected void onProgressUpdate(String... values) {
+                        lists.add(values[0]);
+                        System.out.println("[Main] : Update "+ values);
+                    }
+
+                    @Override
+                    protected void onPostExecute(List<String> strings) {
+                        ipAddr = new String[lists.size()];
+                        for (int i=0; i< lists.size(); i++){
+                            ipAddr[i] = lists.get(i);
+                        }
+                        System.out.println("[Main] : onPostttttt " + lists.toString());
+                        Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_LONG).show();
+                    }
+
+
+                }.execute();
+
+        System.out.println("[Main] : Lists ipAddress " + lists);
+
 //        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 //        assert connManager != null;
-//        NetworkInfo networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+//        NetworkInfo networkInfo =
+////                connManager.getActiveNetworkInfo();
+//                connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 //        if (networkInfo.isConnected()) {
 //            final WifiManager wifiManager1 = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 //            final WifiInfo connectionInfo = wifiManager1 != null ? wifiManager1.getConnectionInfo() : null;
@@ -604,8 +687,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                ssid = connectionInfo.getSSID();
 //            }
 //        }
-//        return ssid;
-//    }
+
+    }
+
+
 
 
     @Override
