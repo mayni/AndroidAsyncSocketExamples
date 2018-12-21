@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         rightwork = (Button) findViewById(R.id.rightwork);
         leftwork = (Button) findViewById(R.id.leftwork);
         bothwork = (Button) findViewById(R.id.bothwork);
@@ -113,10 +114,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         calibratework.setOnClickListener(this);
         directcontrol.setOnClickListener(this);
 
-
         ipaddress = (EditText) findViewById(R.id.ip);
 
-        getipAddress();
+
         port = (EditText) findViewById(R.id.port);
 
 
@@ -149,11 +149,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bedStatus.setTextColor(Color.RED);
         }
 
+//        checkConnection();
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
 
         wifi =(WifiManager)
         getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
+
+        getipAddress();
 
 
 //
@@ -185,12 +188,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void dialogIp(){
+//        getipAddress();
 //        for (int i=0;i< lists.size(); i++){
 //            ipAddr[i] = lists.get(i);
 //        }
         System.out.println("[Main] : ipAddr" + ipAddr);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Select Mattress's ipAddress");
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         builder.setItems(ipAddr, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -238,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected  void onResume(){
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this);
-        checkConnection();
+//        checkConnection();
 
 //        ServerBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -288,6 +298,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         System.out.println("Destroyyyyyyyyyyyyyyyyyyyyyy");
 
+    }
+
+    protected void onPause(){
+        super.onPause();
+        checkConnection();
+        System.out.println("Pauseeeeedddddddddd" + text);
     }
 
     @Override
@@ -430,22 +446,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
         if (view.getId() == wifibtn.getId()){
+
                 if (!getConnection()){
+                    System.out.println("Clicked connect");
                 findViewById(R.id.sending).setEnabled(true);
+                findViewById(R.id.findIp).setEnabled(true);
                 connectWifi();
                 checkConnection();
+//                    try {
+//                        Thread.sleep(2500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+                    getipAddress();
+
+
 
             }
             else {
                 wifi.setWifiEnabled(false);
                 findViewById(R.id.sending).setEnabled(false);
+                findViewById(R.id.findIp).setEnabled(false);
                 checkConnection();
+//                ipAddr = new String[0];
 
             }
         }
         if (view.getId() == findViewById(R.id.findIp).getId()){
             System.out.println("[Main] : click detail");
 //            getipAddress();
+
             dialogIp();
             System.out.println("[Main] : " + lists);
 //            ipaddress.setText(lists.get(0));
@@ -575,6 +605,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             wifiManager.addNetwork(conf);
         }
 
+
+
 //        wifi.startScan();
 //        for (ScanResult sx : wifi.getScanResults()) {
 //            System.out.println("Point - " + sx);
@@ -590,6 +622,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         checkConnection();
+        if (!getConnection()){
+            Toast.makeText(MainActivity.this, "Not wifi", Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -662,14 +697,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     protected void onPostExecute(List<String> strings) {
-                        ipAddr = new String[lists.size()];
-                        for (int i=0; i< lists.size(); i++){
-                            ipAddr[i] = lists.get(i);
-                        }
-                        System.out.println("[Main] : onPostttttt " + lists.toString());
-                        Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_LONG).show();
-                    }
 
+                            ipAddr = new String[lists.size()];
+                            for (int i=0; i< lists.size(); i++){
+                                ipAddr[i] = lists.get(i);
+                            }
+
+                        System.out.println("[Main] : onPostttttt " + lists.toString());
+                        Toast.makeText(MainActivity.this, "Successful Scan Ip!", Toast.LENGTH_LONG).show();
+                    }
 
                 }.execute();
 
@@ -707,6 +743,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             wifiStatus.setText("Connected");
             wifibtn.setText("disconnect");
+//            bedStatus.setText("Connected");
+//            bedStatus.setTextColor(getColor(R.color.lightGreen));
 
         }
     }
