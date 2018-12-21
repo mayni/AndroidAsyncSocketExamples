@@ -39,8 +39,6 @@ public class MainAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             ((CardViewHolder) holder).setText2(cardViewItem.getText2());
             ((CardViewHolder) holder).setText3(cardViewItem.getText3());
 
-
-
         }
     }
 

@@ -43,6 +43,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+        <activity android:name=".PressureActivity"></activity>
     </application>
 
 </manifest>
