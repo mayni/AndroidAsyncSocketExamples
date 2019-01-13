@@ -9,8 +9,12 @@
         <item name="colorButtonNormal">@color/red</item>
     </style>
     <style name="Onwork" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/indigo</item>
-        <item name="colorButtonNormal">@color/green</item>
+    <item name="colorControlHighlight">@color/indigo</item>
+    <item name="colorButtonNormal">@color/green</item>
+    </style>
+    <style name="blueBtn" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/blue</item>
+        <item name="colorButtonNormal">@color/lightBlue</item>
     </style>
 
 </resources>
