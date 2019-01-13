@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+    
 
     <application
         android:name=".MyApplication"
@@ -44,6 +47,9 @@
             </intent-filter>
         </receiver>
         <activity android:name=".PressureActivity"></activity>
+        
     </application>
+    
+    
 
 </manifest>

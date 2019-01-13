@@ -78,12 +78,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] val;
 
     ///// ------------------------------------ NETWORK CREDENTIALS
-    String networkSSID = "TP-Link_1316";
-    String networkPass = "60177094";
+//    String networkSSID = "TP-Link_1316";
+//    String networkPass = "60177094";
+    String networkSSID = "CPE_BACON";
+    String networkPass = "bcondabest";
 //    String networkSSID = "DESKTOP-5HK7N4N 2635";
 //    String networkPass = "580610684";
 //    String networkSSID = "nanearnano";
 //    String networkPass = "yok37491";
+//    String networkSSID = "JumboPlus";
+//    String networkPass = "";
     WifiManager wifiManager;
 
 
@@ -147,12 +151,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 //        adapterRec = new MainAdapter();
 
+        wifi =(WifiManager)
+                getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
         if (getConnection()){
             wifibtn.setText("disconnect");
             wifiStatus.setText("Connected");
             bedStatus.setText("Connected");
             bedStatus.setTextColor(Color.GREEN);
             findViewById(R.id.sending).setEnabled(true);
+            getipAddress();
         }else {
             wifibtn.setText("connect");
             findViewById(R.id.sending).setEnabled(false);
@@ -164,11 +172,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        checkConnection();
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
 
-        wifi =(WifiManager)
-        getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
 
-        getipAddress();
 
 
 //
@@ -288,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStop(){
         super.onStop();
         checkConnection();
-
         System.out.println("Stopppppppppppp" + text);
     }
     protected void onDestroy(){
@@ -453,15 +457,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!getConnection()){
                     System.out.println("Clicked connect");
                 findViewById(R.id.sending).setEnabled(true);
-                findViewById(R.id.findIp).setEnabled(true);
+//                findViewById(R.id.findIp).setEnabled(true);
                 connectWifi();
-                checkConnection();
-//                    try {
-//                        Thread.sleep(2500);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
+//                checkConnection();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    checkConnection();
+//                    if (getConnection()){
+                        getipAddress();
 //                    }
-                    getipAddress();
+//                    checkConnection();
+
 
             }
             else {
@@ -627,13 +636,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
+                System.out.println("[Main] : finddddd ipppppp" + i.SSID);
+//                checkConnection();
                 break;
             }
         }
+//        System.out.println("[Main] : isssConnnectttt "+ wifi.getConnectionInfo());
+//        if (wifi.getConnectionInfo().getSupplicantState().equals("DISCONNECTED")){
+//            wifi.setWifiEnabled(false);
+//        }
         checkConnection();
-        if (!getConnection()){
-            Toast.makeText(MainActivity.this, "Not wifi", Toast.LENGTH_LONG).show();
-        }
+
+//        if (!getConnection()){
+////            Toast.makeText(MainActivity.this, "Not wifi", Toast.LENGTH_LONG).show();
+//            wifi.setWifiEnabled(false);
+//            wifibtn.setText("connect");
+//            wifiStatus.setText("Disconnect");
+//        }
 
     }
 
@@ -671,6 +690,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new AsyncTask<Void, String, List<String>>() {
                     @Override
                     protected List<String> doInBackground(Void... voids) {
+
                         for (int i = lower; i <= upper; i++) {
                             String host = subnet.concat(String.valueOf(i));
 
@@ -714,6 +734,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         System.out.println("[Main] : onPostttttt " + lists.toString());
                         Toast.makeText(MainActivity.this, "Successful Scan Ip!", Toast.LENGTH_LONG).show();
+                        findViewById(R.id.findIp).setEnabled(true);
                     }
 
                 }.execute();
@@ -734,6 +755,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 
     }
+
+
 
 
 
