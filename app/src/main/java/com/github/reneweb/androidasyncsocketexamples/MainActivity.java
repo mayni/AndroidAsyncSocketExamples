@@ -14,11 +14,13 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
@@ -29,6 +31,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView, recyclerViewRec ;
     private MainAdapter adapter, adapterRec ;
     private List<BaseItem> itemList, itemListRec ;
+
+    private int hour, min;
+    Calendar calendar;
 
 
     private static final int sizeOfIntInHalfBytes = 8;
@@ -70,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    String networkSSID = "nanearnano";
 //    String networkPass = "yok37491";
     WifiManager wifiManager;
+
+    Integer hourTime=0,minuteTime =0;
 
 
 
@@ -196,16 +204,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             BufferedReader br = new BufferedReader(InputRead);
             StringBuilder sb = new StringBuilder();
             String text;
+            String ab = null;
             while ((text = br.readLine()) != null){
-                sb.append(text).append("\n");
+                System.out.println("[Pressure]" + text);
+                ab = text;
             }
+
+
             InputRead.close();
             ArrayList<String> press = new ArrayList<>();
-            for(String str : sb.toString().split("\\s") ){
+            for(String str : ab.split("\\s") ){
                 press.add(str);
             }
-            PRESSURE_SIDE = press.get(1);
-            PRESSURE_MAIN = press.get(2);
+            PRESSURE_SIDE = press.get(2);
+            PRESSURE_MAIN = press.get(3);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -306,6 +318,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }.execute();
 
                         System.out.println("[Main]"+mes);
+                    }
+
+                    @Override
+                    public void checkConnection(Exception e) {
+
                     }
                 });
                 return null;
@@ -417,52 +434,113 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setTime(final Integer id) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Set Time");
-        builder.setSingleChoiceItems(CLUBS, 0, new DialogInterface.OnClickListener() {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View theView = inflater.inflate(R.layout.time_picker, null);
+
+        NumberPicker time = theView.findViewById(R.id.time1);
+        NumberPicker time1 = theView.findViewById(R.id.time2);
+
+        time.setMaxValue(2);
+        time.setMinValue(0);
+
+
+        time1.setMaxValue(59);
+        time1.setMinValue(0);
+
+
+
+
+
+        time.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mSelected = CLUBS[which];
-                switch (mSelected){
-                    case "45 minute":
-                        time = 60*45;
-                        break;
-                    case "1 hour":
-                        time = 60*60;
-                        break;
-                    case "1 hour 30 minute":
-                        time = (60*30) + (60*60);
-                        break;
-                    case "2 hours":
-                        time = (120 * 60);
-                        break;
-                }
-                if(id == rightwork.getId()){
-                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
-                    message.setText(right);
-                }else if(id == leftwork.getId()){
-                      String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
-                      message.setText(left);
-                }else if(id == bothwork.getId()){
-                      String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600)+" 0000 0000";
-                    message.setText(both);
-                }
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                System.out.println(newVal);
+                hourTime = newVal;
             }
         });
+        time1.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                System.out.println(newVal);
+                minuteTime = newVal;
+            }
+        });
+        builder.setTitle("Set time");
+        builder.setView(theView);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            int timeTime = (hourTime*60*60)+(minuteTime*60);
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                if(id == rightwork.getId()){
+                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    message.setText(right);
+                }else if(id == leftwork.getId()){
+                      String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                      message.setText(left);
+                }else if(id == bothwork.getId()){
+                      String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
+                    message.setText(both);
+                }
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton("CANCEL", null);
+        builder.setNegativeButton("CANCEL",null);
         builder.create();
         builder.show();
-//        "45 minute","1 hour","1 hour 30 minute","2 hours"
+
+
+
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//        builder.setTitle("Set Time");
+//        builder.setSingleChoiceItems(CLUBS, 0, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                mSelected = CLUBS[which];
+//                switch (mSelected){
+//                    case "45 minute":
+//                        time = 60*45;
+//                        break;
+//                    case "1 hour":
+//                        time = 60*60;
+//                        break;
+//                    case "1 hour 30 minute":
+//                        time = (60*30) + (60*60);
+//                        break;
+//                    case "2 hours":
+//                        time = (120 * 60);
+//                        break;
+//                }
+//                if(id == rightwork.getId()){
+//                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
+//                    message.setText(right);
+//                }else if(id == leftwork.getId()){
+//                      String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600).substring(4)+" 0000 0000";
+//                      message.setText(left);
+//                }else if(id == bothwork.getId()){
+//                      String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(time-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(time-600)+" 0000 0000";
+//                    message.setText(both);
+//                }
+//            }
+//        });
+//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.setNegativeButton("CANCEL", null);
+//        builder.create();
+//        builder.show();
+////        "45 minute","1 hour","1 hour 30 minute","2 hours"
 
 
     }
+
 
     public static String decToHex(int dec) {
         StringBuilder hexBuilder = new StringBuilder(sizeOfIntInHalfBytes);
