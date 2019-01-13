@@ -10,27 +10,41 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        >
 
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:text="WIFI : "
+            android:visibility="invisible"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="WIFI : " />
-
+            android:text="Mattress Control"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
         <TextView
             android:id="@+id/wifiSatus"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="disconnect" />
+            android:layout_height="0dp"
 
+            android:text="disconnect"
+            android:visibility="invisible"/>
+
+        <!--android:layout_weight="1"-->
         <Button
             android:id="@+id/wifiBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:onClick="onClick"
-            android:text="connect" />
+            android:text="connect"
+            android:visibility="invisible"
+            />
     </LinearLayout>
 
     <LinearLayout

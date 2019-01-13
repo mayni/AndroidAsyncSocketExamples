@@ -35,6 +35,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
     public interface clientMessageRecListener{
         void recMessage(String mes);
+        void checkConnection(Exception e);
     }
 
 
@@ -56,20 +57,22 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         System.out.println("Client setup " + host);
         System.out.println("Client setup " + port);
         AsyncServer.getDefault().connectSocket(new InetSocketAddress(host, port), new ConnectCallback() {
-
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
-                if (ex == null && socket.isOpen() ){
-//                    listener.recMessage("portCorrect");
-                    System.out.println("Client onConnectCompleted ");
+                if(ex != null){
+                    System.out.println("[Fail]" + ex.toString());
+                    listener.checkConnection(ex);
+
+                }else{
                     handleConnectCompleted(ex,socket);
-                }else {
-                    listener.recMessage("disconnect");
+                    listener.checkConnection(ex);
                 }
-//                System.out.println("Client onConnectCompleted " + socket.toString());
+
 //                handleConnectCompleted(ex,socket);
             }
+
         });
+
     }
 
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
