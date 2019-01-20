@@ -420,6 +420,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void checkConnection(Exception e) {
 
+
                     }
                 });
                 return null;
@@ -580,10 +581,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         time1.setMaxValue(59);
         time1.setMinValue(0);
-
-
-
-
 
         time.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override

@@ -1,11 +1,7 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
 
-import android.os.AsyncTask;
-import android.widget.ArrayAdapter;
-
 import com.github.reneweb.androidasyncsocketexamples.ConnectivityReceiver;
-import com.koushikdutta.async.*;
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncSocket;
 import com.koushikdutta.async.ByteBufferList;
@@ -16,7 +12,6 @@ import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
 
 import java.net.InetSocketAddress;
-import java.net.Socket;
 
 public class Client implements ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -33,7 +28,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
 
 
-    public interface clientMessageRecListener{
+    public interface clientMessageRecListener {
         void recMessage(String mes);
         void checkConnection(Exception e);
     }
@@ -62,6 +57,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
                 if(ex != null){
                     System.out.println("[Fail]" + ex.toString());
                     listener.checkConnection(ex);
+
 
                 }else{
                     handleConnectCompleted(ex,socket);
