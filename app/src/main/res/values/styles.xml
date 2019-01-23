@@ -16,5 +16,10 @@
         <item name="colorControlHighlight">@color/blue</item>
         <item name="colorButtonNormal">@color/lightBlue</item>
     </style>
+    <style name="DefaultNumberPickerTheme">
+        <item name="android:textSize">18sp</item>
+        <item name="colorControlNormal">@color/transparent</item>
+    </style>
+
 
 </resources>

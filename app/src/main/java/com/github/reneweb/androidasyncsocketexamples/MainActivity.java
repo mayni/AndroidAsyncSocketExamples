@@ -1,7 +1,9 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.AlertDialog;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +17,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,11 +31,15 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.NumberPicker;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
+
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
@@ -60,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MainAdapter adapter, adapterRec ;
     private List<BaseItem> itemList, itemListRec ;
 
+
+
     private int hour, min;
     Calendar calendar;
 
@@ -71,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             '0', '1', '2', '3', '4', '5', '6', '7',
             '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
-    String[] CLUBS = {"45 minute","1 hour","1 hour 30 minute","2 hours"};
+
     String [] BITS = {"main pump","side pump","Valve main left","Valve main right","Valve side left", "Valve side right"};
     String[] ipAddr;
     boolean[] Checkbit = new boolean[]{false, false, false, false, false, false};
@@ -79,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String mSelected;
     Integer time = 0;
 
-    String closedPopup = "0";
     private List<ScanResult> wifiList;
     String[] val;
 
@@ -101,11 +114,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    @SuppressLint("StaticFieldLeak")
+    @SuppressLint({"StaticFieldLeak", "WrongViewCast"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
 
 
@@ -119,9 +134,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         clearwork = findViewById(R.id.clear);
         detail = findViewById(R.id.detail);
         readpressurework = findViewById(R.id.readpressure);
-        emergencywork = findViewById(R.id.emergency);
+//        emergencywork = findViewById(R.id.emergency);
         calibratework = findViewById(R.id.calibrate);
-        onwork = findViewById(R.id.onwork);
+//        onwork = findViewById(R.id.onwork);
 
         wifibtn = findViewById(R.id.wifiBtn);
         wifiStatus = findViewById(R.id.wifiSatus);
@@ -133,10 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkmodework.setOnClickListener(this);
         clearwork.setOnClickListener(this);
         readpressurework.setOnClickListener(this);
-        emergencywork.setOnClickListener(this);
+//        emergencywork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
         directcontrol.setOnClickListener(this);
-        onwork.setOnClickListener(this);
+//        onwork.setOnClickListener(this);
 
         ipaddress = (EditText) findViewById(R.id.ip);
 
@@ -151,9 +166,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         itemList = new ArrayList<>();
         itemListRec = new ArrayList<>();
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        adapter = new MainAdapter();
+//        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+//        adapter = new MainAdapter();
 
 //        recyclerViewRec = findViewById(R.id.recyclerView1);
 //        recyclerViewRec.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -211,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 
     }
+
 
     private void dialogIp(){
 //        getipAddress();
@@ -449,9 +465,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else if(view.getId() == readpressurework.getId()){
                 Intent intent = new Intent(MainActivity.this,PressureActivity.class);
                 startActivity(intent);
-            }else if(view.getId() == emergencywork.getId()){
-                String emerg = "EE";
-                message.setText(emerg);
+//            }else if(view.getId() == emergencywork.getId()){
+//                String emerg = "EE";
+//                message.setText(emerg);
             }else if(view.getId() == calibratework.getId()){
                 checkConnection();
                 Intent intent = new Intent(this,CalibrateActivity.class);
@@ -468,10 +484,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("time",min);
             startActivity(intent);
         }
-        if(view.getId() == onwork.getId()){
-            String on = "0B 01 FF 00 0000 00 0000";
-            message.setText(on);
-        }
+//        if(view.getId() == onwork.getId()){
+//            String on = "0B 01 FF 00 0000 00 0000";
+//            message.setText(on);
+//        }
         if (view.getId() == wifibtn.getId()){
 
                 if (!getConnection()){
@@ -867,6 +883,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         boolean isConnected = ConnectivityReceiver.isConnected();
         return isConnected;
     }
+
 }
 
 
