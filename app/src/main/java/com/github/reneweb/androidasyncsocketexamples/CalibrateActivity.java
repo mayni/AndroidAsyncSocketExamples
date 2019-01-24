@@ -20,7 +20,9 @@ import android.widget.Toast;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.io.FileOutputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 public class CalibrateActivity extends AppCompatActivity implements View.OnClickListener {
     SensorManager sensorManager;
@@ -162,6 +164,7 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
                             @Override
                             public void checkConnection(Exception e) {
 
+
                             }
 
                             @Override
@@ -228,64 +231,72 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
             Exception error = null;
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client("10.0.0.177",12345,"01");
-                client.setListener(new Client.clientMessageRecListener() {
-                    @Override
-                    public void checkConnection(Exception e) {
-                        error = e;
-                        if(error != null){
-                            System.out.println("Calibrate checkConnection" + e) ;
-                            writeTofile("Error "+e);
+
+                try {
+                    Client client = new Client("10.0.0.177",12345,"01");
+                    Thread.sleep(32000);
+                    client.setListener( new Client.clientMessageRecListener() {
+
+                        @Override
+                        public void checkConnection(Exception e) {
+
+                            error = e;
+                            if(error != null){
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                System.out.println("Calibrate checkConnection " + e) ;
+                                writeTofile(dateFormat.format(dateFormat)+" Error "+e);
+
+                            }
 
                         }
-                    }
-
-                    @Override
-                    public void checkWifi(Exception e) {
-
-                    }
-
-
-                    @Override
-                    public void recMessage(String mes) {
-                        System.out.println("Calibrate recMessage" + mes) ;
-                        pressure =mes;
-                        if(pressure != null){
-                            writeTofile("Pressure " + pressure );
+                        @Override
+                        public void checkWifi(Exception e) {
+    
                         }
-                    }
-                });
+                        
+                        @Override
+                        public void recMessage(String mes) {
+                            System.out.println("Calibrate recMessage " + mes) ;
+                            pressure =mes;
+                            if(pressure != null){
+                                writeTofile("Pressure " + pressure );
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
+                System.out.println("onPostExecutezz");
 
             }
         }.execute();
 
-        Toast.makeText(this,"Completed saved pressure",Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,"Completed saved pressure",Toast.LENGTH_LONG).show();
 
 
 
     }
 
-    private void writeTofile(String data) {
+    private void writeTofile(String dat) {
         FileOutputStream fos = null;
-
+        String data = dat + "\n";
         try {
             fos = openFileOutput(NOTES, MODE_APPEND);
             fos.write(data.getBytes());
 
             Toast.makeText(this, "Saved to " + getFilesDir() + "/" + NOTES,
                     Toast.LENGTH_LONG).show();
-
         }
         catch (Throwable t) {
 
         }
-
     }
 
 }

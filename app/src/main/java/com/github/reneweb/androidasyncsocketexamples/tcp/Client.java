@@ -1,11 +1,7 @@
 package com.github.reneweb.androidasyncsocketexamples.tcp;
 
 
-import android.os.AsyncTask;
-import android.widget.ArrayAdapter;
-
 import com.github.reneweb.androidasyncsocketexamples.ConnectivityReceiver;
-import com.koushikdutta.async.*;
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncSocket;
 import com.koushikdutta.async.ByteBufferList;
@@ -34,7 +30,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
 
 
-    public interface clientMessageRecListener{
+    public interface clientMessageRecListener {
         void recMessage(String mes);
         void checkConnection(Exception e);
         void checkWifi(Exception e);
@@ -65,6 +61,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
                     System.out.println("[Fail]" + ex.toString());
                     listener.checkWifi(ex);
                     listener.checkConnection(ex);
+
 
                 }else{
                     handleConnectCompleted(ex,socket);

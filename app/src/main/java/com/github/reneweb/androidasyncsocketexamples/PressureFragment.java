@@ -1,13 +1,17 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
-import android.content.Intent;
+import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.ViewGroup;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
@@ -17,36 +21,53 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PressureActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class PressureFragment extends Fragment implements View.OnClickListener {
     Thread thread;
     private RecyclerView pressureRecycle;
     private PressureAdapter pressureAdapter;
     private List<Pressure> pressList;
-    private ImageButton backbtn;
+
+    public BackToTestListener listener;
+
+
+    public PressureFragment() {
+
+    }
+    public interface BackToTestListener{
+        void PressBackButton(boolean bool);
+    }
+    public void setListener(BackToTestListener listener) {
+        this.listener = listener;
+    }
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pressure);
-        pressureRecycle = findViewById(R.id.pressureRecycle);
-        pressList = new ArrayList<>();
-        backbtn = findViewById(R.id.back_main);
-        backbtn.setOnClickListener(this);
+    }
 
-        pressureRecycle.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_pressure,container,false);
+        pressureRecycle = view.findViewById(R.id.pressureRecycle);
+        pressList = new ArrayList<>();
+
+        pressureRecycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         pressureAdapter = new PressureAdapter();
 
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setTitle("Read Pressure");
+        toolbar.setNavigationOnClickListener(this);
 
         getPressure();
-    }
-    protected void onStop(){
-        super.onStop();
-        thread.interrupt();
-    }
-    protected void onDestroy() {
-        super.onDestroy();
-        thread.interrupt();
+
+        return view;
     }
     public void getPressure(){
         thread = new Thread() {
@@ -55,7 +76,7 @@ public class PressureActivity extends AppCompatActivity implements View.OnClickL
                 try {
                     while (!isInterrupted()) {
                         Thread.sleep(1200);
-                        runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 new AsyncTask<Void,Void,Void>(){
@@ -63,7 +84,7 @@ public class PressureActivity extends AppCompatActivity implements View.OnClickL
 
                                     @Override
                                     protected Void doInBackground(Void... voids) {
-                                        Client client = new Client("10.0.0.177",12345,"01");
+                                        Client client = new Client("10.80.67.104",12345,"01");
                                         client.setListener(new Client.clientMessageRecListener() {
                                             @Override
                                             public void recMessage(final String mes) {
@@ -94,12 +115,6 @@ public class PressureActivity extends AppCompatActivity implements View.OnClickL
 
 
                                             }
-
-                                            @Override
-                                            public void checkWifi(Exception e) {
-
-                                            }
-
                                         });
                                         return null;
                                     }
@@ -120,10 +135,9 @@ public class PressureActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == backbtn.getId()){
-            Intent intent = new Intent(PressureActivity.this,MainActivity.class);
-            startActivity(intent);
-            thread.interrupt();
-        }
+        listener.PressBackButton(true);
+        thread.interrupt();
+
     }
+
 }

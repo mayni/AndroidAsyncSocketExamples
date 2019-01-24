@@ -1,13 +1,9 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
+    tools:context="com.github.reneweb.androidasyncsocketexamples.TestLogsFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,13 +17,7 @@
             android:layout_marginStart="10dp"
             android:text="WIFI : "
             android:visibility="invisible"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mattress Control"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:layout_margin="10dp"/>
+
         <TextView
             android:id="@+id/wifiSatus"
             android:layout_width="0dp"
@@ -41,70 +31,70 @@
             android:id="@+id/wifiBtn"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:onClick="onClick"
+
             android:text="connect"
             android:visibility="invisible"
             />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1"
-        >
-        <EditText
-            android:id="@+id/ip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.65"
-            android:inputType="number"
-            android:hint="IP Address"
-            android:text="10.0.0.177"/>
-        <EditText
-            android:id="@+id/port"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:hint="Port"
-            android:inputType="number"
-            android:text="12345"/>
-        <Button
-            android:id="@+id/findIp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04"
-            android:text="Find IP"
-            android:onClick="onClick"
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:weightSum="1"-->
+        <!--&gt;-->
+        <!--<EditText-->
+            <!--android:id="@+id/ip"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.65"-->
+            <!--android:inputType="number"-->
+            <!--android:hint="IP Address"-->
+            <!--android:text="10.0.0.177"/>-->
+        <!--<EditText-->
+            <!--android:id="@+id/port"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.3"-->
+            <!--android:hint="Port"-->
+            <!--android:inputType="number"-->
+            <!--android:text="12345"/>-->
+        <!--<Button-->
+            <!--android:id="@+id/findIp"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.04"-->
+            <!--android:text="Find IP"-->
+            <!--android:onClick="onClick"-->
 
-            />
-        <Button
-            android:id="@+id/detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04"
-            android:text="detail"
-            android:visibility="gone"
-            android:onClick="onClick"
+            <!--/>-->
+        <!--<Button-->
+            <!--android:id="@+id/detail"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.04"-->
+            <!--android:text="detail"-->
+            <!--android:visibility="gone"-->
+            <!--android:onClick="onClick"-->
 
-            />
+            <!--/>-->
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status : "
-            android:layout_marginStart="10dp"
-            />
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <!--</LinearLayout>-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textSize="30dp"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Status : "-->
+            <!--android:layout_marginStart="10dp"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/status"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+    <!--</LinearLayout>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -219,16 +209,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center">
-                    <Button
-                        android:id="@+id/checkmode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="check mode"/>
-                    <Button
-                        android:id="@+id/clear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="clear mode"/>
+                        <Button
+                            android:id="@+id/checkmode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="check mode"/>
+                        <Button
+                            android:id="@+id/clear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="clear mode"/>
                     </LinearLayout>
 
 
@@ -302,30 +292,19 @@
         android:orientation="vertical">
 
         <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:orientation="horizontal"-->
-            <!--&gt;-->
-            <!--<android.support.v7.widget.RecyclerView-->
-                <!--tools:listitem="@layout/list_item"-->
-                <!--android:id="@+id/recyclerView"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--&gt;-->
-            <!--</android.support.v7.widget.RecyclerView>-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal"-->
+        <!--&gt;-->
+        <!--<android.support.v7.widget.RecyclerView-->
+        <!--tools:listitem="@layout/list_item"-->
+        <!--android:id="@+id/recyclerView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--&gt;-->
+        <!--</android.support.v7.widget.RecyclerView>-->
         <!--</LinearLayout>-->
     </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
 
 
 
