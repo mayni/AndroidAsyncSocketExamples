@@ -17,6 +17,7 @@ import com.koushikdutta.async.callback.DataCallback;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.sql.Time;
 
 public class Client implements ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -36,6 +37,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
     public interface clientMessageRecListener{
         void recMessage(String mes);
         void checkConnection(Exception e);
+        void checkWifi(Exception e);
     }
 
 
@@ -61,10 +63,12 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
                 if(ex != null){
                     System.out.println("[Fail]" + ex.toString());
+                    listener.checkWifi(ex);
                     listener.checkConnection(ex);
 
                 }else{
                     handleConnectCompleted(ex,socket);
+                    listener.checkWifi(ex);
                     listener.checkConnection(ex);
                 }
 
@@ -77,6 +81,8 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
         System.out.println("Client handleConnectCompleted " + socket.toString());
+
+
 
         if(ex != null) {
             ///////////////////////////////////////////////////////

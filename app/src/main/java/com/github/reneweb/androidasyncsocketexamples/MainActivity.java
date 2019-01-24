@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int hour, min;
     Calendar calendar;
 
+    Thread thread;
+
 
     private static final int sizeOfIntInHalfBytes = 8;
     private static final int numberOfBitsInAHalfByte = 4;
@@ -165,17 +167,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (getConnection()){
             wifibtn.setText("disconnect");
             wifiStatus.setText("Connected");
-            bedStatus.setText("Connected");
-            bedStatus.setTextColor(Color.GREEN);
+//            bedStatus.setText("Connected");
+//            bedStatus.setTextColor(Color.GREEN);
             findViewById(R.id.sending).setEnabled(true);
             getipAddress();
         }else {
             wifibtn.setText("connect");
             findViewById(R.id.sending).setEnabled(false);
             wifiStatus.setText("Disconnect");
-            bedStatus.setText("Disconnect");
-            bedStatus.setTextColor(Color.RED);
+//            bedStatus.setText("Disconnect");
+//            bedStatus.setTextColor(Color.RED);
         }
+
+        checkWifi();
 
 //        checkConnection();
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
@@ -420,6 +424,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void checkConnection(Exception e) {
 
+                    }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+                        Exception error = e;
+                        if (error != null){
+                            bedStatus.setText("Disconnect");
+                        }else {
+                            bedStatus.setText("Connected");                        }
                     }
                 });
                 return null;
@@ -836,6 +849,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void checkWifi(){
+        thread = new Thread(){
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        Thread.sleep(1200);
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                String portStr = port.getText().toString();
+                                int portNumber = Integer.parseInt(portStr);
+                                Client client = new Client(ipaddress.getText().toString(),portNumber,"0A FF FF");
+                                client.setListener(new Client.clientMessageRecListener() {
+                                    @Override
+                                    public void recMessage(String mes) {
+
+                                    }
+
+                                    @Override
+                                    public void checkConnection(Exception e) {
+
+                                    }
+
+                                    @Override
+                                    public void checkWifi(Exception e) {
+                                        Exception err = e;
+                                        if (err != null){
+                                            bedStatus.setText("Disconnedt");
+                                        }else {
+                                            bedStatus.setText("Connected");
+                                        }
+
+                                    }
+                                });
+                                return null;
+                            }
+                        }.execute();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        };
+    }
+
 
 
 
@@ -849,8 +909,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showConnected(boolean isConnected) {
         if (isConnected) {
             wifiStatus.setText("Disconnect");
-            bedStatus.setText("Disconnect");
-            bedStatus.setTextColor(Color.RED);
+//            bedStatus.setText("Disconnect");
+//            bedStatus.setTextColor(Color.RED);
             wifibtn.setText("connect");
         } else {
             wifiStatus.setText("Connected");

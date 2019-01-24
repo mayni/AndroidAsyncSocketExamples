@@ -93,6 +93,12 @@ public class PressureActivity extends AppCompatActivity implements View.OnClickL
                                             public void checkConnection(Exception e) {
 
                                             }
+
+                                            @Override
+                                            public void checkWifi(Exception e) {
+
+                                            }
+
                                         });
                                         return null;
                                     }

@@ -163,6 +163,13 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
                             public void checkConnection(Exception e) {
 
                             }
+
+                            @Override
+                            public void checkWifi(Exception e) {
+
+                            }
+
+
                         });
                         return null;
                     }
@@ -232,6 +239,13 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
 
                         }
                     }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+
+                    }
+
+
                     @Override
                     public void recMessage(String mes) {
                         System.out.println("Calibrate recMessage" + mes) ;
