@@ -22,8 +22,11 @@ public class CombineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_combine);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setTitle("Mattress");
+
+
 
 
 
@@ -38,7 +41,7 @@ public class CombineActivity extends AppCompatActivity {
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new UserLogsFragment(), "USER");
+        adapter.addFragment(new UserFragment(), "USER");
         adapter.addFragment(new TestFragment(), "TEST");
         viewPager.setAdapter(adapter);
     }

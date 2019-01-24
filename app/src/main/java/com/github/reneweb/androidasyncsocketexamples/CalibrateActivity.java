@@ -281,12 +281,10 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
 
             Toast.makeText(this, "Saved to " + getFilesDir() + "/" + NOTES,
                     Toast.LENGTH_LONG).show();
-
         }
         catch (Throwable t) {
 
         }
-
     }
 
 }

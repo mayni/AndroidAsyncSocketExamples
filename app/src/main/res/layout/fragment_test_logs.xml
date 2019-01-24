@@ -37,64 +37,64 @@
             />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1"
-        >
-        <EditText
-            android:id="@+id/ip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.65"
-            android:inputType="number"
-            android:hint="IP Address"
-            android:text="10.0.0.177"/>
-        <EditText
-            android:id="@+id/port"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:hint="Port"
-            android:inputType="number"
-            android:text="12345"/>
-        <Button
-            android:id="@+id/findIp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04"
-            android:text="Find IP"
-            android:onClick="onClick"
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:weightSum="1"-->
+        <!--&gt;-->
+        <!--<EditText-->
+            <!--android:id="@+id/ip"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.65"-->
+            <!--android:inputType="number"-->
+            <!--android:hint="IP Address"-->
+            <!--android:text="10.0.0.177"/>-->
+        <!--<EditText-->
+            <!--android:id="@+id/port"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.3"-->
+            <!--android:hint="Port"-->
+            <!--android:inputType="number"-->
+            <!--android:text="12345"/>-->
+        <!--<Button-->
+            <!--android:id="@+id/findIp"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.04"-->
+            <!--android:text="Find IP"-->
+            <!--android:onClick="onClick"-->
 
-            />
-        <Button
-            android:id="@+id/detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04"
-            android:text="detail"
-            android:visibility="gone"
-            android:onClick="onClick"
+            <!--/>-->
+        <!--<Button-->
+            <!--android:id="@+id/detail"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="0.04"-->
+            <!--android:text="detail"-->
+            <!--android:visibility="gone"-->
+            <!--android:onClick="onClick"-->
 
-            />
+            <!--/>-->
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status : "
-            android:layout_marginStart="10dp"
-            />
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <!--</LinearLayout>-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textSize="30dp"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Status : "-->
+            <!--android:layout_marginStart="10dp"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/status"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+    <!--</LinearLayout>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

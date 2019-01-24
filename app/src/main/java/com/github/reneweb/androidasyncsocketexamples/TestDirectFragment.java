@@ -2,32 +2,46 @@ package com.github.reneweb.androidasyncsocketexamples;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
+
+import java.io.FileOutputStream;
+import java.util.function.BinaryOperator;
+
+import static android.content.Context.MODE_APPEND;
 
 
 public class TestDirectFragment extends Fragment implements  View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     public BackToTestListener listener;
-    private String mParam1;
-    private String mParam2;
+    Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve;
     Toolbar toolbar;
-    private OnFragmentInteractionListener mListener;
+
+    String PROCESS = "Process.txt";
+    private static final int sizeOfIntInHalfBytes = 8;
+    private static final int numberOfBitsInAHalfByte = 4;
+    private static final int halfByte = 0x0F;
+    private static final char[] hexDigits = {
+            '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
 
     public TestDirectFragment() {
-        // Required empty public constructor
+
     }
     public interface BackToTestListener{
         void PressBackButton(boolean bool);
@@ -37,23 +51,11 @@ public class TestDirectFragment extends Fragment implements  View.OnClickListene
         this.listener = listener;
     }
 
-    public static TestDirectFragment newInstance(String param1, String param2) {
-        TestDirectFragment fragment = new TestDirectFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -61,6 +63,8 @@ public class TestDirectFragment extends Fragment implements  View.OnClickListene
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_direct, container, false);
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        setView(view);
+        setOnclick();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
@@ -71,32 +75,101 @@ public class TestDirectFragment extends Fragment implements  View.OnClickListene
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    private void setSending(final String msg) {
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Client client = new Client("10.80.66.207",12345,msg);
+                client.setListener(new Client.clientMessageRecListener() {
+                    @Override
+                    public void recMessage(String mes) {
+
+                    }
+
+                    @Override
+                    public void checkConnection(Exception e) {
+
+
+                    }
+                });
+                return null;
+            }
+
+        }.execute();
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    private void setOnclick() {
+        mainPump.setOnClickListener(this);
+        sidePump.setOnClickListener(this);
+        leftsideValve.setOnClickListener(this);
+        leftmainValve.setOnClickListener(this);
+        rightsideValve.setOnClickListener(this);
+        rightmainValve.setOnClickListener(this);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+    private void setView(View view) {
+        mainPump=view.findViewById(R.id.main_pump);
+        sidePump=view.findViewById(R.id.side_pump);
+        leftmainValve=view.findViewById(R.id.left_mainValve);
+        leftsideValve=view.findViewById(R.id.left_sideValve);
+        rightmainValve=view.findViewById(R.id.right_mainValve);
+        rightsideValve=view.findViewById(R.id.right_sideValve);
 
+    }
 
     @Override
     public void onClick(View v) {
-        listener.PressBackButton(true);
+        if(v.getId() == mainPump.getId()){
+            setMessage((byte) 0b00000001,0);
+        }else if(v.getId() == sidePump.getId()){
+            setMessage((byte) 0b00000010,0);
+        }else if(v.getId() == leftmainValve.getId()){
+            setMessage((byte) 0b00010000,1);
+        }else if(v.getId() == leftsideValve.getId()){
+            setMessage((byte) 0b01000000,1);
+        }else if(v.getId() == rightsideValve.getId()){
+            setMessage((byte) 128,1);
+        }else if(v.getId() == rightmainValve.getId()){
+            setMessage((byte) 0b00100000,1);
+        }else{
+            listener.PressBackButton(true);
+        }
+    }
+    byte command = (byte) 0b00000000;
+
+    private void setMessage(byte mes, int sec) {
+        command = (byte) (command | mes);
+        System.out.println(command);
+
+
+    }
+    public static String decToHex(int dec) {
+        StringBuilder hexBuilder = new StringBuilder(sizeOfIntInHalfBytes);
+        hexBuilder.setLength(sizeOfIntInHalfBytes);
+        for (int i = sizeOfIntInHalfBytes - 1; i >= 0; --i)
+        {
+            int j = dec & halfByte;
+            hexBuilder.setCharAt(i, hexDigits[j]);
+            dec >>= numberOfBitsInAHalfByte;
+        }
+        return hexBuilder.toString();
     }
 
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    private void writeTofile(String dat) {
+        FileOutputStream fos = null;
+        String data = dat + "\n";
+        try {
+            fos = getActivity().openFileOutput(PROCESS, MODE_APPEND);
+            fos.write(data.getBytes());
+//
+//            fos = getActivity().openFileOutput(PROCESS, Context.MODE_PRIVATE);
+//            fos.write("".getBytes());
+        }
+        catch (Throwable t) {
+
+        }
     }
+
+
 }

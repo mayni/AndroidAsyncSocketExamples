@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,45 +17,42 @@ import android.widget.NumberPicker;
 import com.github.reneweb.androidasyncsocketexamples.R;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UserLogsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UserLogsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
 
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
-    private String mParam1;
-    private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
+    private static final int sizeOfIntInHalfBytes = 8;
+    private static final int numberOfBitsInAHalfByte = 4;
+    private static final int halfByte = 0x0F;
+    private static final char[] hexDigits = {
+            '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+
+    public CalibratePressOnListener listener;
+    Integer hourTime=0,minuteTime =0;
+
 
     public UserLogsFragment() {
-        // Required empty public constructor
+
+    }
+    public interface CalibratePressOnListener{
+        void isCalibratePressOn(boolean bool);
     }
 
-    public static UserLogsFragment newInstance(String param1, String param2) {
-        UserLogsFragment fragment = new UserLogsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public void setListener(CalibratePressOnListener listener) {
+        this.listener = listener;
     }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -62,11 +61,32 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_user_logs,container,false);
         setView(view);
         setOnClick();
-        setSending();
+//        setSending();
+
         return view;
     }
 
-    private void setSending() {
+    private void setSending(final String msg) {
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Client client = new Client("10.80.66.207",12345,msg);
+                client.setListener(new Client.clientMessageRecListener() {
+                    @Override
+                    public void recMessage(String mes) {
+
+                    }
+
+                    @Override
+                    public void checkConnection(Exception e) {
+
+
+                    }
+                });
+                return null;
+            }
+
+        }.execute();
 
     }
 
@@ -86,37 +106,23 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork = view.findViewById(R.id.emergency);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
 
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
     @Override
     public void onClick(View v) {
+
         if(v.getId() == rightwork.getId() || v.getId() == leftwork.getId() || v.getId() == bothwork.getId() ){
-            dialogSetting();
+            dialogSetting(v.getId());
         }else if(v.getId() == calibratework.getId()){
-
+            listener.isCalibratePressOn(true);
         }else if(v.getId() == emergencywork.getId()){
-
+            setSending("EE");
         }
     }
 
-    private void dialogSetting() {
+    private void dialogSetting(final int id) {
+        final String onVal = "0B 01 FF 00 0000 00 0000";
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = this.getLayoutInflater();
         View theView = inflater.inflate(R.layout.time_picker, null);
@@ -142,21 +148,32 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 System.out.println(newVal);
-//                hourTime = newVal;
+                hourTime = newVal;
             }
         });
         time1.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 System.out.println(newVal);
-//                minuteTime = newVal;
+                minuteTime = newVal;
             }
         });
 //        builder.setTitle("Set time");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                int timeTime = (hourTime*60*60)+(minuteTime*60);
+                if(id == rightwork.getId()){
+                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    setSending(right);
+                }else if(id == leftwork.getId()){
+                    String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    setSending(left);
+                }else if(id == bothwork.getId()){
+                    String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
+                    setSending(both);
+                }
+//                setSending(onVal);
             }
         });
         builder.setView(theView);
@@ -167,9 +184,15 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         builder.show();
 
     }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public static String decToHex(int dec) {
+        StringBuilder hexBuilder = new StringBuilder(sizeOfIntInHalfBytes);
+        hexBuilder.setLength(sizeOfIntInHalfBytes);
+        for (int i = sizeOfIntInHalfBytes - 1; i >= 0; --i)
+        {
+            int j = dec & halfByte;
+            hexBuilder.setCharAt(i, hexDigits[j]);
+            dec >>= numberOfBitsInAHalfByte;
+        }
+        return hexBuilder.toString();
     }
 }

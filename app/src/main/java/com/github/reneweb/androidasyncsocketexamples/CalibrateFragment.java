@@ -25,14 +25,6 @@ import static android.content.Context.SENSOR_SERVICE;
 import static android.support.v4.content.ContextCompat.getSystemService;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CalibrateFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CalibrateFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CalibrateFragment extends Fragment implements View.OnClickListener {
     SensorManager sensorManager;
     TextView ySensor , angle ;
@@ -41,17 +33,14 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     Button startCalibrate,changeAngle,cancelCalibrate,calibrateRight,calibrateLeft;
     boolean isCalibrate = false;
     String NOTES = "Pressure.txt";
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
+    String valuePage;
 
     private String mParam1;
     private String mParam2;
 
     Toolbar toolbar;
 
-    private OnFragmentInteractionListener mListener;
+
 
     public  BackToTestListener listener;
 
@@ -66,21 +55,13 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         this.listener = listener;
     }
 
-    public static CalibrateFragment newInstance(String param1, String param2) {
-        CalibrateFragment fragment = new CalibrateFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+             valuePage = bundle.getString("PAGE", "0");
         }
     }
 
@@ -98,14 +79,20 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         toolbar.setNavigationOnClickListener(this);
 
         ySensor = view.findViewById(R.id.yPo);
-
         startCalibrate = view.findViewById(R.id.startcalibrate);
         angle = view.findViewById(R.id.calibrate_angle);
         changeAngle = view.findViewById(R.id.change_angle);
         cancelCalibrate = view.findViewById(R.id.cancelcalibrate);
 
+        calibrateLeft = view.findViewById(R.id.calibrate_left);
+        calibrateRight = view.findViewById(R.id.calibrate_right);
 
+        if(valuePage == "USER"){
+            System.out.println("USERRRRRRRRRRRRRRRRRRRR");
+            calibrateLeft.setVisibility(view.VISIBLE);
+            calibrateRight.setVisibility(view.VISIBLE);
 
+        }
         cancelCalibrate.setEnabled(false);
         angle.setText(angleCalibrate.toString());
         sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
@@ -117,12 +104,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
     public SensorEventListener sensorListener  =  new SensorEventListener (){
 
         @Override
@@ -171,23 +153,6 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
     public void onClick(View v) {
 
         if(v.getId() ==startCalibrate.getId()){
@@ -206,13 +171,10 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         }else if(v.getId() == changeAngle.getId()){
             changeAngleDialog();
         }else {
-                    listener.PressBackButton(true);
+            listener.PressBackButton(true);
         }
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
     private void changeAngleDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = this.getLayoutInflater();
