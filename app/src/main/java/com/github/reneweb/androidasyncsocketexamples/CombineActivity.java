@@ -81,7 +81,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         }, 0, 600000);
 
         if (getConnection()){
-            getipAddress();
+//            getipAddress();
         }
 
 //        toolbar = findViewById(R.id.toolbar);

@@ -146,6 +146,11 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
 
                             }
+
+                            @Override
+                            public void checkWifi(Exception e) {
+
+                            }
                         });
                         return null;
                     }
@@ -221,6 +226,12 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                             }
 
                         }
+
+                        @Override
+                        public void checkWifi(Exception e) {
+
+                        }
+
                         @Override
                         public void recMessage(String mes) {
                             System.out.println("Calibrate recMessage " + mes) ;
