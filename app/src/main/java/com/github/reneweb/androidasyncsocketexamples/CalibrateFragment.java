@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,9 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     boolean isCalibrate = false;
     String NOTES = "Pressure.txt";
     String valuePage;
+
+    EditText ip,port;
+    TextView status;
 
     private String mParam1;
     private String mParam2;
@@ -77,6 +81,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calibrate,container,false);
+        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
@@ -94,6 +99,10 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
         calibrateLeft = view.findViewById(R.id.calibrate_left);
         calibrateRight = view.findViewById(R.id.calibrate_right);
+
+        ip = view1.findViewById(R.id.ipBed);
+        port = view1.findViewById(R.id.port);
+        status = view1.findViewById(R.id.statusBed);
 
         if(valuePage == "USER"){
             System.out.println("USERRRRRRRRRRRRRRRRRRRR");
@@ -135,7 +144,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                     @Override
                     protected Void doInBackground(Void... voids) {
                         System.out.println("[String]"+finalMessage);
-                        Client client = new Client("10.0.0.177",12345,finalMessage);
+                        Client client = new Client(ip.getText().toString(),Integer.parseInt(port.getText().toString()),finalMessage);
                         client.setListener(new Client.clientMessageRecListener() {
                             @Override
                             public void recMessage(String mes) {
@@ -150,6 +159,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
                             @Override
                             public void checkWifi(Exception e) {
+
 
                             }
                         });

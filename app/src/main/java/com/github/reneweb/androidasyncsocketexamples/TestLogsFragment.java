@@ -16,6 +16,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +84,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     Integer hourTime=0,minuteTime =0;
 
+    String iptest,porttest;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -127,10 +131,11 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_test_logs, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
         setView(view,view1);
+        CombineActivity combineActivity = (CombineActivity) getActivity();
+        iptest = combineActivity.sendData();
         setOnClick();
         setItemlist();
         setWiFi();
-
 
         return view;
     }
@@ -153,6 +158,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 //            bedStatus.setTextColor(Color.RED);
 //        }
     }
+
 
     private void setItemlist() {
         itemList = new ArrayList<>();
@@ -183,6 +189,8 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         status = view1.findViewById(R.id.statusBed);
         send = view.findViewById(R.id.sending);
 
+        iptest = ipaddress.getText().toString();
+
 
 
 
@@ -209,9 +217,14 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     }
 
 
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+
+
 
     }
 
@@ -370,26 +383,26 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                                 super.onPostExecute(mes);
 
 
-                                if (mes.equals("disconnect")) {
-                                    bedStatus.setText("Disconnect");
-                                    bedStatus.setTextColor(Color.RED);
-                                    getActivity().findViewById(R.id.sending).setEnabled(false);
-                                }
-//                                else if (mes.equals("portWrong")){
+//                                if (mes.equals("disconnect")) {
 //                                    bedStatus.setText("Disconnect");
 //                                    bedStatus.setTextColor(Color.RED);
-//                                    findViewById(R.id.sending).setEnabled(false);
-//                                }else if (mes.equals("portCorrect")){
-//                                    bedStatus.setText("Connected");
-//                                    bedStatus.setTextColor(Color.GREEN);
-//                                    findViewById(R.id.sending).setEnabled(true);
+//                                    getActivity().findViewById(R.id.sending).setEnabled(false);
 //                                }
-                                else {
-                                    bedStatus.setText("Connected");
-                                    getActivity().findViewById(R.id.sending).setEnabled(true);
-                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
-//                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
-//
+////                                else if (mes.equals("portWrong")){
+////                                    bedStatus.setText("Disconnect");
+////                                    bedStatus.setTextColor(Color.RED);
+////                                    findViewById(R.id.sending).setEnabled(false);
+////                                }else if (mes.equals("portCorrect")){
+////                                    bedStatus.setText("Connected");
+////                                    bedStatus.setTextColor(Color.GREEN);
+////                                    findViewById(R.id.sending).setEnabled(true);
+////                                }
+//                                else {
+//                                    bedStatus.setText("Connected");
+//                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+//                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+////                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
+////
 //                                    adapter.setItemList(itemList);
 //                                    recyclerView.setAdapter(adapter);
 //                                itemListRec.add(0,new CardViewItem()
@@ -398,7 +411,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 //                                recyclerViewRec.setAdapter(adapterRec);
                                 }
 
-                            }
+
                         }.execute();
 
                         System.out.println("[Main]" + mes);

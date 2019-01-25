@@ -95,27 +95,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void checkWifi(Exception e) {
-                        final Exception err = e;
-                        final String[] mes = {null};
-                        new AsyncTask<Void, Void, String>() {
-                            @Override
-                            protected String doInBackground(Void... voids) {
-                                if (err != null) {
-                                    mes[0] = "Disconnect";
 
-                                } else {
-                                    mes[0] = "Connected";
-                                }
-                                return mes[0];
-                            }
-
-                            @Override
-                            protected void onPostExecute(String mes) {
-                                super.onPostExecute(mes);
-                                status.setText(mes);
-                                status.setTextColor((mes == "Connected" ? getActivity().getColor(R.color.lightGreen): getActivity().getColor(R.color.red)));
-                            }
-                        }.execute();
                     }
                 });
                 return null;

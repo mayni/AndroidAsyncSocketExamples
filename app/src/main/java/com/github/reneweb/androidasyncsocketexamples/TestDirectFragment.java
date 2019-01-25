@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
@@ -31,6 +32,8 @@ public class TestDirectFragment extends Fragment  {
     public BackToTestListener listener;
     Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve;
     Toolbar toolbar;
+
+    EditText ip,port;
 
     String PROCESS = "Process.txt";
     String STATUS_BUTTON="statusbutton.txt";
@@ -78,6 +81,10 @@ public class TestDirectFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_direct, container, false);
+        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+
+        ip = view1.findViewById(R.id.ipBed);
+        port = view1.findViewById(R.id.port);
         
         setView(view);
         setOnclick(view);
@@ -154,7 +161,7 @@ public class TestDirectFragment extends Fragment  {
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client("10.10.186.64",12345,msg);
+                Client client = new Client(ip.getText().toString(),Integer.parseInt(port.getText().toString()),msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {

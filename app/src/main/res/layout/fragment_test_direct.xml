@@ -28,13 +28,13 @@
             <Button
                 android:id="@+id/main_pump"
                 android:layout_width="wrap_content"
-                android:text="main pump"
+                android:text=" main pump "
                 android:layout_marginRight="10dp"
                 android:layout_height="80dp" />
             <Button
                 android:id="@+id/side_pump"
                 android:layout_width="wrap_content"
-                android:text="side pump"
+                android:text=" side pump "
                 android:layout_height="80dp"/>
         </LinearLayout>
 
