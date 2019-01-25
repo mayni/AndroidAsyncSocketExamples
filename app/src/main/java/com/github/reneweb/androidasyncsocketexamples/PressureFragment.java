@@ -12,8 +12,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
+
+import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,6 +33,9 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
     private List<Pressure> pressList;
 
     public BackToTestListener listener;
+
+    EditText ip,port;
+    TextView status;
 
 
     public PressureFragment() {
@@ -66,9 +73,17 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
         toolbar.setNavigationOnClickListener(this);
 
         getPressure();
+        setView(view);
 
         return view;
     }
+
+    private void setView(View view) {
+        ip = view.findViewById(R.id.ip);
+        port = view.findViewById(R.id.port);
+        status = view.findViewById(R.id.statusBed);
+    }
+
     public void getPressure(){
         thread = new Thread() {
             @Override
@@ -84,7 +99,9 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
                                     @Override
                                     protected Void doInBackground(Void... voids) {
-                                        Client client = new Client("10.80.67.104",12345,"01");
+                                        String portStr = port.getText().toString();
+                                        int portNumber = Integer.parseInt(portStr);
+                                        Client client = new Client(ip.getText().toString(),portNumber,"01");
                                         client.setListener(new Client.clientMessageRecListener() {
                                             @Override
                                             public void recMessage(final String mes) {
@@ -112,6 +129,33 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
                                             @Override
                                             public void checkConnection(Exception e) {
+
+
+                                            }
+
+                                            @Override
+                                            public void checkWifi(Exception e) {
+                                                final Exception err = e;
+                                                final String[] mes = {null};
+                                                new AsyncTask<Void, Void, String>() {
+                                                    @Override
+                                                    protected String doInBackground(Void... voids) {
+                                                        if (err != null) {
+                                                            mes[0] = "Disconnect";
+
+                                                        } else {
+                                                            mes[0] = "Connected";
+                                                        }
+                                                        return mes[0];
+                                                    }
+
+                                                    @Override
+                                                    protected void onPostExecute(String mes) {
+                                                        super.onPostExecute(mes);
+                                                        status.setText(mes);
+                                                        status.setTextColor((mes == "Connected" ? getActivity().getColor(R.color.lightGreen): getActivity().getColor(R.color.red)));
+                                                    }
+                                                }.execute();
 
 
                                             }

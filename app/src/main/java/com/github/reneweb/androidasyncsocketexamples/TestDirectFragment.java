@@ -91,6 +91,11 @@ public class TestDirectFragment extends Fragment implements  View.OnClickListene
 
 
                     }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+
+                    }
                 });
                 return null;
             }

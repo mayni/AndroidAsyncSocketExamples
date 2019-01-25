@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            bedStatus.setTextColor(Color.RED);
         }
 
-        checkWifi();
+//        checkWifi();
 
 //        checkConnection();
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.exatools.sensors");
@@ -890,9 +890,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     public void checkWifi(Exception e) {
                                         Exception err = e;
                                         if (err != null){
-                                            bedStatus.setText("Disconnedt");
+//                                            bedStatus.setText("Disconnedt");
                                         }else {
-                                            bedStatus.setText("Connected");
+//                                            bedStatus.setText("Connected");
                                         }
 
                                     }

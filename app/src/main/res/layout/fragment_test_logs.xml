@@ -265,6 +265,7 @@
             android:layout_height="wrap_content"
             android:text="emergency"
             android:layout_weight="0.2"
+            android:textColor="@color/cardview_light_background"
             android:layout_margin="5dp"
             android:theme="@style/MyButton"
             />

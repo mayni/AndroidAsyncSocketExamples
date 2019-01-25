@@ -20,10 +20,10 @@
 
         android:layout_gravity="end">
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_marginRight="20dp"
             android:text="Calibrate : "
+            android:layout_marginTop="6dp"
             android:textSize="30sp"
             android:layout_height="wrap_content" />
         <TextView
@@ -31,12 +31,15 @@
             android:layout_width="wrap_content"
             android:layout_marginRight="20dp"
             android:text="angle"
+            android:layout_marginTop="6dp"
             android:textSize="30sp"
             android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/change_angle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
             android:text="change"/>
 
     </LinearLayout>
@@ -46,13 +49,18 @@
         android:padding="20dp"
         android:layout_marginTop="40dp"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="horizontal">
         <TextView
             android:id="@+id/yPo"
             android:layout_width="wrap_content"
             android:textSize="80sp"
             android:layout_height="wrap_content"
             android:text="y"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="80sp"
+            android:layout_height="wrap_content"
+            android:text="°"/>
 
     </LinearLayout>
     <LinearLayout
@@ -60,17 +68,20 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/startcalibrate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
-            android:textSize="40sp"
-            android:text="start" />
+            android:text=" start "
+            android:layout_marginEnd="5dp"
+            android:textSize="30sp" />
         <Button
             android:id="@+id/cancelcalibrate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20sp"
             android:text="cancel"/>
     </LinearLayout>
     <LinearLayout

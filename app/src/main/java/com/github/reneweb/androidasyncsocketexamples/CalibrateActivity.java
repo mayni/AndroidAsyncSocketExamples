@@ -153,7 +153,7 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
                 new AsyncTask<Void,Void,Void>(){
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        System.out.println("[String]"+finalMessage);
+                        System.out.println("[String]"+ finalMessage );
                         Client client = new Client("10.0.0.177",12345,finalMessage);
                         client.setListener(new Client.clientMessageRecListener() {
                             @Override
@@ -171,7 +171,6 @@ public class CalibrateActivity extends AppCompatActivity implements View.OnClick
                             public void checkWifi(Exception e) {
 
                             }
-
 
                         });
                         return null;

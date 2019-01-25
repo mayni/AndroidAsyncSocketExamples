@@ -65,7 +65,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
                 }else{
                     handleConnectCompleted(ex,socket);
-                    listener.checkWifi(ex);
+//                    listener.checkWifi(ex);
                     listener.checkConnection(ex);
                 }
 
@@ -110,6 +110,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 //                    listener.recMessage(mes);
 //                }
                 listener.recMessage(mes);
+
                 socket.close();
             }
         });
@@ -119,6 +120,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             public void onCompleted(Exception ex) {
 //                if(ex != null) throw new RuntimeException(ex);
 //                listener.recMessage("disconnect");
+                listener.checkWifi(ex);
                 System.out.println("[Client] Successfully closed connection");
             }
         });

@@ -28,21 +28,29 @@
             android:gravity="center"
             android:layout_height="150dp">
             <Button
-                android:layout_width="50dp"
-                android:layout_height="120dp"
-                android:text="1"/>
+                android:layout_width="35dp"
+                android:layout_height="130dp"
+                android:text="1"
+                android:layout_margin="3dp"
+                android:background="@drawable/bag_bed"/>
             <Button
-                android:layout_width="50dp"
-                android:layout_height="120dp"
-                android:text="2"/>
+                android:layout_width="35dp"
+                android:layout_height="130dp"
+                android:layout_margin="3dp"
+                android:text="2"
+                android:background="@drawable/bag_bed"/>
             <Button
-                android:layout_width="50dp"
-                android:layout_height="120dp"
-                android:text="3"/>
+                android:layout_width="35dp"
+                android:layout_height="130dp"
+                android:layout_margin="3dp"
+                android:text="3"
+                android:background="@drawable/bag_bed"/>
             <Button
-                android:layout_width="50dp"
-                android:layout_height="120dp"
-                android:text="4"/>
+                android:layout_width="35dp"
+                android:layout_height="130dp"
+                android:layout_margin="3dp"
+                android:text="4"
+                android:background="@drawable/bag_bed"/>
 
         </LinearLayout>
         <LinearLayout
@@ -60,20 +68,21 @@
             android:gravity="center"
             android:layout_height="wrap_content">
             <Button
-                android:id="@+id/rightwork"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:text="right"/>
-            <Button
                 android:id="@+id/leftwork"
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
                 android:text="left"/>
+
             <Button
                 android:id="@+id/bothwork"
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
                 android:text="both"/>
+            <Button
+                android:id="@+id/rightwork"
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:text="right"/>
 
         </LinearLayout>
         <LinearLayout
@@ -87,8 +96,9 @@
                 android:id="@+id/emergency"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:backgroundTint="@color/red"
+                android:backgroundTint="@color/indigo"
                 android:background="@drawable/round_button"
+                android:textColor="#FFFFFF"
                 android:text="EMERgency"/>
         </LinearLayout>
         <LinearLayout
@@ -99,9 +109,10 @@
                 android:id="@+id/calibrate_angle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10dp"
-                android:backgroundTint="@color/lightBlue"
-                android:text="calibrate"/>
+                android:textSize="12sp"
+                android:backgroundTint="#6681EA"
+                android:textColor="#FFFFFF"
+                android:text="calibrate "/>
         </LinearLayout>
     </LinearLayout>
 
