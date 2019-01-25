@@ -78,10 +78,10 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
                 checkWifi();
                 System.out.println("[Main]: startttt connect");
             }
-        }, 0, 600000);
+        }, 0, 20000);
 
         if (getConnection()){
-//            getipAddress();
+            getipAddress();
         }
 
 //        toolbar = findViewById(R.id.toolbar);
