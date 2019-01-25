@@ -32,7 +32,9 @@ public class TestDirectFragment extends Fragment  {
     public BackToTestListener listener;
     Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve;
     Toolbar toolbar;
+
     EditText ip,port;
+
     String PROCESS = "Process.txt";
     String STATUS_BUTTON="statusbutton.txt";
     private static final int sizeOfIntInHalfBytes = 8;
@@ -80,7 +82,11 @@ public class TestDirectFragment extends Fragment  {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_direct, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
-        setView(view,view1);
+
+        ip = view1.findViewById(R.id.ipBed);
+        port = view1.findViewById(R.id.port);
+        
+        setView(view);
         setOnclick(view);
         clearContent("",STATUS_BUTTON);
         for(int[] btn: buttonStatus){

@@ -92,7 +92,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
                 checkWifi();
                 System.out.println("[Main]: startttt connect");
             }
-        }, 0, 20000);
+        }, 0, 600000);
 
         if (getConnection()){
             getipAddress();
@@ -124,6 +124,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         adapter.addFragment(new UserFragment(), "USER");
         adapter.addFragment(new TestFragment(), "TEST");
         viewPager.setAdapter(adapter);
+
     }
 
     @Override
@@ -316,7 +317,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
                                     publishProgress(host);
 //                                            lists.add(host);
                                     System.out.println("[Main] : Reachable -> "+ hostName + " (" + host +") is Reachable!");
-                                    System.out.println("[Main] : Lists available "+ lists);
+//                                    System.out.println("[Main] : Lists available "+ lists);
                                 }
                             }
                         }
@@ -353,7 +354,9 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
 
 
     }
-
+    public String sendData() {
+        return ip.getText().toString();
+    }
 
 
 }

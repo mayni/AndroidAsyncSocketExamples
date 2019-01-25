@@ -118,7 +118,9 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
                                     @Override
                                     protected Void doInBackground(Void... voids) {
-                                        Client client = new Client(ip.getText().toString(),12345,"01");
+//                                        String portStr = port.getText().toString();
+//                                        int portNumber = Integer.parseInt(portStr);
+                                        Client client = new Client("10.0.0.177",12345,"01");
                                         client.setListener(new Client.clientMessageRecListener() {
                                             @Override
                                             public void recMessage(final String mes) {
@@ -138,6 +140,7 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
                                                         pressList.add(0,new Pressure(message,dateFormat.format(date)));
                                                         pressureAdapter.setPressures(pressList);
                                                         pressureRecycle.setAdapter(pressureAdapter);
+
                                                     }
                                                 }.execute();
 
@@ -152,28 +155,6 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
                                             @Override
                                             public void checkWifi(Exception e) {
-                                                final Exception err = e;
-                                                final String[] mes = {null};
-                                                new AsyncTask<Void, Void, String>() {
-                                                    @Override
-                                                    protected String doInBackground(Void... voids) {
-                                                        if (err != null) {
-                                                            mes[0] = "Disconnect";
-
-                                                        } else {
-                                                            mes[0] = "Connected";
-                                                        }
-                                                        return mes[0];
-                                                    }
-
-                                                    @Override
-                                                    protected void onPostExecute(String mes) {
-                                                        super.onPostExecute(mes);
-                                                        status.setText(mes);
-                                                        status.setTextColor((mes == "Connected" ? getActivity().getColor(R.color.lightGreen): getActivity().getColor(R.color.red)));
-                                                    }
-                                                }.execute();
-
 
                                             }
                                         });
