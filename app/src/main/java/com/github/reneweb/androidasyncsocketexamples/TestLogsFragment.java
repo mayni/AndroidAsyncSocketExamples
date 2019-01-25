@@ -371,44 +371,40 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                             @Override
                             protected String doInBackground(Void... voids) {
 
-                                System.out.println("[Main] rec" + mes.trim());
-                                return String.valueOf(mes.trim());
-                            }
+                            System.out.println("[Main] rec" + mes.trim());
+                            return String.valueOf(mes.trim());
+                        }
 
                             @Override
                             protected void onPostExecute(String mes) {
-                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                                Date date = new Date();
-                                super.onPostExecute(mes);
+                            final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                            Date date = new Date();
+                            super.onPostExecute(mes);
 
 
-//                                if (mes.equals("disconnect")) {
-//                                    bedStatus.setText("Disconnect");
-//                                    bedStatus.setTextColor(Color.RED);
-//                                    getActivity().findViewById(R.id.sending).setEnabled(false);
-//                                }
-                                else {
+                            if (mes.equals("disconnect")) {
+////                                    bedStatus.setText("Disconnect");
+////                                    bedStatus.setTextColor(Color.RED);
+////                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+                            } else {
 //                                    bedStatus.setText("Connected");
 //                                    getActivity().findViewById(R.id.sending).setEnabled(true);
 //                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
-                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
+                                itemList.set(0, new CardViewItem().setText(m, dateSend, mes, dateFormat.format(date)));
 
-                                    adapter.setItemList(itemList);
-                                    recyclerView.setAdapter(adapter);
-                                itemListRec.add(0,new CardViewItem().setText(m,dateSend,dateFormat.format(date),mes));
+                                adapter.setItemList(itemList);
+                                recyclerView.setAdapter(adapter);
+                                itemListRec.add(0, new CardViewItem().setText(m, dateSend, dateFormat.format(date), mes));
                                 adapterRec.setItemList(itemListRec);
                                 recyclerViewRec.setAdapter(adapterRec);
-                                }
-
-
+                            }
+                        }
                         }.execute();
 
-                        System.out.println("[Main]" + mes);
                     }
 
                     @Override
                     public void checkConnection(Exception e) {
-
 
                     }
 
@@ -444,6 +440,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         }.execute();
 
         message.setText("");
+
     }
 
 

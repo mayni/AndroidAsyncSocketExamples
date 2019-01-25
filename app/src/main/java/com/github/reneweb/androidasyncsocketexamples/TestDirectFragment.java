@@ -86,7 +86,7 @@ public class TestDirectFragment extends Fragment  {
         ip = view1.findViewById(R.id.ipBed);
         port = view1.findViewById(R.id.port);
         
-        setView(view);
+        setView(view,view1);
         setOnclick(view);
         clearContent("",STATUS_BUTTON);
         for(int[] btn: buttonStatus){
