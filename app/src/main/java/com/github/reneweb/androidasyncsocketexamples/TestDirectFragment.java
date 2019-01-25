@@ -154,7 +154,7 @@ public class TestDirectFragment extends Fragment  {
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client("10.80.65.97",12345,msg);
+                Client client = new Client("10.10.186.64",12345,msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
