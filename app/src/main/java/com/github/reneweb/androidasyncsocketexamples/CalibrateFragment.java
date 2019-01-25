@@ -77,6 +77,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calibrate,container,false);
+        View view1 =inflater.inflate(R.layout.activity_combine,container,false);
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
@@ -94,6 +95,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
         calibrateLeft = view.findViewById(R.id.calibrate_left);
         calibrateRight = view.findViewById(R.id.calibrate_right);
+
 
         if(valuePage == "USER"){
             System.out.println("USERRRRRRRRRRRRRRRRRRRR");

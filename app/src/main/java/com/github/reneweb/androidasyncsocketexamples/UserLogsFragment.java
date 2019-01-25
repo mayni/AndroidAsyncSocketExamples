@@ -140,7 +140,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         calibratework = view.findViewById(R.id.calibrate_angle);
         emergencywork = view.findViewById(R.id.emergency);
 
-        status = view.findViewById(R.id.statusBed);
+        status = view1.findViewById(R.id.statusBed);
         ip = view1.findViewById(R.id.ipBed);
         port = view1.findViewById(R.id.port);
     }

@@ -18,6 +18,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
@@ -51,9 +53,17 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     String networkSSID = "DESKTOP-5HK7N4N 2635";
     String networkPass = "580610684";
 
+    public IpAndPortListener listener;
+    String it;
     private String[] ipAddr;
-
+    public void setListener(IpAndPortListener listener){
+        this.listener = listener;
+    }
 //    Thread thread;
+    public interface IpAndPortListener{
+        void ipAndportChange(String ip);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +79,10 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         findIp.setOnClickListener(this);
         ip = findViewById(R.id.ipBed);
         port = findViewById(R.id.port);
+
+
+
+
 
         wifi =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         Timer myTimer;
@@ -103,6 +117,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this);
 
+
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -131,6 +146,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         boolean isConnected = ConnectivityReceiver.isConnected();
         showConnected(isConnected);
     }
+
 
     private boolean getConnection(){
         boolean isConnected = ConnectivityReceiver.isConnected();

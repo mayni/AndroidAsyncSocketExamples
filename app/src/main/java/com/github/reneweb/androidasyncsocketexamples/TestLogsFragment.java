@@ -15,6 +15,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -103,14 +104,6 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         this.listener = listener;
     }
 
-    public static TestLogsFragment newInstance(String param1, String param2) {
-        TestLogsFragment fragment = new TestLogsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -188,7 +181,13 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
         message =  view.findViewById(R.id.message);
 
+                recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        adapter = new MainAdapter();
 
+        recyclerViewRec = view.findViewById(R.id.recyclerView1);
+        recyclerViewRec.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        adapterRec = new MainAdapter();
 
     }
 
@@ -208,18 +207,6 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     }
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        mListener = null;
-    }
 
     @Override
     public void onClick(View view) {
@@ -343,10 +330,10 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
         final String dateSend = dateFormat.format(date);
 
-//        itemList.add(0,new CardViewItem()
-//                .setText(m,dateFormat.format(date),"",""));
-//        adapter.setItemList(itemList);
-//        recyclerView.setAdapter(adapter);
+        itemList.add(0,new CardViewItem()
+                .setText(m,dateFormat.format(date),"",""));
+        adapter.setItemList(itemList);
+        recyclerView.setAdapter(adapter);
 
         new AsyncTask<Void, Void, Void>(){
             @Override
@@ -371,9 +358,9 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
 
                                 if (mes.equals("disconnect")) {
-                                    bedStatus.setText("Disconnect");
-                                    bedStatus.setTextColor(Color.RED);
-                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+//                                    bedStatus.setText("Disconnect");
+//                                    bedStatus.setTextColor(Color.RED);
+//                                    getActivity().findViewById(R.id.sending).setEnabled(false);
                                 }
 //                                else if (mes.equals("portWrong")){
 //                                    bedStatus.setText("Disconnect");
@@ -385,17 +372,16 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 //                                    findViewById(R.id.sending).setEnabled(true);
 //                                }
                                 else {
-                                    bedStatus.setText("Connected");
-                                    getActivity().findViewById(R.id.sending).setEnabled(true);
-                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
-//                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
-//
-//                                    adapter.setItemList(itemList);
-//                                    recyclerView.setAdapter(adapter);
-//                                itemListRec.add(0,new CardViewItem()
-//                                        .setText1(dateFormat.format(date),mes));
-//                                adapterRec.setItemList(itemListRec);
-//                                recyclerViewRec.setAdapter(adapterRec);
+//                                    bedStatus.setText("Connected");
+//                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+//                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
+
+                                    adapter.setItemList(itemList);
+                                    recyclerView.setAdapter(adapter);
+                                itemListRec.add(0,new CardViewItem().setText(m,dateSend,dateFormat.format(date),mes));
+                                adapterRec.setItemList(itemListRec);
+                                recyclerViewRec.setAdapter(adapterRec);
                                 }
 
                             }

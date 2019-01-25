@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
@@ -31,7 +32,7 @@ public class TestDirectFragment extends Fragment  {
     public BackToTestListener listener;
     Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve;
     Toolbar toolbar;
-
+    EditText ip,port;
     String PROCESS = "Process.txt";
     String STATUS_BUTTON="statusbutton.txt";
     private static final int sizeOfIntInHalfBytes = 8;
@@ -78,8 +79,8 @@ public class TestDirectFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_direct, container, false);
-        
-        setView(view);
+        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+        setView(view,view1);
         setOnclick(view);
         clearContent("",STATUS_BUTTON);
         for(int[] btn: buttonStatus){
@@ -146,15 +147,18 @@ public class TestDirectFragment extends Fragment  {
 
     public boolean fileExist(String fname){
         String path = getContext().getFilesDir().getAbsolutePath() + "/" + fname;
+
         File file = new File(path);
         return file.exists();
     }
 
     private void setSending(final String msg, final String command, final View view) {
+        final String ipAddress = ip.getText().toString();
+        final Integer portNumber =Integer.parseInt(port.getText().toString()) ;
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client("10.10.186.64",12345,msg);
+                Client client = new Client(ipAddress,portNumber,msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
@@ -255,7 +259,7 @@ public class TestDirectFragment extends Fragment  {
         }
     }
 
-    private void setView(View view) {
+    private void setView(View view,View view1) {
         mainPump=view.findViewById(R.id.main_pump);
         sidePump=view.findViewById(R.id.side_pump);
         leftmainValve=view.findViewById(R.id.left_mainValve);
@@ -263,6 +267,10 @@ public class TestDirectFragment extends Fragment  {
         rightmainValve=view.findViewById(R.id.right_mainValve);
         rightsideValve=view.findViewById(R.id.right_sideValve);
         toolbar =  view.findViewById(R.id.toolbar);
+
+        ip = view1.findViewById(R.id.ipBed);
+        port = view1.findViewById(R.id.port);
+
     }
 
 
