@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -22,8 +24,13 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TestLogsFragment extends Fragment implements View.OnClickListener {
@@ -32,9 +39,9 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     String text,selectIp;
     private static MainActivity instance;
     Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,
-            wifibtn,onwork;
+            wifibtn,onwork,send;
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
-    TextView wifiStatus,bedStatus;
+    TextView wifiStatus,bedStatus,status;
 
     private RecyclerView recyclerView, recyclerViewRec ;
     private MainAdapter adapter, adapterRec ;
@@ -118,7 +125,8 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_logs, container, false);
-        setView(view);
+        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+        setView(view,view1);
         setOnClick();
         setItemlist();
         setWiFi();
@@ -151,7 +159,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         itemListRec = new ArrayList<>();
     }
 
-    private void setView(View view){
+    private void setView(View view,View view1){
         rightwork = view.findViewById(R.id.rightwork);
         leftwork =  view.findViewById(R.id.leftwork);
         bothwork =  view.findViewById(R.id.bothwork);
@@ -162,15 +170,25 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         readpressurework = view.findViewById(R.id.readpressure);
         emergencywork = view.findViewById(R.id.emergency);
         calibratework = view.findViewById(R.id.calibrate);
+
         onwork = view.findViewById(R.id.onwork);
+        emergencywork = view.findViewById(R.id.emergency);
 
         wifibtn = view.findViewById(R.id.wifiBtn);
         wifiStatus = view.findViewById(R.id.wifiSatus);
         bedStatus = view.findViewById(R.id.status);
 
-        ipaddress = view.findViewById(R.id.ip);
-        port = view.findViewById(R.id.port);
+        ipaddress = view1.findViewById(R.id.ipBed);
+        port = view1.findViewById(R.id.port);
+        status = view1.findViewById(R.id.statusBed);
+        send = view.findViewById(R.id.sending);
+
+
+
+
         message =  view.findViewById(R.id.message);
+
+
 
     }
 
@@ -184,14 +202,12 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
         directcontrol.setOnClickListener(this);
+
         onwork.setOnClickListener(this);
+        send.setOnClickListener(this);
 
     }
-    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -221,14 +237,19 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                 message.setText(clear);
             }else if(view.getId() == readpressurework.getId()){
                 listener.DirectControlOnclick(true,"pressure");
-//            }else if(view.getId() == emergencywork.getId()){
-//                String emerg = "EE";
-//                message.setText(emerg);
+            }else if(view.getId() == emergencywork.getId()){
+                String emerg = "EE";
+                    sendONOFF(emerg);
             }else if(view.getId() == calibratework.getId()){
 //                checkConnection();
                     listener.DirectControlOnclick(true,"calibrate");
             }else if(view.getId() ==  directcontrol.getId()){
                 setDirectControl();
+            }else if(view.getId() == send.getId()){
+                ClickToConnect();
+            }else if(view.getId() == onwork.getId()){
+                String on = "0B 01 FF 00 0000 00 0000";
+                sendONOFF(on);
             }
         }
 
@@ -282,8 +303,146 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 ////            ipaddress.setText(lists.get(0));
 
     }
+    private void sendONOFF(final String text){
+        final String ip = ipaddress.getText().toString();
+        final int p = Integer.parseInt(port.getText().toString());
+        new AsyncTask<Void,Void,Void>(){
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Client client = new Client(ip, p, text);
+                client.setListener(new Client.clientMessageRecListener() {
+                    @Override
+                    public void recMessage(String mes) {
+
+                    }
+
+                    @Override
+                    public void checkConnection(Exception e) {
+
+                    }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+
+                    }
+                });
+                return null;
+            }
+        }.execute();
+
+    }
+
+    public void ClickToConnect() {
+        final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+
+        final String m = message.getText().toString();
+        final String ip = ipaddress.getText().toString();
+        final int p = Integer.parseInt(port.getText().toString());
+
+        final String dateSend = dateFormat.format(date);
+
+//        itemList.add(0,new CardViewItem()
+//                .setText(m,dateFormat.format(date),"",""));
+//        adapter.setItemList(itemList);
+//        recyclerView.setAdapter(adapter);
+
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Client client = new Client(ip, p, m);
+                client.setListener(new Client.clientMessageRecListener() {
+                    @Override
+                    public void recMessage(final String mes) {
+                        new AsyncTask<Void, Void, String>() {
+                            @Override
+                            protected String doInBackground(Void... voids) {
+
+                                System.out.println("[Main] rec" + mes.trim());
+                                return String.valueOf(mes.trim());
+                            }
+
+                            @Override
+                            protected void onPostExecute(String mes) {
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                Date date = new Date();
+                                super.onPostExecute(mes);
 
 
+                                if (mes.equals("disconnect")) {
+                                    bedStatus.setText("Disconnect");
+                                    bedStatus.setTextColor(Color.RED);
+                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+                                }
+//                                else if (mes.equals("portWrong")){
+//                                    bedStatus.setText("Disconnect");
+//                                    bedStatus.setTextColor(Color.RED);
+//                                    findViewById(R.id.sending).setEnabled(false);
+//                                }else if (mes.equals("portCorrect")){
+//                                    bedStatus.setText("Connected");
+//                                    bedStatus.setTextColor(Color.GREEN);
+//                                    findViewById(R.id.sending).setEnabled(true);
+//                                }
+                                else {
+                                    bedStatus.setText("Connected");
+                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+//                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
+//
+//                                    adapter.setItemList(itemList);
+//                                    recyclerView.setAdapter(adapter);
+//                                itemListRec.add(0,new CardViewItem()
+//                                        .setText1(dateFormat.format(date),mes));
+//                                adapterRec.setItemList(itemListRec);
+//                                recyclerViewRec.setAdapter(adapterRec);
+                                }
+
+                            }
+                        }.execute();
+
+                        System.out.println("[Main]" + mes);
+                    }
+
+                    @Override
+                    public void checkConnection(Exception e) {
+
+
+                    }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+                        final Exception err = e;
+                        final String[] mes = {null};
+                        new AsyncTask<Void, Void, String>() {
+                            @Override
+                            protected String doInBackground(Void... voids) {
+                                if (err != null) {
+                                    mes[0] = "Disconnect";
+
+                                } else {
+                                    mes[0] = "Connected";
+                                }
+                                return mes[0];
+                            }
+
+                            @Override
+                            protected void onPostExecute(String mes) {
+                                super.onPostExecute(mes);
+                                status.setText(mes);
+                                status.setTextColor((mes == "Connected" ? getActivity().getColor(R.color.lightGreen) : getActivity().getColor(R.color.red)));
+                            }
+                        }.execute();
+                    }
+
+                });
+                return null;
+            }
+
+        }.execute();
+
+        message.setText("");
+    }
 
 
     private void setTime(final Integer id) {

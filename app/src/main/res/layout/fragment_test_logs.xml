@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:text="send"
             android:layout_weight="0.05"
-            android:onClick="ClickToConnect"/>
+            />
 
     </LinearLayout>
     <LinearLayout

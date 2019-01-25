@@ -79,7 +79,7 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setView(View view) {
-        ip = view.findViewById(R.id.ip);
+        ip = view.findViewById(R.id.ipBed);
         port = view.findViewById(R.id.port);
         status = view.findViewById(R.id.statusBed);
     }

@@ -119,10 +119,11 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Confirm");
         if(id == calibrateLeft.getId()){
-            builder.setMessage("02 63 FF");
+            builder.setMessage("Calibrate Left");
+
             message = "02 63 FF";
         }else if(id == calibrateRight.getId()){
-            builder.setMessage("02 93 FF");
+            builder.setMessage("Calibrate Right");
             message = "02 93 FF";
         }
         final String finalMessage = message;
