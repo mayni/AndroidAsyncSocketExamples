@@ -12,6 +12,8 @@ import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
 
 import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.sql.Time;
 
 public class Client implements ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -31,6 +33,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
     public interface clientMessageRecListener {
         void recMessage(String mes);
         void checkConnection(Exception e);
+        void checkWifi(Exception e);
     }
 
 
@@ -55,12 +58,22 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
                 if(ex != null){
+<<<<<<< HEAD
 //                    System.out.println("[Fail]" + ex.toString());
+=======
+                    System.out.println("[Fail]" + ex.toString());
+                    listener.checkWifi(ex);
+>>>>>>> dev
                     listener.checkConnection(ex);
 
                 }else{
                     handleConnectCompleted(ex,socket);
+<<<<<<< HEAD
 //                    listener.checkConnection(ex);
+=======
+//                    listener.checkWifi(ex);
+                    listener.checkConnection(ex);
+>>>>>>> dev
                 }
 
 //                handleConnectCompleted(ex,socket);
@@ -72,6 +85,8 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
 //        System.out.println("Client handleConnectCompleted " + socket.toString());
+
+
 
         if(ex != null) {
             ///////////////////////////////////////////////////////
@@ -102,6 +117,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 //                    listener.recMessage(mes);
 //                }
                 listener.recMessage(mes);
+
                 socket.close();
             }
         });
@@ -111,6 +127,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             public void onCompleted(Exception ex) {
 //                if(ex != null) throw new RuntimeException(ex);
 //                listener.recMessage("disconnect");
+                listener.checkWifi(ex);
                 System.out.println("[Client] Successfully closed connection");
             }
         });

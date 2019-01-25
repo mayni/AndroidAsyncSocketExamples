@@ -5,11 +5,11 @@
         <!-- Customize your theme here. -->
     </style>
     <style name="MyButton" parent="Base.Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/indigo</item>
-        <item name="colorButtonNormal">@color/red</item>
+        <item name="colorControlHighlight">@color/red</item>
+        <item name="colorButtonNormal">@color/indigo</item>
     </style>
     <style name="Onwork" parent="Theme.AppCompat.Light">
-    <item name="colorControlHighlight">@color/indigo</item>
+    <item name="colorControlHighlight">#38ADAE</item>
     <item name="colorButtonNormal">@color/green</item>
     </style>
     <style name="blueBtn" parent="Theme.AppCompat.Light">

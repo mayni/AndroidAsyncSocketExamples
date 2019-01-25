@@ -12,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import com.github.reneweb.androidasyncsocketexamples.R;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
@@ -24,7 +26,8 @@ import java.util.ArrayList;
 
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
-
+    TextView status;
+    EditText ip,port;
 
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
 
@@ -57,7 +60,6 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -75,7 +77,9 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client("10.80.66.207",12345,msg);
+                String portStr = port.getText().toString();
+                int portNumber = Integer.parseInt(portStr);
+                Client client = new Client(ip.getText().toString(),portNumber,msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
@@ -86,6 +90,31 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                     public void checkConnection(Exception e) {
 
 
+                    }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+                        final Exception err = e;
+                        final String[] mes = {null};
+                        new AsyncTask<Void, Void, String>() {
+                            @Override
+                            protected String doInBackground(Void... voids) {
+                                if (err != null) {
+                                    mes[0] = "Disconnect";
+
+                                } else {
+                                    mes[0] = "Connected";
+                                }
+                                return mes[0];
+                            }
+
+                            @Override
+                            protected void onPostExecute(String mes) {
+                                super.onPostExecute(mes);
+                                status.setText(mes);
+                                status.setTextColor((mes == "Connected" ? getActivity().getColor(R.color.lightGreen): getActivity().getColor(R.color.red)));
+                            }
+                        }.execute();
                     }
                 });
                 return null;
@@ -109,6 +138,10 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         bothwork = view.findViewById(R.id.bothwork);
         calibratework = view.findViewById(R.id.calibrate_angle);
         emergencywork = view.findViewById(R.id.emergency);
+
+        status = view.findViewById(R.id.statusBed);
+        ip = view.findViewById(R.id.ip);
+        port = view.findViewById(R.id.port);
     }
 
 

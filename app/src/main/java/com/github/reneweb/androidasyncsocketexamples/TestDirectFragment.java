@@ -168,6 +168,11 @@ public class TestDirectFragment extends Fragment  {
                         System.out.println("[TestDirect] "+e);
 
                     }
+
+                    @Override
+                    public void checkWifi(Exception e) {
+
+                    }
                 });
                 return null;
             }
