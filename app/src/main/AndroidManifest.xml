@@ -19,13 +19,17 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CombineActivity">
+        <activity android:name=".CombineActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
 
             <!-- android:label="@string/app_name" > -->
             <intent-filter>
@@ -42,8 +46,12 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".Main2Activity" />
-        <activity android:name=".CalibrateActivity" />
+        <activity android:name=".Main2Activity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CalibrateActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
 
         <receiver
             android:name=".ConnectivityReceiver"
@@ -53,7 +61,9 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".PressureActivity" />
+        <activity android:name=".PressureActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
 
     </application>
 
