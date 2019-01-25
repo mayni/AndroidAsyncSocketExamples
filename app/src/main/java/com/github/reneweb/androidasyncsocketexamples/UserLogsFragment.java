@@ -66,7 +66,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_logs,container,false);
-        setView(view);
+        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+        setView(view,view1);
         setOnClick();
 //        setSending();
 
@@ -132,7 +133,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork.setOnClickListener(this);
     }
 
-    private void setView(View view) {
+    private void setView(View view,View view1) {
         rightwork = view.findViewById(R.id.rightwork);
         leftwork = view.findViewById(R.id.leftwork);
         bothwork = view.findViewById(R.id.bothwork);
@@ -140,8 +141,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork = view.findViewById(R.id.emergency);
 
         status = view.findViewById(R.id.statusBed);
-        ip = view.findViewById(R.id.ip);
-        port = view.findViewById(R.id.port);
+        ip = view1.findViewById(R.id.ipBed);
+        port = view1.findViewById(R.id.port);
     }
 
 
@@ -204,12 +205,15 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                 if(id == rightwork.getId()){
                     String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     setSending(right);
+                    setSending(onVal);
                 }else if(id == leftwork.getId()){
                     String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     setSending(left);
+                    setSending(onVal);
                 }else if(id == bothwork.getId()){
                     String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
                     setSending(both);
+                    setSending(onVal);
                 }
 //                setSending(onVal);
             }
