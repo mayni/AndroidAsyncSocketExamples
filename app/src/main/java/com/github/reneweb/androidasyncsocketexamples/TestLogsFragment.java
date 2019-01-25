@@ -39,7 +39,7 @@ import java.util.List;
 
 public class TestLogsFragment extends Fragment implements View.OnClickListener {
     final List<String> lists = new ArrayList<String>();
-    private EditText message, ipaddress, port;
+    private EditText message;
     String text,selectIp;
     private static MainActivity instance;
     Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,
@@ -85,7 +85,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     Integer hourTime=0,minuteTime =0;
 
-    String iptest,porttest;
+    EditText ipAddress,portNumber;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -99,7 +99,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     UserLogsFragment userLogsFragment = new UserLogsFragment();
 
     public TestLogsFragment() {
-        // Required empty public constructor
+
     }
     public interface DirectControllistener{
         void DirectControlOnclick(boolean bool,String string);
@@ -124,8 +124,10 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_test_logs, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
         setView(view,view1);
-        CombineActivity combineActivity = (CombineActivity) getActivity();
-        iptest = combineActivity.sendData();
+
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
+
         setOnClick();
         setItemlist();
         setWiFi();
@@ -177,19 +179,17 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         wifiStatus = view.findViewById(R.id.wifiSatus);
         bedStatus = view.findViewById(R.id.status);
 
-        ipaddress = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
+
         status = view1.findViewById(R.id.statusBed);
         send = view.findViewById(R.id.sending);
 
-        iptest = ipaddress.getText().toString();
+
 
 
 
 
         message =  view.findViewById(R.id.message);
-
-                recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         adapter = new MainAdapter();
 
@@ -213,24 +213,6 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         onwork.setOnClickListener(this);
         send.setOnClickListener(this);
 
-    }
-
-
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-
-
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        mListener = null;
     }
 
     @Override
@@ -316,8 +298,20 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     }
     private void sendONOFF(final String text){
-        final String ip = ipaddress.getText().toString();
-        final int p = Integer.parseInt(port.getText().toString());
+        final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+        final String ip = ipAddress.getText().toString();
+        final int p = Integer.parseInt(portNumber.getText().toString());
+
+
+
+        final String dateSend = dateFormat.format(date);
+
+        itemList.add(0,new CardViewItem()
+                .setText(text,dateFormat.format(date),"",""));
+        adapter.setItemList(itemList);
+        recyclerView.setAdapter(adapter);
+
         new AsyncTask<Void,Void,Void>(){
 
             @Override
@@ -325,8 +319,40 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                 Client client = new Client(ip, p, text);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
-                    public void recMessage(String mes) {
+                    public void recMessage(final String mes) {
+                        new AsyncTask<Void, Void, String>() {
+                            @Override
+                            protected String doInBackground(Void... voids) {
 
+                                System.out.println("[Main] rec" + mes.trim());
+                                return String.valueOf(mes.trim());
+                            }
+
+                            @Override
+                            protected void onPostExecute(String mes) {
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                Date date = new Date();
+                                super.onPostExecute(mes);
+
+
+                                if (mes.equals("disconnect")) {
+                                    ////                                    bedStatus.setText("Disconnect");
+                                    ////                                    bedStatus.setTextColor(Color.RED);
+                                    ////                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+                                } else {
+                                    //                                    bedStatus.setText("Connected");
+                                    //                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+                                    //                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+                                    itemList.set(0, new CardViewItem().setText(text, dateSend, mes, dateFormat.format(date)));
+
+                                    adapter.setItemList(itemList);
+                                    recyclerView.setAdapter(adapter);
+                                    itemListRec.add(0, new CardViewItem().setText(text, dateSend, dateFormat.format(date), mes));
+                                    adapterRec.setItemList(itemListRec);
+                                    recyclerViewRec.setAdapter(adapterRec);
+                                }
+                            }
+                        }.execute();
                     }
 
                     @Override
@@ -350,8 +376,8 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         Date date = new Date();
 
         final String m = message.getText().toString();
-        final String ip = ipaddress.getText().toString();
-        final int p = Integer.parseInt(port.getText().toString());
+        final String ip = ipAddress.getText().toString();
+        final int port = Integer.parseInt(portNumber.getText().toString());
 
         final String dateSend = dateFormat.format(date);
 
@@ -363,7 +389,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(ip, p, m);
+                Client client = new Client(ip ,port, m);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(final String mes) {
@@ -377,28 +403,28 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
                             @Override
                             protected void onPostExecute(String mes) {
-                            final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                            Date date = new Date();
-                            super.onPostExecute(mes);
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                Date date = new Date();
+                                super.onPostExecute(mes);
 
 
-                            if (mes.equals("disconnect")) {
-////                                    bedStatus.setText("Disconnect");
-////                                    bedStatus.setTextColor(Color.RED);
-////                                    getActivity().findViewById(R.id.sending).setEnabled(false);
-                            } else {
-//                                    bedStatus.setText("Connected");
-//                                    getActivity().findViewById(R.id.sending).setEnabled(true);
-//                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
-                                itemList.set(0, new CardViewItem().setText(m, dateSend, mes, dateFormat.format(date)));
+                                if (mes.equals("disconnect")) {
+    ////                                    bedStatus.setText("Disconnect");
+    ////                                    bedStatus.setTextColor(Color.RED);
+    ////                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+                                } else {
+    //                                    bedStatus.setText("Connected");
+    //                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+    //                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+                                    itemList.set(0, new CardViewItem().setText(m, dateSend, mes, dateFormat.format(date)));
 
-                                adapter.setItemList(itemList);
-                                recyclerView.setAdapter(adapter);
-                                itemListRec.add(0, new CardViewItem().setText(m, dateSend, dateFormat.format(date), mes));
-                                adapterRec.setItemList(itemListRec);
-                                recyclerViewRec.setAdapter(adapterRec);
+                                    adapter.setItemList(itemList);
+                                    recyclerView.setAdapter(adapter);
+                                    itemListRec.add(0, new CardViewItem().setText(m, dateSend, dateFormat.format(date), mes));
+                                    adapterRec.setItemList(itemListRec);
+                                    recyclerViewRec.setAdapter(adapterRec);
+                                }
                             }
-                        }
                         }.execute();
 
                     }

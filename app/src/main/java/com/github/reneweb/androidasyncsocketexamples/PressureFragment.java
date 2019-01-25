@@ -36,10 +36,9 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
     public BackToTestListener listener;
 
-    EditText ip,port;
+    EditText ipAddress,portNumber;
     TextView status;
-    String testip ;
-    Integer testport = 12345;
+
 
 
 
@@ -69,7 +68,8 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pressure,container,false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
-        setView(view,view1);
+        setView(view1);
+
         pressureRecycle = view.findViewById(R.id.pressureRecycle);
         pressList = new ArrayList<>();
 
@@ -91,18 +91,15 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    private void setView(View view,View view1) {
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
-        status = view1.findViewById(R.id.statusBed);
-
-
-
+    private void setView(View view) {
+        status = view.findViewById(R.id.statusBed);
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
     }
 
     public void getPressure(){
-        final String ipAddress = ip.getText().toString();
-        final Integer portNumber = Integer.parseInt(port.getText().toString());
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
         thread = new Thread() {
             @Override
             public void run() {
@@ -120,7 +117,7 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
                                     protected Void doInBackground(Void... voids) {
 //                                        String portStr = port.getText().toString();
 //                                        int portNumber = Integer.parseInt(portStr);
-                                        Client client = new Client("10.0.0.177",12345,"01");
+                                        Client client = new Client(ip,port,"01");
                                         client.setListener(new Client.clientMessageRecListener() {
                                             @Override
                                             public void recMessage(final String mes) {

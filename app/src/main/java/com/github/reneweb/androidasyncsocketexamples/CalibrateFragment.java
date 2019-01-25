@@ -44,11 +44,9 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     String NOTES = "Pressure.txt";
     String valuePage;
 
-    EditText ip,port;
+    EditText ipAddress,portNumber;
     TextView status;
 
-    private String mParam1;
-    private String mParam2;
 
     Toolbar toolbar;
 
@@ -83,7 +81,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         View view = inflater.inflate(R.layout.fragment_calibrate,container,false);
         View view1 =inflater.inflate(R.layout.activity_combine,container,false);
 
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar =  view.findViewById(R.id.toolbar);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
@@ -100,8 +98,9 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         calibrateLeft = view.findViewById(R.id.calibrate_left);
         calibrateRight = view.findViewById(R.id.calibrate_right);
 
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
+
         status = view1.findViewById(R.id.statusBed);
 
         if(valuePage == "USER"){
@@ -139,12 +138,13 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                final String ip = ipAddress.getText().toString();
+                final Integer port = Integer.parseInt(portNumber.getText().toString());
                 new AsyncTask<Void,Void,Void>(){
                     @Override
                     protected Void doInBackground(Void... voids) {
                         System.out.println("[String]"+finalMessage);
-                        Client client = new Client(ip.getText().toString(),Integer.parseInt(port.getText().toString()),finalMessage);
+                        Client client = new Client(ip,port,finalMessage);
                         client.setListener(new Client.clientMessageRecListener() {
                             @Override
                             public void recMessage(String mes) {
@@ -213,6 +213,8 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         }
     };
     public void getPressure(){
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
 
         new AsyncTask<Void,Void,Void>(){
             String pressure = null;
@@ -221,7 +223,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             protected Void doInBackground(Void... voids) {
 
                 try {
-                    Client client = new Client("10.80.67.215",12345,"01");
+                    Client client = new Client(ip,port,"01");
 //                    Thread.sleep(32000);
                     client.setListener( new Client.clientMessageRecListener() {
 

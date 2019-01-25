@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
     TextView status;
-    EditText ip,port;
+    EditText ipAddress,portNumber;
 
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
 
@@ -75,12 +75,12 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setSending(final String msg) {
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                String portStr = port.getText().toString();
-                int portNumber = Integer.parseInt(portStr);
-                Client client = new Client(ip.getText().toString(),portNumber,msg);
+                Client client = new Client(ip,port,msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
@@ -121,8 +121,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork = view.findViewById(R.id.emergency);
 
         status = view1.findViewById(R.id.statusBed);
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
     }
 
 

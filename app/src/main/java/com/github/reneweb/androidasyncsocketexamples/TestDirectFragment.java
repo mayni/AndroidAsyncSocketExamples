@@ -33,7 +33,7 @@ public class TestDirectFragment extends Fragment  {
     Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve;
     Toolbar toolbar;
 
-    EditText ip,port;
+    EditText ipAddress,portNumber;
 
     String PROCESS = "Process.txt";
     String STATUS_BUTTON="statusbutton.txt";
@@ -81,12 +81,11 @@ public class TestDirectFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_direct, container, false);
-        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
 
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
         
-        setView(view,view1);
+        setView(view);
         setOnclick(view);
         clearContent("",STATUS_BUTTON);
         for(int[] btn: buttonStatus){
@@ -159,12 +158,12 @@ public class TestDirectFragment extends Fragment  {
     }
 
     private void setSending(final String msg, final String command, final View view) {
-        final String ipAddress = ip.getText().toString();
-        final Integer portNumber =Integer.parseInt(port.getText().toString()) ;
+        final String ip = ipAddress.getText().toString();
+        final Integer port =Integer.parseInt(portNumber.getText().toString()) ;
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(ipAddress,portNumber,msg);
+                Client client = new Client(ip,port,msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
@@ -265,7 +264,7 @@ public class TestDirectFragment extends Fragment  {
         }
     }
 
-    private void setView(View view,View view1) {
+    private void setView(View view) {
         mainPump=view.findViewById(R.id.main_pump);
         sidePump=view.findViewById(R.id.side_pump);
         leftmainValve=view.findViewById(R.id.left_mainValve);
@@ -274,8 +273,6 @@ public class TestDirectFragment extends Fragment  {
         rightsideValve=view.findViewById(R.id.right_sideValve);
         toolbar =  view.findViewById(R.id.toolbar);
 
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
 
     }
 
