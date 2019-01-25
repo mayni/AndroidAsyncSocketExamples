@@ -48,20 +48,19 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 
 
     private void setup() {
-        System.out.println("Client setup " );
         System.out.println("Client setup " + host);
         System.out.println("Client setup " + port);
+        System.out.println("Client setup " + message);
         AsyncServer.getDefault().connectSocket(new InetSocketAddress(host, port), new ConnectCallback() {
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
                 if(ex != null){
-                    System.out.println("[Fail]" + ex.toString());
+//                    System.out.println("[Fail]" + ex.toString());
                     listener.checkConnection(ex);
-
 
                 }else{
                     handleConnectCompleted(ex,socket);
-                    listener.checkConnection(ex);
+//                    listener.checkConnection(ex);
                 }
 
 //                handleConnectCompleted(ex,socket);
@@ -72,7 +71,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
     }
 
     public void handleConnectCompleted(Exception ex, final AsyncSocket socket) {
-        System.out.println("Client handleConnectCompleted " + socket.toString());
+//        System.out.println("Client handleConnectCompleted " + socket.toString());
 
         if(ex != null) {
             ///////////////////////////////////////////////////////

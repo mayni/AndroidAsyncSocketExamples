@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +19,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
+
+import java.io.FileOutputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
+import static android.content.Context.MODE_APPEND;
 import static android.content.Context.SENSOR_SERVICE;
 import static android.support.v4.content.ContextCompat.getSystemService;
 
@@ -100,10 +108,59 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         startCalibrate.setOnClickListener(this);
         changeAngle.setOnClickListener(this);
         cancelCalibrate.setOnClickListener(this);
+        calibrateLeft.setOnClickListener(this);
+        calibrateRight.setOnClickListener(this);
 
         return view;
     }
 
+    private void QuickCalibrate(int id) {
+        String message = null;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Confirm");
+        if(id == calibrateLeft.getId()){
+            builder.setMessage("02 63 FF");
+            message = "02 63 FF";
+        }else if(id == calibrateRight.getId()){
+            builder.setMessage("02 93 FF");
+            message = "02 93 FF";
+        }
+        final String finalMessage = message;
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                new AsyncTask<Void,Void,Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        System.out.println("[String]"+finalMessage);
+                        Client client = new Client("10.0.0.177",12345,finalMessage);
+                        client.setListener(new Client.clientMessageRecListener() {
+                            @Override
+                            public void recMessage(String mes) {
+
+                            }
+
+                            @Override
+                            public void checkConnection(Exception e) {
+
+
+                            }
+                        });
+                        return null;
+                    }
+
+                }.execute();
+                isCalibrate = true;
+                startCalibrate.setEnabled(false);
+                cancelCalibrate.setEnabled(true);
+                changeAngle.setEnabled(false);
+            }
+
+        });
+        builder.setNegativeButton("CANCEL",null);
+        builder.create().show();
+    }
 
     public SensorEventListener sensorListener  =  new SensorEventListener (){
 
@@ -118,7 +175,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                     startCalibrate.setEnabled(true);
                     cancelCalibrate.setEnabled(false);
                     changeAngle.setEnabled(true);
-//                    getPressure();
+                    getPressure();
                     isCalibrate = false;
                 }
                 if(sensorEvent.values[1] > (angleCalibrate+1) && sensorEvent.values[1] < (angleCalibrate-1)){
@@ -139,6 +196,73 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
         }
     };
+    public void getPressure(){
+
+        new AsyncTask<Void,Void,Void>(){
+            String pressure = null;
+            Exception error = null;
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                try {
+                    Client client = new Client("10.80.67.215",12345,"01");
+//                    Thread.sleep(32000);
+                    client.setListener( new Client.clientMessageRecListener() {
+
+                        @Override
+                        public void checkConnection(Exception e) {
+
+                            error = e;
+                            if(error != null){
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                System.out.println("Calibrate checkConnection " + e) ;
+                                writeTofile(dateFormat.format(dateFormat)+" Error "+e);
+
+                            }
+
+                        }
+                        @Override
+                        public void recMessage(String mes) {
+                            System.out.println("Calibrate recMessage " + mes) ;
+                            pressure =mes;
+                            if(pressure != null){
+                                writeTofile("Pressure " + pressure );
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                System.out.println("onPostExecutezz");
+
+            }
+        }.execute();
+
+//        Toast.makeText(this,"Completed saved pressure",Toast.LENGTH_LONG).show();
+
+
+
+    }
+    private void writeTofile(String dat) {
+        FileOutputStream fos = null;
+        String data = dat + "\n";
+        try {
+            fos = getActivity().openFileOutput(NOTES, MODE_APPEND);
+            fos.write(data.getBytes());
+
+            Toast.makeText(getActivity(), "Saved to " + getContext().getFilesDir().getAbsolutePath() + "/" + NOTES, Toast.LENGTH_LONG).show();
+        }
+        catch (Throwable t) {
+
+        }
+    }
 
     @Override
     public void onResume() {
@@ -168,8 +292,10 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             changeAngle.setEnabled(true);
             v.setEnabled(false);
 
-        }else if(v.getId() == changeAngle.getId()){
+        }else if(v.getId() == changeAngle.getId()) {
             changeAngleDialog();
+        }else if(v.getId() == calibrateRight.getId() || v.getId() == calibrateLeft.getId()){
+            QuickCalibrate(v.getId());
         }else {
             listener.PressBackButton(true);
         }

@@ -290,8 +290,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("[Pressure]" + text);
                 ab = text;
             }
-
-
             InputRead.close();
             ArrayList<String> press = new ArrayList<>();
             for(String str : ab.split("\\s") ){

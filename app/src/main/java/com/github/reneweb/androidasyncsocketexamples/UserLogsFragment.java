@@ -17,6 +17,11 @@ import android.widget.NumberPicker;
 import com.github.reneweb.androidasyncsocketexamples.R;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
 
@@ -183,6 +188,30 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         builder.create();
         builder.show();
 
+    }
+//    0x02 0x0C 0x0E
+    public void readFile(){
+        try {
+            FileInputStream fileIn=getActivity().openFileInput("Pressure.txt");
+            InputStreamReader InputRead= new InputStreamReader(fileIn);
+            BufferedReader br = new BufferedReader(InputRead);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            String ab = null;
+            while ((text = br.readLine()) != null){
+                System.out.println("[Pressure]" + text);
+                ab = text;
+            }
+            InputRead.close();
+            ArrayList<String> press = new ArrayList<>();
+            for(String str : ab.split("\\s") ){
+                press.add(str);
+            }
+            PRESSURE_SIDE = press.get(2);
+            PRESSURE_MAIN = press.get(3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public static String decToHex(int dec) {
         StringBuilder hexBuilder = new StringBuilder(sizeOfIntInHalfBytes);

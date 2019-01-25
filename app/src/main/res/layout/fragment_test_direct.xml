@@ -23,11 +23,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+
             android:orientation="horizontal">
             <Button
                 android:id="@+id/main_pump"
                 android:layout_width="wrap_content"
                 android:text="main pump"
+                android:layout_marginRight="10dp"
                 android:layout_height="80dp" />
             <Button
                 android:id="@+id/side_pump"
@@ -38,20 +40,24 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
+            android:layout_margin="20dp"
             android:layout_height="wrap_content">
             <Button
                 android:id="@+id/left_sideValve"
                 android:layout_width="80dp"
+                android:layout_marginRight="10dp"
                 android:layout_height="200dp"
                 android:text="left side valve"/>
             <Button
                 android:id="@+id/left_mainValve"
                 android:layout_width="80dp"
+                android:layout_marginRight="10dp"
                 android:layout_height="200dp"
                 android:text="left main valve"/>
             <Button
                 android:id="@+id/right_mainValve"
                 android:layout_width="80dp"
+                android:layout_marginRight="10dp"
                 android:layout_height="200dp"
                 android:text="right main valve"/>
             <Button
