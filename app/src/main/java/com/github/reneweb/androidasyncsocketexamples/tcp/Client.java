@@ -58,22 +58,16 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             @Override
             public void onConnectCompleted(Exception ex, final AsyncSocket socket) {
                 if(ex != null){
-<<<<<<< HEAD
 //                    System.out.println("[Fail]" + ex.toString());
-=======
                     System.out.println("[Fail]" + ex.toString());
                     listener.checkWifi(ex);
->>>>>>> dev
                     listener.checkConnection(ex);
 
                 }else{
                     handleConnectCompleted(ex,socket);
-<<<<<<< HEAD
 //                    listener.checkConnection(ex);
-=======
 //                    listener.checkWifi(ex);
                     listener.checkConnection(ex);
->>>>>>> dev
                 }
 
 //                handleConnectCompleted(ex,socket);
