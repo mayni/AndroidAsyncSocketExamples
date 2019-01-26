@@ -15,7 +15,7 @@ public class UserFragment extends Fragment {
 
 
     public UserFragment() {
-        // Required empty public constructor
+
     }
 
 
@@ -33,7 +33,7 @@ public class UserFragment extends Fragment {
             @Override
             public void isCalibratePressOn(boolean bool) {
                 if(bool == true){
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").addToBackStack("fragmentUserLogs").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").commit();
                 }
             }
         });
@@ -41,7 +41,7 @@ public class UserFragment extends Fragment {
             @Override
             public void PressBackButton(boolean bool) {
                 if(bool == true){
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").addToBackStack("fragmentCalibrate").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").commit();
                 }
             }
         });
