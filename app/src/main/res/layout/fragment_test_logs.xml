@@ -95,26 +95,7 @@
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content" />-->
     <!--</LinearLayout>-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1">
-        <EditText
-            android:id="@+id/message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.95"
-            android:hint="Command"
-            />
-        <Button
-            android:id="@+id/sending"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="send"
-            android:layout_weight="0.05"
-            />
 
-    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -238,6 +219,27 @@
 
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+            <EditText
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.95"
+                android:layout_marginStart="10dp"
+                android:hint="Command"
+                />
+            <Button
+                android:id="@+id/sending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="send"
+                android:layout_weight="0.05"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
     <LinearLayout
@@ -249,6 +251,7 @@
             android:layout_height="wrap_content"
             android:text="Control Mattress : "
             android:layout_marginStart="10dp"
+            android:textStyle="bold"
             android:layout_marginTop="5dp"/>
 
         <Button

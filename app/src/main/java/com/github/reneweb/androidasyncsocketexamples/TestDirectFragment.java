@@ -82,9 +82,9 @@ public class TestDirectFragment extends Fragment  {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_direct, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
-
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
+        CombineActivity combineActivity = (CombineActivity) getActivity();
+        ip = getActivity().findViewById(R.id.ipBed);
+        port = getActivity().findViewById(R.id.port);
         
         setView(view);
         setOnclick(view);

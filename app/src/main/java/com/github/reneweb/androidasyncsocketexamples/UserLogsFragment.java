@@ -119,10 +119,10 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         bothwork = view.findViewById(R.id.bothwork);
         calibratework = view.findViewById(R.id.calibrate_angle);
         emergencywork = view.findViewById(R.id.emergency);
-
+        CombineActivity combineActivity = (CombineActivity) getActivity();
+        ip = getActivity().findViewById(R.id.ipBed);
+        port = getActivity().findViewById(R.id.port);
         status = view.findViewById(R.id.statusBed);
-        ip = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
     }
 
 

@@ -84,7 +84,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     Integer hourTime=0,minuteTime =0;
 
-    String iptest,porttest;
+    EditText iptest,porttest;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -132,7 +132,9 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
         setView(view,view1);
         CombineActivity combineActivity = (CombineActivity) getActivity();
-        iptest = combineActivity.sendData();
+        iptest = getActivity().findViewById(R.id.ipBed);
+        porttest = getActivity().findViewById(R.id.port);
+        System.out.println("[Main] : ipppppptestttt : "+ iptest.getText().toString());
         setOnClick();
         setItemlist();
         setWiFi();
@@ -188,8 +190,6 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         port = view1.findViewById(R.id.port);
         status = view1.findViewById(R.id.statusBed);
         send = view.findViewById(R.id.sending);
-
-        iptest = ipaddress.getText().toString();
 
 
 
@@ -323,7 +323,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(ip, p, text);
+                Client client = new Client(iptest.getText().toString(),  Integer.parseInt(porttest.getText().toString()), text);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
@@ -364,7 +364,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(ip, p, m);
+                Client client = new Client(iptest.getText().toString(), Integer.parseInt(porttest.getText().toString()), m);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(final String mes) {

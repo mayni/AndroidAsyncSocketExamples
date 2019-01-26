@@ -58,6 +58,7 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pressure,container,false);
+        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
         pressureRecycle = view.findViewById(R.id.pressureRecycle);
         pressList = new ArrayList<>();
 
@@ -73,14 +74,15 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
         toolbar.setNavigationOnClickListener(this);
 
         getPressure();
-        setView(view);
+        setView(view1);
 
         return view;
     }
 
     private void setView(View view) {
-        ip = view.findViewById(R.id.ipBed);
-        port = view.findViewById(R.id.port);
+        CombineActivity combineActivity = (CombineActivity) getActivity();
+        ip = getActivity().findViewById(R.id.ipBed);
+        port = getActivity().findViewById(R.id.port);
         status = view.findViewById(R.id.statusBed);
     }
 
@@ -99,9 +101,8 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
                                     @Override
                                     protected Void doInBackground(Void... voids) {
-//                                        String portStr = port.getText().toString();
-//                                        int portNumber = Integer.parseInt(portStr);
-                                        Client client = new Client("10.0.0.177",12345,"01");
+//
+                                        Client client = new Client(ip.getText().toString(),Integer.parseInt(port.getText().toString()),"01");
                                         client.setListener(new Client.clientMessageRecListener() {
                                             @Override
                                             public void recMessage(final String mes) {

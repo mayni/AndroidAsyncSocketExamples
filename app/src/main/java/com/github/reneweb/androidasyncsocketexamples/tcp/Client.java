@@ -66,7 +66,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
                 }else{
                     handleConnectCompleted(ex,socket);
 //                    listener.checkConnection(ex);
-//                    listener.checkWifi(ex);
+                    listener.checkWifi(ex);
                     listener.checkConnection(ex);
                 }
 
@@ -94,6 +94,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
             public void onCompleted(Exception ex) {
 //                if (ex != null){
 //                    listener.recMessage("disconnect");
+                    listener.checkWifi(ex);
 //                }
 //                {throw new RuntimeException(ex);}
                 System.out.println("[Client] Successfully wrote message");

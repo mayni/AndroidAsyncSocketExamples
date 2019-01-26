@@ -1,5 +1,6 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,12 +19,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
@@ -45,6 +49,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     private Button findIp;
     private EditText ip,port;
     final List<String> lists = new ArrayList<String>();
+
 
     WifiManager wifi;
     WifiManager wifiManager;
@@ -70,6 +75,8 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         ip = findViewById(R.id.ipBed);
         port = findViewById(R.id.port);
 
+//
+
         wifi =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         Timer myTimer;
         myTimer = new Timer();
@@ -84,6 +91,8 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
             getipAddress();
         }
 
+
+
 //        toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setTitle("Mattress");
@@ -95,6 +104,9 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+
+
 
     }
 
@@ -109,6 +121,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         adapter.addFragment(new UserFragment(), "USER");
         adapter.addFragment(new TestFragment(), "TEST");
         viewPager.setAdapter(adapter);
+        viewPager.getAdapter().notifyDataSetChanged();
 
     }
 
@@ -169,6 +182,12 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            // POSITION_NONE makes it possible to reload the PagerAdapter
+            return POSITION_NONE;
         }
     }
 
