@@ -61,6 +61,14 @@ public class TestFragment extends Fragment implements View.OnClickListener {
                     manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").addToBackStack("fragmentDirect").commit();
                 }
             }
+
+            @Override
+            public void Reload(boolean bool) {
+                if(bool == true){
+                    manager.beginTransaction().detach(fragmentDirect).attach(fragmentDirect).commit();
+                }
+
+            }
         });
         fragmentPressure.setListener(new PressureFragment.BackToTestListener() {
             @Override

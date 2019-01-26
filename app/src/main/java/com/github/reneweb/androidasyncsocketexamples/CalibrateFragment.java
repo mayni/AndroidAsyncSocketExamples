@@ -22,12 +22,15 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.github.reneweb.androidasyncsocketexamples.call.CallToTCP;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.content.Context.MODE_APPEND;
 import static android.content.Context.SENSOR_SERVICE;
@@ -215,64 +218,93 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     public void getPressure(){
         final String ip = ipAddress.getText().toString();
         final Integer port = Integer.parseInt(portNumber.getText().toString());
-
-        new AsyncTask<Void,Void,Void>(){
-            String pressure = null;
-            Exception error = null;
+        CallToTCP callToTCP = new CallToTCP(ip,port,"01");
+        callToTCP.setListener(new CallToTCP.CallToTCPListener() {
             @Override
-            protected Void doInBackground(Void... voids) {
-
-                try {
-                    Client client = new Client(ip,port,"01");
-//                    Thread.sleep(32000);
-                    client.setListener( new Client.clientMessageRecListener() {
-
-                        @Override
-                        public void checkConnection(Exception e) {
-
-                            error = e;
-                            if(error != null){
-                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                                System.out.println("Calibrate checkConnection " + e) ;
-                                writeTofile(dateFormat.format(dateFormat)+" Error "+e);
-
-                            }
-
-                        }
-
-                        @Override
-                        public void checkWifi(Exception e) {
-
-                        }
-
-                        @Override
-                        public void recMessage(String mes) {
-                            System.out.println("Calibrate recMessage " + mes) ;
-                            pressure =mes;
-                            if(pressure != null){
-                                writeTofile("Pressure " + pressure );
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
+            public void recMessageCallBack(final String mes) {
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                if(mes.charAt(0) != '['){
+                    if(mes != null){
+                        writeTofile(formatter.format(date).toString()+" Pressure " + mes );
+                    }
+                }else{
+                    writeTofile(formatter.format(date).toString()+" Error "+mes);
+                    AlertForTryAgain();
                 }
 
-
-                return null;
             }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                System.out.println("onPostExecutezz");
-
-            }
-        }.execute();
+        });
+//        new AsyncTask<Void,Void,Void>(){
+//            String pressure = null;
+//            Exception error = null;
+//            @Override
+//            protected Void doInBackground(Void... voids) {
+//
+//                try {
+//                    Client client = new Client(ip,port,"01");
+////                    Thread.sleep(32000);
+//                    client.setListener( new Client.clientMessageRecListener() {
+//
+//                        @Override
+//                        public void checkConnection(Exception e) {
+//                            error = e;
+//                            if(error != null){
+//                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+//                                System.out.println("Calibrate checkConnection " + e) ;
+//
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void checkWifi(Exception e) {
+//
+//                        }
+//
+//                        @Override
+//                        public void recMessage(String mes) {
+//                            System.out.println("Calibrate recMessage " + mes) ;
+//                            pressure =mes;
+//                            if(pressure != null){
+//                                writeTofile("Pressure " + pressure );
+//                            }
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Void aVoid) {
+//                System.out.println("onPostExecutezz");
+//
+//            }
+//        }.execute();
 
 //        Toast.makeText(this,"Completed saved pressure",Toast.LENGTH_LONG).show();
 
 
 
+    }
+    private void AlertForTryAgain(){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Can't get pressure please try again");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.create().show();
+            }
+        });
     }
     private void writeTofile(String dat) {
         FileOutputStream fos = null;

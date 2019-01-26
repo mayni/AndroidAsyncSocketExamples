@@ -1,18 +1,28 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
+import android.app.Dialog;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telecom.Call;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.github.reneweb.androidasyncsocketexamples.call.CallToTCP;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
+import com.santalu.emptyview.EmptyView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +31,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.content.Context.MODE_APPEND;
 import static android.content.Context.MODE_PRIVATE;
@@ -29,8 +43,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TestDirectFragment extends Fragment  {
 
+    EmptyView layoutContentContainer ;
+    Thread thread;
+
     public BackToTestListener listener;
-    Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve;
+    Button mainPump,sidePump,leftsideValve,leftmainValve,rightmainValve,rightsideValve,reload;
     Toolbar toolbar;
 
     EditText ipAddress,portNumber;
@@ -64,6 +81,7 @@ public class TestDirectFragment extends Fragment  {
 
     public interface BackToTestListener{
         void PressBackButton(boolean bool);
+        void Reload(boolean bool);
     }
 
     public void setListener(BackToTestListener listener) {
@@ -84,29 +102,95 @@ public class TestDirectFragment extends Fragment  {
 
         ipAddress = getActivity().findViewById(R.id.ipBed);
         portNumber = getActivity().findViewById(R.id.port);
-        
+        layoutContentContainer = view.findViewById(R.id.layoutContentContainer);
+
         setView(view);
         setOnclick(view);
-        clearContent("",STATUS_BUTTON);
-        for(int[] btn: buttonStatus){
-            String text = btn[0] +" "+ btn[1];
-            writeTofile(text,STATUS_BUTTON);
-        }
+        setOnclickReload();
+        layoutContentContainer.showLoading();
+        layoutContentContainer.error().setOnClickListener(new tryAgainError(view));
+
+        setWriteStatusButton(view);
         setFileButton(view);
+
         setToolBar(view);
 
-        
-
         return view;
+    }
+
+    private void setOnclickReload() {
+        reload.setOnClickListener(new OnClickReloadListener());
+    }
+
+    private void setWriteStatusButton(final View view) {
+        if(fileExist(STATUS_BUTTON) == true){
+            clearContent("",STATUS_BUTTON);
+        }
+
+
+        CallToTCP callToTCP = new CallToTCP(ipAddress.getText().toString(),Integer.parseInt(portNumber.getText().toString()),"02 0C 0E");
+        callToTCP.setListener(new CallToTCP.CallToTCPListener() {
+            @Override
+            public void recMessageCallBack(String mes) {
+                if(mes.charAt(0) != '['){
+                    ArrayList<String> data = new ArrayList<>();
+                    for(String a:mes.split("\\s")){
+                        data.add(a);
+                    }
+                    Integer buttonNumber = Integer.parseInt(Integer.toBinaryString(Integer.parseInt(data.get(1),16)));
+                    String str = String.format("%08d", buttonNumber);
+                    System.out.println("[TestDirectFragment] "+ str );
+                    for(int i=0;i<8;i++){
+                        buttonStatus[i][1] = Integer.parseInt(String.valueOf(str.charAt(7-i)));
+                    }
+                    for(int[] btn : buttonStatus){
+                        String text = btn[0] +" "+ btn[1];
+                        writeTofile(text,STATUS_BUTTON);
+                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            layoutContentContainer.showContent();
+                        }
+                    });
+                    setBtn(view);
+
+                }else{
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            layoutContentContainer.showError();
+                        }
+                    });
+
+                }
+            }
+        });
+
+
+
+
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
     private void setToolBar(View view) {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar();
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         activity.getSupportActionBar().setTitle("Direct Control");
+        toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setNavigationOnClickListener(new onClickListener(view));
+
+
+
     }
+
 
     private void setFileButton(View view) {
         if(fileExist(STATUS_BUTTON) == false){
@@ -114,8 +198,6 @@ public class TestDirectFragment extends Fragment  {
                 String text = btn[0] +" "+ btn[1];
                 writeTofile(text,STATUS_BUTTON);
             }
-        }else{
-            setBtn(view);
         }
     }
 
@@ -143,6 +225,8 @@ public class TestDirectFragment extends Fragment  {
 
             }
             InputRead.close();
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -160,33 +244,16 @@ public class TestDirectFragment extends Fragment  {
     private void setSending(final String msg, final String command, final View view) {
         final String ip = ipAddress.getText().toString();
         final Integer port =Integer.parseInt(portNumber.getText().toString()) ;
-        new AsyncTask<Void,Void,Void>(){
+        CallToTCP callToTCP = new CallToTCP(ip,port,msg);
+        callToTCP.setListener(new CallToTCP.CallToTCPListener() {
             @Override
-            protected Void doInBackground(Void... voids) {
-                Client client = new Client(ip,port,msg);
-                client.setListener(new Client.clientMessageRecListener() {
-                    @Override
-                    public void recMessage(String mes) {
-                        System.out.println("[TestDirect] "+mes);
-                        writeTofile(command,PROCESS);
-                        writeTofileUpdateProcess(command,STATUS_BUTTON,view);
-
-                    }
-                    @Override
-                    public void checkConnection(Exception e) {
-                        System.out.println("[TestDirect] "+e);
-
-                    }
-
-                    @Override
-                    public void checkWifi(Exception e) {
-
-                    }
-                });
-                return null;
+            public void recMessageCallBack(String mes) {
+                System.out.println("[TestDirect] "+mes);
+                writeTofile(command,PROCESS);
+                writeTofileUpdateProcess(command,STATUS_BUTTON,view);
             }
+        });
 
-        }.execute();
     }
     private void writeTofileUpdateProcess(String command,String file,View view){
         Integer buttonNumber = Integer.parseInt(Integer.toBinaryString(Integer.parseInt(command,16)));
@@ -206,26 +273,13 @@ public class TestDirectFragment extends Fragment  {
 
         }
 
-//        for (int i : index){
-//            buttonStatus[i][1] = 1;
-//            System.out.print(buttonStatus[i][0]);
-//        }
-
         clearContent("",STATUS_BUTTON);
 
         for(int[] btn: buttonStatus){
             String text = btn[0] +" "+ btn[1];
             writeTofile(text,STATUS_BUTTON);
         }
-
         setBtn(view);
-
-
-//        for(int[] btn: buttonStatus){
-//            String text = btn[0] +" "+ btn[1];
-//            writeTofile(text,STATUS_BUTTON);
-//        }
-
     }
 
 
@@ -236,6 +290,7 @@ public class TestDirectFragment extends Fragment  {
         leftmainValve.setOnClickListener(new onClickListener(view));
         rightsideValve.setOnClickListener(new onClickListener(view));
         rightmainValve.setOnClickListener(new onClickListener(view));
+
     }
     class onClickListener implements View.OnClickListener{
         View view;
@@ -272,13 +327,8 @@ public class TestDirectFragment extends Fragment  {
         rightmainValve=view.findViewById(R.id.right_mainValve);
         rightsideValve=view.findViewById(R.id.right_sideValve);
         toolbar =  view.findViewById(R.id.toolbar);
-
-
+        reload = view.findViewById(R.id.reload);
     }
-
-
-
-
     private void setMessage(int mes, View view,View v) {
         Integer message_command=0;
         FileInputStream fileIn= null;
@@ -301,13 +351,8 @@ public class TestDirectFragment extends Fragment  {
                         if(press.get(0) == v.getId()){
                             sameBit = true;
                             System.out.println("SAME");
-                        }else{
-
                         }
                         message_command = message_command | bitButton[i];
-//                        System.out.println(bitButton[i]);
-                    }else{
-
                     }
                 }
                 i++;
@@ -328,8 +373,6 @@ public class TestDirectFragment extends Fragment  {
         System.out.println(Integer.toString(message_command,2));
         String message = "02 "+decToHex(message_command)+" FF";
         setSending(message,decToHex(message_command),view);
-//          ReadFile();
-//          writeTofile(decToHex(mes));
     }
 
     private void ReadFile(String file) {
@@ -397,4 +440,33 @@ public class TestDirectFragment extends Fragment  {
     }
 
 
+    private class tryAgainError implements View.OnClickListener {
+        View view ;
+        public tryAgainError(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public void onClick(View v) {
+                listener.Reload(true);
+//            layoutContentContainer.showLoading();
+//            setWriteStatusButton(view);
+        }
+    }
+
+    private class OnClickReloadListener implements View.OnClickListener {
+
+        public OnClickReloadListener(){
+
+
+        }
+        @Override
+        public void onClick(View v) {
+            if(v.getId() == reload.getId()){
+                System.out.println("reloaddddddddd");
+                listener.Reload(true);
+            }
+
+        }
+    }
 }

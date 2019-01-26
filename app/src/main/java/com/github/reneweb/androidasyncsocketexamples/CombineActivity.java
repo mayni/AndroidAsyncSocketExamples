@@ -59,7 +59,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     public void setListener(IpAndPortListener listener){
         this.listener = listener;
     }
-//    Thread thread;
+
     public interface IpAndPortListener{
         void ipAndportChange(String ip);
 
@@ -81,9 +81,6 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         port = findViewById(R.id.port);
 
 
-
-
-
         wifi =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         Timer myTimer;
         myTimer = new Timer();
@@ -97,11 +94,6 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         if (getConnection()){
             getipAddress();
         }
-
-//        toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle("Mattress");
-
 
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -123,6 +115,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new UserFragment(), "USER");
         adapter.addFragment(new TestFragment(), "TEST");
+        adapter.addFragment(new SettingFragment(),"SETTING");
         viewPager.setAdapter(adapter);
 
     }
