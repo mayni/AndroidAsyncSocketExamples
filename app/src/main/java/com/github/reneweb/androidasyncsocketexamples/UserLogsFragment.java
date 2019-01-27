@@ -66,8 +66,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_logs,container,false);
-        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
-        setView(view,view1);
+//        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+        setView(view);
         setOnClick();
 //        setSending();
 
@@ -113,14 +113,14 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork.setOnClickListener(this);
     }
 
-    private void setView(View view,View view1) {
+    private void setView(View view) {
         rightwork = view.findViewById(R.id.rightwork);
         leftwork = view.findViewById(R.id.leftwork);
         bothwork = view.findViewById(R.id.bothwork);
         calibratework = view.findViewById(R.id.calibrate_angle);
         emergencywork = view.findViewById(R.id.emergency);
 
-        status = view1.findViewById(R.id.statusBed);
+        status = getActivity().findViewById(R.id.statusBed);
         ipAddress = getActivity().findViewById(R.id.ipBed);
         portNumber = getActivity().findViewById(R.id.port);
     }
