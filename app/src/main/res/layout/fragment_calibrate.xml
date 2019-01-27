@@ -84,8 +84,9 @@
             android:id="@+id/cancelcalibrate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="cancel"/>
+
+            android:textSize="30sp"
+            android:text="stop"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/calibrate_btn"

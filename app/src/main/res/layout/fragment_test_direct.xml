@@ -1,3 +1,4 @@
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,6 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.github.reneweb.androidasyncsocketexamples.TestDirectFragment">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -13,13 +15,55 @@
         android:background="?attr/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-    <LinearLayout
+
+    <com.santalu.emptyview.EmptyView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:http="http://schemas.android.com/tools"
+        android:id="@+id/layoutContentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
 
-        android:gravity="center">
+        app:ev_empty_button="try_again"
+        app:ev_empty_buttonBackgroundColor="@color/lightBlue"
+        app:ev_empty_buttonTextColor="@color/grey"
+        app:ev_empty_title="empty"
+
+        app:ev_error_backgroundColor="@color/red"
+        app:ev_error_button="try again"
+        app:ev_error_buttonBackgroundColor="@color/white"
+        app:ev_error_buttonTextColor="@color/black"
+        app:ev_error_drawable="@drawable/ic_sentiment_very_dissatisfied"
+        app:ev_error_drawableTint="@color/white"
+        app:ev_error_text="@string/error_connection"
+        app:ev_error_textColor="@color/white"
+        app:ev_error_title="@string/error_connection_title"
+        app:ev_error_titleTextColor="@color/white"
+        app:ev_font="@font/fallingsky"
+
+        app:ev_loading_type="circular"
+        app:ev_loading_text="Please wait..."
+        app:ev_transition="auto">
         <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="end"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/reload"
+                android:layout_width="wrap_content"
+                android:text="Reload"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+
+            android:gravity="center">
+
+            <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -38,7 +82,7 @@
                 android:layout_height="80dp"/>
         </LinearLayout>
 
-        <LinearLayout
+            <LinearLayout
             android:layout_width="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
@@ -68,9 +112,10 @@
                 android:text="right side valve"/>
 
         </LinearLayout>
-    </LinearLayout>
+        </LinearLayout>
 
 
+    </com.santalu.emptyview.EmptyView>
 
 
 </LinearLayout>

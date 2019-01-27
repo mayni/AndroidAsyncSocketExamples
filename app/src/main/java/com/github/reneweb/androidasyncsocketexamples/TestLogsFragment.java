@@ -15,6 +15,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,12 +39,17 @@ import java.util.List;
 
 public class TestLogsFragment extends Fragment implements View.OnClickListener {
     final List<String> lists = new ArrayList<String>();
-    private EditText message, ipaddress, port;
+    private EditText message;
     String text,selectIp;
     private static MainActivity instance;
     Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,
             wifibtn,onwork,send;
-    String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
+    String LEFT_PRESSURE_SIDE = "0000",LEFT_PRESSURE_MAIN = "0000";
+    String RIGHT_PRESSURE_SIDE = "0000",RIGHT_PRESSURE_MAIN = "0000";
+    String OFFSET_LEFT = "0000";
+    String OFFSET_RIGHT = "0000";
+    String OFFSET_SUPINR = "0000";
+
     TextView wifiStatus,bedStatus,status;
 
     private RecyclerView recyclerView, recyclerViewRec ;
@@ -84,7 +90,11 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     Integer hourTime=0,minuteTime =0;
 
+<<<<<<< HEAD
     EditText iptest,porttest;
+=======
+    EditText ipAddress,portNumber;
+>>>>>>> d45c44c3cf3b44d0fb8e415a6d17121d255c7ea9
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -98,7 +108,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     UserLogsFragment userLogsFragment = new UserLogsFragment();
 
     public TestLogsFragment() {
-        // Required empty public constructor
+
     }
     public interface DirectControllistener{
         void DirectControlOnclick(boolean bool,String string);
@@ -107,14 +117,6 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         this.listener = listener;
     }
 
-    public static TestLogsFragment newInstance(String param1, String param2) {
-        TestLogsFragment fragment = new TestLogsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -131,10 +133,10 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_test_logs, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
         setView(view,view1);
-        CombineActivity combineActivity = (CombineActivity) getActivity();
-        iptest = getActivity().findViewById(R.id.ipBed);
-        porttest = getActivity().findViewById(R.id.port);
-        System.out.println("[Main] : ipppppptestttt : "+ iptest.getText().toString());
+
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
+
         setOnClick();
         setItemlist();
         setWiFi();
@@ -186,17 +188,23 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         wifiStatus = view.findViewById(R.id.wifiSatus);
         bedStatus = view.findViewById(R.id.status);
 
-        ipaddress = view1.findViewById(R.id.ipBed);
-        port = view1.findViewById(R.id.port);
+
         status = view1.findViewById(R.id.statusBed);
         send = view.findViewById(R.id.sending);
 
 
 
 
+
+
         message =  view.findViewById(R.id.message);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        adapter = new MainAdapter();
 
-
+        recyclerViewRec = view.findViewById(R.id.recyclerView1);
+        recyclerViewRec.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        adapterRec = new MainAdapter();
 
     }
 
@@ -214,24 +222,6 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         onwork.setOnClickListener(this);
         send.setOnClickListener(this);
 
-    }
-
-
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-
-
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        mListener = null;
     }
 
     @Override
@@ -317,8 +307,20 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     }
     private void sendONOFF(final String text){
-        final String ip = ipaddress.getText().toString();
-        final int p = Integer.parseInt(port.getText().toString());
+        final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+        final String ip = ipAddress.getText().toString();
+        final int p = Integer.parseInt(portNumber.getText().toString());
+
+
+
+        final String dateSend = dateFormat.format(date);
+
+        itemList.add(0,new CardViewItem()
+                .setText(text,dateFormat.format(date),"",""));
+        adapter.setItemList(itemList);
+        recyclerView.setAdapter(adapter);
+
         new AsyncTask<Void,Void,Void>(){
 
             @Override
@@ -326,8 +328,40 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                 Client client = new Client(iptest.getText().toString(),  Integer.parseInt(porttest.getText().toString()), text);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
-                    public void recMessage(String mes) {
+                    public void recMessage(final String mes) {
+                        new AsyncTask<Void, Void, String>() {
+                            @Override
+                            protected String doInBackground(Void... voids) {
 
+                                System.out.println("[Main] rec" + mes.trim());
+                                return String.valueOf(mes.trim());
+                            }
+
+                            @Override
+                            protected void onPostExecute(String mes) {
+                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                Date date = new Date();
+                                super.onPostExecute(mes);
+
+
+                                if (mes.equals("disconnect")) {
+                                    ////                                    bedStatus.setText("Disconnect");
+                                    ////                                    bedStatus.setTextColor(Color.RED);
+                                    ////                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+                                } else {
+                                    //                                    bedStatus.setText("Connected");
+                                    //                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+                                    //                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+                                    itemList.set(0, new CardViewItem().setText(text, dateSend, mes, dateFormat.format(date)));
+
+                                    adapter.setItemList(itemList);
+                                    recyclerView.setAdapter(adapter);
+                                    itemListRec.add(0, new CardViewItem().setText(text, dateSend, dateFormat.format(date), mes));
+                                    adapterRec.setItemList(itemListRec);
+                                    recyclerViewRec.setAdapter(adapterRec);
+                                }
+                            }
+                        }.execute();
                     }
 
                     @Override
@@ -351,20 +385,20 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         Date date = new Date();
 
         final String m = message.getText().toString();
-        final String ip = ipaddress.getText().toString();
-        final int p = Integer.parseInt(port.getText().toString());
+        final String ip = ipAddress.getText().toString();
+        final int port = Integer.parseInt(portNumber.getText().toString());
 
         final String dateSend = dateFormat.format(date);
 
-//        itemList.add(0,new CardViewItem()
-//                .setText(m,dateFormat.format(date),"",""));
-//        adapter.setItemList(itemList);
-//        recyclerView.setAdapter(adapter);
+        itemList.add(0,new CardViewItem()
+                .setText(m,dateFormat.format(date),"",""));
+        adapter.setItemList(itemList);
+        recyclerView.setAdapter(adapter);
 
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(iptest.getText().toString(), Integer.parseInt(porttest.getText().toString()), m);
+                Client client = new Client(ip ,port, m);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(final String mes) {
@@ -372,9 +406,9 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                             @Override
                             protected String doInBackground(Void... voids) {
 
-                                System.out.println("[Main] rec" + mes.trim());
-                                return String.valueOf(mes.trim());
-                            }
+                            System.out.println("[Main] rec" + mes.trim());
+                            return String.valueOf(mes.trim());
+                        }
 
                             @Override
                             protected void onPostExecute(String mes) {
@@ -383,43 +417,29 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                                 super.onPostExecute(mes);
 
 
-//                                if (mes.equals("disconnect")) {
-//                                    bedStatus.setText("Disconnect");
-//                                    bedStatus.setTextColor(Color.RED);
-//                                    getActivity().findViewById(R.id.sending).setEnabled(false);
-//                                }
-////                                else if (mes.equals("portWrong")){
-////                                    bedStatus.setText("Disconnect");
-////                                    bedStatus.setTextColor(Color.RED);
-////                                    findViewById(R.id.sending).setEnabled(false);
-////                                }else if (mes.equals("portCorrect")){
-////                                    bedStatus.setText("Connected");
-////                                    bedStatus.setTextColor(Color.GREEN);
-////                                    findViewById(R.id.sending).setEnabled(true);
-////                                }
-//                                else {
-//                                    bedStatus.setText("Connected");
-//                                    getActivity().findViewById(R.id.sending).setEnabled(true);
-//                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
-////                                    itemList.set(0,new CardViewItem().setText(m,dateSend,mes,dateFormat.format(date)));
-////
-//                                    adapter.setItemList(itemList);
-//                                    recyclerView.setAdapter(adapter);
-//                                itemListRec.add(0,new CardViewItem()
-//                                        .setText1(dateFormat.format(date),mes));
-//                                adapterRec.setItemList(itemListRec);
-//                                recyclerViewRec.setAdapter(adapterRec);
+                                if (mes.equals("disconnect")) {
+    ////                                    bedStatus.setText("Disconnect");
+    ////                                    bedStatus.setTextColor(Color.RED);
+    ////                                    getActivity().findViewById(R.id.sending).setEnabled(false);
+                                } else {
+    //                                    bedStatus.setText("Connected");
+    //                                    getActivity().findViewById(R.id.sending).setEnabled(true);
+    //                                    bedStatus.setTextColor(getActivity().getColor(R.color.lightGreen));
+                                    itemList.set(0, new CardViewItem().setText(m, dateSend, mes, dateFormat.format(date)));
+
+                                    adapter.setItemList(itemList);
+                                    recyclerView.setAdapter(adapter);
+                                    itemListRec.add(0, new CardViewItem().setText(m, dateSend, dateFormat.format(date), mes));
+                                    adapterRec.setItemList(itemListRec);
+                                    recyclerViewRec.setAdapter(adapterRec);
                                 }
-
-
+                            }
                         }.execute();
 
-                        System.out.println("[Main]" + mes);
                     }
 
                     @Override
                     public void checkConnection(Exception e) {
-
 
                     }
 
@@ -455,6 +475,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         }.execute();
 
         message.setText("");
+
     }
 
 
@@ -496,13 +517,28 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
 
                 if(id == rightwork.getId()){
-                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String right = "0A 04 FF "
+                            +"82 012C 03FF 03FF"
+                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000 "
+                            +"00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     message.setText(right);
                 }else if(id == leftwork.getId()){
-                    String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String left = "0A 04 FF "
+                            +"42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     message.setText(left);
                 }else if(id == bothwork.getId()){
-                    String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
+                    String both = "0A 08 FF "
+                            +"42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600)+" 0000 0000"
+                            +" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600)+" 0000 0000";
                     message.setText(both);
                 }
                 dialog.dismiss();

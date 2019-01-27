@@ -62,6 +62,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
                     System.out.println("[Fail]" + ex.toString());
                     listener.checkWifi(ex);
                     listener.checkConnection(ex);
+                    listener.recMessage("[Fail] "+ex.toString());
 
                 }else{
                     handleConnectCompleted(ex,socket);

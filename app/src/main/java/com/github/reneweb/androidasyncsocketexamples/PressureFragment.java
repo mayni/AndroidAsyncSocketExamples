@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,13 +36,20 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
     public BackToTestListener listener;
 
-    EditText ip,port;
+    EditText ipAddress,portNumber;
     TextView status;
+
+
+
 
 
     public PressureFragment() {
 
     }
+
+
+
+
     public interface BackToTestListener{
         void PressBackButton(boolean bool);
     }
@@ -59,8 +68,11 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pressure,container,false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+        setView(view1);
+
         pressureRecycle = view.findViewById(R.id.pressureRecycle);
         pressList = new ArrayList<>();
+
 
         pressureRecycle.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         pressureAdapter = new PressureAdapter();
@@ -74,25 +86,26 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
         toolbar.setNavigationOnClickListener(this);
 
         getPressure();
-        setView(view1);
 
         return view;
     }
 
     private void setView(View view) {
-        CombineActivity combineActivity = (CombineActivity) getActivity();
-        ip = getActivity().findViewById(R.id.ipBed);
-        port = getActivity().findViewById(R.id.port);
         status = view.findViewById(R.id.statusBed);
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
     }
 
     public void getPressure(){
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
         thread = new Thread() {
             @Override
             public void run() {
                 try {
                     while (!isInterrupted()) {
                         Thread.sleep(1200);
+
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -101,8 +114,9 @@ public class PressureFragment extends Fragment implements View.OnClickListener {
 
                                     @Override
                                     protected Void doInBackground(Void... voids) {
-//
-                                        Client client = new Client(ip.getText().toString(),Integer.parseInt(port.getText().toString()),"01");
+//                                        String portStr = port.getText().toString();
+//                                        int portNumber = Integer.parseInt(portStr);
+                                        Client client = new Client(ip,port,"01");
                                         client.setListener(new Client.clientMessageRecListener() {
                                             @Override
                                             public void recMessage(final String mes) {

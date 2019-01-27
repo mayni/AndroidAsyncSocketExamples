@@ -296,19 +296,26 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal"-->
-        <!--&gt;-->
-        <!--<android.support.v7.widget.RecyclerView-->
-        <!--tools:listitem="@layout/list_item"-->
-        <!--android:id="@+id/recyclerView"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--&gt;-->
-        <!--</android.support.v7.widget.RecyclerView>-->
-        <!--</LinearLayout>-->
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+        <android.support.v7.widget.RecyclerView
+        tools:listitem="@layout/list_item"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.RecyclerView
+                tools:listitem="@layout/list_item"
+                android:id="@+id/recyclerView1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
     </LinearLayout>
 
 

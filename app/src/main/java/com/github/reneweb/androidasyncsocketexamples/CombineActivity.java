@@ -15,6 +15,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.Formatter;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,9 +45,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class CombineActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener, View.OnClickListener {
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+//    private Toolbar toolbar;
+//    private TabLayout tabLayout;
+//    private ViewPager viewPager;
     private TextView status;
     private Button findIp;
     private EditText ip,port;
@@ -56,9 +59,17 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     String networkSSID = "DESKTOP-5HK7N4N 2635";
     String networkPass = "580610684";
 
+    public IpAndPortListener listener;
+    String it;
     private String[] ipAddr;
+    public void setListener(IpAndPortListener listener){
+        this.listener = listener;
+    }
 
-//    Thread thread;
+    public interface IpAndPortListener{
+        void ipAndportChange(String ip);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,13 +108,13 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setTitle("Mattress");
 
+        Toolbar toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setupViewPager();
 
-        viewPager = findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
 
 
-        tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+      
 
 
 
@@ -115,15 +126,39 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this);
 
-    }
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new UserFragment(), "USER");
-        adapter.addFragment(new TestFragment(), "TEST");
-        viewPager.setAdapter(adapter);
-        viewPager.getAdapter().notifyDataSetChanged();
 
     }
+    private void setupViewPager() {
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.addTab(tabLayout.newTab().setText("USER"));
+        tabLayout.addTab(tabLayout.newTab().setText("TEST"));
+        tabLayout.addTab(tabLayout.newTab().setText("SETTING"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        final ViewPager viewPager = findViewById(R.id.viewpager);
+        final PagerAdapter adapter = new PageAdapter
+                (getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+    }
+
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
@@ -146,6 +181,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         showConnected(isConnected);
     }
 
+
     private boolean getConnection(){
         boolean isConnected = ConnectivityReceiver.isConnected();
         return isConnected;
@@ -159,37 +195,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     }
 
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-        public ViewPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public Fragment getItem(int i) {
-            return mFragmentList.get(i);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            // POSITION_NONE makes it possible to reload the PagerAdapter
-            return POSITION_NONE;
-        }
-    }
 
     public void checkWifi(){
         System.out.println("[Main] : checkwiiiiifiiii");

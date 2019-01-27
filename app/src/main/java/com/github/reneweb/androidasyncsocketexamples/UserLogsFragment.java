@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
     TextView status;
-    EditText ip,port;
+    EditText ipAddress,portNumber;
 
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
 
@@ -66,8 +66,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_logs,container,false);
-        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
-        setView(view,view1);
+//        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+        setView(view);
         setOnClick();
 //        setSending();
 
@@ -75,12 +75,12 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setSending(final String msg) {
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                String portStr = port.getText().toString();
-                int portNumber = Integer.parseInt(portStr);
-                Client client = new Client(ip.getText().toString(),portNumber,msg);
+                Client client = new Client(ip,port,msg);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(String mes) {
@@ -113,16 +113,16 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         emergencywork.setOnClickListener(this);
     }
 
-    private void setView(View view,View view1) {
+    private void setView(View view) {
         rightwork = view.findViewById(R.id.rightwork);
         leftwork = view.findViewById(R.id.leftwork);
         bothwork = view.findViewById(R.id.bothwork);
         calibratework = view.findViewById(R.id.calibrate_angle);
         emergencywork = view.findViewById(R.id.emergency);
-        CombineActivity combineActivity = (CombineActivity) getActivity();
-        ip = getActivity().findViewById(R.id.ipBed);
-        port = getActivity().findViewById(R.id.port);
-        status = view.findViewById(R.id.statusBed);
+
+        status = getActivity().findViewById(R.id.statusBed);
+        ipAddress = getActivity().findViewById(R.id.ipBed);
+        portNumber = getActivity().findViewById(R.id.port);
     }
 
 
