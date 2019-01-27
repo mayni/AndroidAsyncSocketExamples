@@ -44,7 +44,12 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     private static MainActivity instance;
     Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,
             wifibtn,onwork,send;
-    String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
+    String LEFT_PRESSURE_SIDE = "0000",LEFT_PRESSURE_MAIN = "0000";
+    String RIGHT_PRESSURE_SIDE = "0000",RIGHT_PRESSURE_MAIN = "0000";
+    String OFFSET_LEFT = "0000";
+    String OFFSET_RIGHT = "0000";
+    String OFFSET_SUPINR = "0000";
+
     TextView wifiStatus,bedStatus,status;
 
     private RecyclerView recyclerView, recyclerViewRec ;
@@ -508,13 +513,28 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
 
                 if(id == rightwork.getId()){
-                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String right = "0A 04 FF "
+                            +"82 012C 03FF 03FF"
+                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000 "
+                            +"00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     message.setText(right);
                 }else if(id == leftwork.getId()){
-                    String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String left = "0A 04 FF "
+                            +"42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     message.setText(left);
                 }else if(id == bothwork.getId()){
-                    String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
+                    String both = "0A 08 FF "
+                            +"42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600)+" 0000 0000"
+                            +" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600)+" 0000 0000";
                     message.setText(both);
                 }
                 dialog.dismiss();

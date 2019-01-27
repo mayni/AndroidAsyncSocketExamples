@@ -1,13 +1,12 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
 import android.app.AlertDialog;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,14 +26,13 @@ import com.github.reneweb.androidasyncsocketexamples.call.CallToTCP;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.io.FileOutputStream;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static android.content.Context.MODE_APPEND;
 import static android.content.Context.SENSOR_SERVICE;
-import static android.support.v4.content.ContextCompat.getSystemService;
 
 
 public class CalibrateFragment extends Fragment implements View.OnClickListener {
@@ -42,11 +40,15 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     TextView ySensor , angle ;
     Integer angleCalibrate = 30;
     Sensor sensor;
-    Button startCalibrate,changeAngle,cancelCalibrate,calibrateRight,calibrateLeft;
+    Button startCalibrate,changeAngle, stopCalibrate,calibrateRight,calibrateLeft;
+    ProgressDialog dialogLoading;
     boolean isCalibrate = false;
+    Boolean isGetPressure = false;
     String NOTES = "Pressure.txt";
+    String NOTES_RAW = "PressureRaw.txt";
     String valuePage;
 
+    String[] senserValue = new String[3];
     EditText ipAddress,portNumber;
     TextView status;
 
@@ -96,7 +98,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         startCalibrate = view.findViewById(R.id.startcalibrate);
         angle = view.findViewById(R.id.calibrate_angle);
         changeAngle = view.findViewById(R.id.change_angle);
-        cancelCalibrate = view.findViewById(R.id.cancelcalibrate);
+        stopCalibrate = view.findViewById(R.id.cancelcalibrate);
 
         calibrateLeft = view.findViewById(R.id.calibrate_left);
         calibrateRight = view.findViewById(R.id.calibrate_right);
@@ -112,13 +114,13 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             calibrateRight.setVisibility(view.VISIBLE);
 
         }
-        cancelCalibrate.setEnabled(false);
+        stopCalibrate.setEnabled(false);
         angle.setText(angleCalibrate.toString());
         sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         startCalibrate.setOnClickListener(this);
         changeAngle.setOnClickListener(this);
-        cancelCalibrate.setOnClickListener(this);
+        stopCalibrate.setOnClickListener(this);
         calibrateLeft.setOnClickListener(this);
         calibrateRight.setOnClickListener(this);
 
@@ -172,7 +174,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                 }.execute();
                 isCalibrate = true;
                 startCalibrate.setEnabled(false);
-                cancelCalibrate.setEnabled(true);
+                stopCalibrate.setEnabled(true);
                 changeAngle.setEnabled(false);
             }
 
@@ -187,21 +189,31 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         public void onSensorChanged(final SensorEvent sensorEvent) {
             DecimalFormat df = new DecimalFormat("#");
             ySensor.setText(String.valueOf(df.format(sensorEvent.values[1])));
+            senserValue[0] = String.valueOf(sensorEvent.values[0]);
+            senserValue[1] = String.valueOf(sensorEvent.values[1]);
+            senserValue[2] = String.valueOf(sensorEvent.values[2]);
+
 
             if(isCalibrate == true){
-                System.out.println("[calibrate]" + sensorEvent.values[1] + " " + sensorEvent.values[2]);
+                System.out.println("[calibrate]" +sensorEvent.values[0]+" "  + sensorEvent.values[1] + " " + sensorEvent.values[2]);
                 if(sensorEvent.values[1] > -(angleCalibrate+1) && sensorEvent.values[1] < -(angleCalibrate-1)){
                     startCalibrate.setEnabled(true);
-                    cancelCalibrate.setEnabled(false);
+                    stopCalibrate.setEnabled(false);
                     changeAngle.setEnabled(true);
-                    getPressure();
+                    PleaseWaitDialog();
+                    checkSide("START");
+
+//                    getPressure("START");
                     isCalibrate = false;
                 }
-                if(sensorEvent.values[1] > (angleCalibrate+1) && sensorEvent.values[1] < (angleCalibrate-1)){
+                if(sensorEvent.values[1] < (angleCalibrate+1) && sensorEvent.values[1] > (angleCalibrate-1)){
+                    System.out.println("eeeeeeeeee");
                     startCalibrate.setEnabled(true);
-                    cancelCalibrate.setEnabled(false);
+                    stopCalibrate.setEnabled(false);
                     changeAngle.setEnabled(true);
-//                    getPressure();
+                    PleaseWaitDialog();
+                    checkSide("START");
+//                    getPressure("START");
                     isCalibrate = false;
                 }
             }
@@ -215,7 +227,43 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
         }
     };
-    public void getPressure(){
+    private void checkSide(final String from){
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
+        CallToTCP callToTCP=new CallToTCP(ip,port,"02 0C 0E");
+        callToTCP.setListener(new CallToTCP.CallToTCPListener() {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = new Date();
+            @Override
+            public void recMessageCallBack(String mes) {
+                if(mes.charAt(0) != '['){
+                    ArrayList<String> data = new ArrayList<>();
+                    for(String a:mes.split("\\s")){
+                        data.add(a);
+                    }
+
+                    if(data.get(1).equals("60") || data.get(1).equals("63")){
+                        System.out.println("[CalibrateFragment] 60" );
+                        getPressure(from,"LEFT");
+
+                    }else if(data.get(1).equals("90") || data.get(1).equals("93")){
+                        System.out.println("[CalibrateFragment] 90");
+                        getPressure(from,"RIGHT");
+                    }else{
+                        AlertForTryAgain("Please check your pump or valve before calibrate");
+                    }
+                    System.out.println("[CalibrateFragment]"+ data.get(1) );
+                }else{
+                    writeTofile(formatter.format(date).toString()+" Error "+mes,NOTES);
+                    String tryagain = "Can't get pressure please try again";
+                    AlertForTryAgain(tryagain);
+                }
+
+            }
+        });
+    }
+    public void getPressure(final String from, final String side){
+
         final String ip = ipAddress.getText().toString();
         final Integer port = Integer.parseInt(portNumber.getText().toString());
         CallToTCP callToTCP = new CallToTCP(ip,port,"01");
@@ -226,11 +274,28 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                 Date date = new Date();
                 if(mes.charAt(0) != '['){
                     if(mes != null){
-                        writeTofile(formatter.format(date).toString()+" Pressure " + mes );
+                        if(from=="START"){
+                            for(String a: mes.split("\\s")){
+                                System.out.println(a);
+                            }
+                            writeTofile(mes +" "+angle.getText().toString()+" "+side,NOTES_RAW);
+                            writeTofile(formatter.format(date).toString()+" Pressure " + mes +" "+angle.getText().toString()+" "+side,NOTES);
+                        }else if(from=="STOP"){
+                            String senserVal = senserValue[1];
+                            if(senserVal.charAt(0) == '-'){
+                                senserVal = senserVal.substring(1);
+                            }
+                            writeTofile(mes +" "+senserVal+" "+side,NOTES_RAW);
+                            writeTofile(formatter.format(date).toString()+" Pressure " + mes +" "+senserVal+" "+side,NOTES);
+                        }
+
                     }
+                    String complete = "Completed";
+                    AlertForTryAgain(complete);
                 }else{
-                    writeTofile(formatter.format(date).toString()+" Error "+mes);
-                    AlertForTryAgain();
+                    writeTofile(formatter.format(date).toString()+" Error "+mes,NOTES);
+                    String tryagain = "Can't get pressure please try again";
+                    AlertForTryAgain(tryagain);
                 }
 
             }
@@ -290,12 +355,21 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
 
     }
-    private void AlertForTryAgain(){
+    private void PleaseWaitDialog(){
+
+        dialogLoading = new ProgressDialog(getActivity());
+        dialogLoading.setMessage("Please Wait");
+        dialogLoading.setCancelable(true);
+        dialogLoading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialogLoading.show();
+    }
+    private void AlertForTryAgain(final String mes){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                dialogLoading.dismiss();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Can't get pressure please try again");
+                builder.setMessage(mes);
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -306,11 +380,11 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             }
         });
     }
-    private void writeTofile(String dat) {
+    private void writeTofile(String dat,String file) {
         FileOutputStream fos = null;
         String data = dat + "\n";
         try {
-            fos = getActivity().openFileOutput(NOTES, MODE_APPEND);
+            fos = getActivity().openFileOutput(file, MODE_APPEND);
             fos.write(data.getBytes());
 
             Toast.makeText(getActivity(), "Saved to " + getContext().getFilesDir().getAbsolutePath() + "/" + NOTES, Toast.LENGTH_LONG).show();
@@ -339,14 +413,16 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             System.out.println("Angle"+angleCalibrate);
             this.isCalibrate = true;
             v.setEnabled(false);
-            cancelCalibrate.setEnabled(true);
+            stopCalibrate.setEnabled(true);
             changeAngle.setEnabled(false);
 
-        }else if(v.getId() == cancelCalibrate.getId()){
+        }else if(v.getId() == stopCalibrate.getId()){
             this.isCalibrate = false;
             startCalibrate.setEnabled(true);
             changeAngle.setEnabled(true);
             v.setEnabled(false);
+            PleaseWaitDialog();
+            checkSide("STOP");
 
         }else if(v.getId() == changeAngle.getId()) {
             changeAngleDialog();
@@ -354,6 +430,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             QuickCalibrate(v.getId());
         }else {
             listener.PressBackButton(true);
+
         }
     }
 
@@ -391,4 +468,6 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         builder.create();
         builder.show();
     }
+
+
 }

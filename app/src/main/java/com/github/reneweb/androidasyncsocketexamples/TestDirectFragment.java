@@ -155,11 +155,14 @@ public class TestDirectFragment extends Fragment  {
                     setBtn(view);
 
                 }else{
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            layoutContentContainer.showError();
-                        }
-                    });
+                    if(isVisible()){
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                layoutContentContainer.showError();
+                            }
+                        });
+                    }
+
 
                 }
             }
@@ -315,6 +318,7 @@ public class TestDirectFragment extends Fragment  {
                 setMessage(0b10000000, view,v);
             }else{
                 listener.PressBackButton(true);
+                onDetach();
             }
         }
     }
@@ -468,5 +472,10 @@ public class TestDirectFragment extends Fragment  {
             }
 
         }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        System.out.println("onDetach");
     }
 }

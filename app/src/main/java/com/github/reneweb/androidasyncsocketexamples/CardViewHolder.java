@@ -2,7 +2,6 @@ package com.github.reneweb.androidasyncsocketexamples;
 
 import android.view.View;
 import android.widget.TextView;
-
 public class CardViewHolder extends BaseViewHolder{
 
     private TextView textView,textView1,textView2,textView3;
