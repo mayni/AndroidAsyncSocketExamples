@@ -165,10 +165,10 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                                                         if(data.get(1).trim().equals("42")||data.get(1).trim().equals("63")||data.get(1).trim().equals("60")){
                                                             getStatus.setText("Left");
                                                         }
-                                                        if(data.get(1).trim().equals("80")||data.get(1).trim().equals("0")||data.get(1).trim().equals("40")){
+                                                        if(data.get(1).trim().equals("80")||data.get(1).trim().equals("00")||data.get(1).trim().equals("40")){
                                                             getStatus.setText("Supine");
                                                         }
-                                                        if(data.get(1).trim().equals("3") || data.get(1).trim().equals("83")){
+                                                        if(data.get(1).trim().equals("03") || data.get(1).trim().equals("83")){
                                                             getStatus.setText("Supine");
                                                         }
 
