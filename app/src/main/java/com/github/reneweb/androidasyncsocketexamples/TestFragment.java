@@ -8,31 +8,38 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.FileOutputStream;
 import java.util.Set;
+
+import static android.content.Context.MODE_APPEND;
 
 public class TestFragment extends Fragment implements View.OnClickListener {
 
     FragmentManager manager;
-
-    TestLogsFragment fragmentTest = new TestLogsFragment ();
+    public String value;
+    TestLogsFragment fragmentTest = new TestLogsFragment();
     TestDirectFragment fragmentDirect = new TestDirectFragment();
     PressureFragment fragmentPressure = new PressureFragment();
     CalibrateFragment fragmentCalibrate = new CalibrateFragment();
+    SettingFragment settingFragment = new SettingFragment();
 
 
 
+    Bundle arguments = new Bundle();
+    Bundle arguments2 = new Bundle();
 
-    public TestFragment() {
+
+    public String passdata(String s, String s1){
+//        fragmentTest.passdata(s,s1);
+        System.out.println("[ttt]"+s);
+        return s;
 
     }
-
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
     }
 
@@ -40,12 +47,14 @@ public class TestFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         manager = getChildFragmentManager();
-        manager.beginTransaction().add(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").commit();
 
-        Bundle arguments = new Bundle();
+        manager.beginTransaction().add(R.id.FRAGMENT_PLACEHOLDER,fragmentTest,"fragmentTest").commit();
+
         arguments.putString("PAGE","TEST");
-
         fragmentCalibrate.setArguments(arguments);
+
+
+       System.out.println("[kkk]" + value);
 
 
 
@@ -99,6 +108,7 @@ public class TestFragment extends Fragment implements View.OnClickListener {
 
 
 
+
         });
 
 
@@ -110,5 +120,6 @@ public class TestFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
 
     }
+
 
 }

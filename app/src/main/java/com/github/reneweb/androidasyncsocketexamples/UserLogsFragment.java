@@ -17,27 +17,30 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.github.reneweb.androidasyncsocketexamples.R;
+import com.github.reneweb.androidasyncsocketexamples.call.CallToTCP;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
-    TextView status;
+    TextView status,getStatus;
     EditText ipAddress,portNumber;
-
+    Thread thread1,thread2;
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
-
-    String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
-    String LEFT_PRESSURE_SIDE = "0000",LEFT_PRESSURE_MAIN = "0000";
+    Button firstB,secB,thirdB,forthB;
+    public String LEFT_PRESSURE_SIDE ,LEFT_PRESSURE_MAIN ;
     String RIGHT_PRESSURE_SIDE = "0000",RIGHT_PRESSURE_MAIN = "0000";
-    String OFFSET_LEFT = "0000";
-    String OFFSET_RIGHT = "0000";
-    String OFFSET_SUPINR = "0000";
-
+    Integer OFFSET_LEFT = 0;
+    Integer OFFSET_RIGHT = 0;
+    Integer OFFSET_SUPINR = 0;
+    String text;
     private static final int sizeOfIntInHalfBytes = 8;
     private static final int numberOfBitsInAHalfByte = 4;
     private static final int halfByte = 0x0F;
@@ -75,9 +78,151 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
 //        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
         setView(view);
         setOnClick();
+        setBag();
 //        setSending();
 
+
+
+
+
         return view;
+    }
+    public void setBag(){
+        final String ip = ipAddress.getText().toString();
+        final Integer port = Integer.parseInt(portNumber.getText().toString());
+        thread1 = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(10000);
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new AsyncTask<Void,Void,Void>(){
+
+
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        Client client = new Client(ip,port,"02 0C 0E");
+                                        client.setListener(new Client.clientMessageRecListener() {
+                                            @Override
+                                            public void recMessage(final String mes) {
+
+
+                                                new AsyncTask<Void,Void,String>(){
+
+                                                    @Override
+                                                    protected String doInBackground(Void... voids) {
+                                                       return mes.trim();
+                                                    }
+
+                                                    @Override
+                                                    protected void onPostExecute(String str) {
+                                                        super.onPostExecute(str);
+
+                                                        String message = str.trim();
+                                                        ArrayList<String> data = new ArrayList<>();
+                                                        for(String m:message.split("\\s")){
+                                                            data.add(m.trim());
+                                                        }
+                                                        System.out.println("iiiiiiiiiiiiiiii"+data.get(1));
+                                                        Integer buttonNumber = Integer.parseInt(Integer.toBinaryString(Integer.parseInt(data.get(1),16)));
+                                                        String no = String.format("%08d", buttonNumber);
+
+                                                        if(no.charAt(0) == '0'){
+                                                            System.out.println("recMessageCallBack" + no.charAt(0));
+                                                            forthB.setBackgroundResource(R.drawable.button);
+                                                        }else{
+                                                            System.out.println("recMessageCallBack" + no.charAt(0));
+                                                            forthB.setBackgroundResource(R.drawable.button_on);
+                                                        }
+                                                        if(no.charAt(1) == '0'){
+                                                            System.out.println("recMessageCallBack" + no.charAt(1));
+                                                            firstB.setBackgroundResource(R.drawable.button);
+                                                        }else{
+                                                            System.out.println("recMessageCallBack" + no.charAt(1));
+                                                            firstB.setBackgroundResource(R.drawable.button_on);
+                                                        }
+                                                        if(no.charAt(2) == '0'){
+                                                            System.out.println("recMessageCallBack" + no.charAt(2));
+                                                            thirdB.setBackgroundResource(R.drawable.button);
+                                                        }else{
+                                                            System.out.println("recMessageCallBack" + no.charAt(2));
+                                                            thirdB.setBackgroundResource(R.drawable.button_on);
+                                                        }
+                                                        if(no.charAt(3) == '0'){
+                                                            System.out.println("recMessageCallBack" + no.charAt(3));
+                                                            secB.setBackgroundResource(R.drawable.button);
+                                                        }else{
+                                                            System.out.println("recMessageCallBack" + no.charAt(3));
+                                                            secB.setBackgroundResource(R.drawable.button_on);
+                                                        }
+                                                        if(data.get(1).trim().equals("82")||data.get(1).trim().equals("93")||data.get(1).trim().equals("90")){
+                                                            getStatus.setText("Right");
+                                                        }
+                                                        if(data.get(1).trim().equals("42")||data.get(1).trim().equals("63")||data.get(1).trim().equals("60")){
+                                                            getStatus.setText("Left");
+                                                        }
+                                                        if(data.get(1).trim().equals("80")||data.get(1).trim().equals("0")||data.get(1).trim().equals("40")){
+                                                            getStatus.setText("Supine");
+                                                        }
+                                                        if(data.get(1).trim().equals("3") || data.get(1).trim().equals("83")){
+                                                            getStatus.setText("Supine");
+                                                        }
+
+                                                    }
+                                                }.execute();
+                                            }
+
+                                            @Override
+                                            public void checkConnection(Exception e) {
+
+
+                                            }
+
+                                            @Override
+                                            public void checkWifi(Exception e) {
+
+                                            }
+                                        });
+                                        return null;
+                                    }
+
+                                }.execute();
+
+
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        thread1.start();
+    }
+
+    private void setStatusBag() {
+        String ip = ipAddress.getText().toString();
+        Integer port =Integer.parseInt(portNumber.getText().toString()) ;
+        final String[] data = new String[1];
+        CallToTCP callToTCP = new CallToTCP(ip,port,"02 0C 0E");
+        callToTCP.setListener(new CallToTCP.CallToTCPListener() {
+            @Override
+            public void recMessageCallBack(String mes) {
+                String message = mes.trim();
+                ArrayList<String> data = new ArrayList<>();
+                for(String m:message.split("\\s")){
+                    data.add(m.trim());
+                }
+                System.out.println("recMessageCallBack" + Integer.toBinaryString(Integer.parseInt(data.get(1),16)));
+
+
+            }
+        });
+
     }
 
     private void setSending(final String msg) {
@@ -129,6 +274,15 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         status = getActivity().findViewById(R.id.statusBed);
         ipAddress = getActivity().findViewById(R.id.ipBed);
         portNumber = getActivity().findViewById(R.id.port);
+
+        firstB=view.findViewById(R.id.firstBag);
+        secB=view.findViewById(R.id.secondBag);
+        thirdB=view.findViewById(R.id.thirdBag);
+        forthB=view.findViewById(R.id.forthBag);
+
+        getStatus=view.findViewById(R.id.statusBag);
+
+
     }
 
 
@@ -147,6 +301,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void dialogSetting(final int id) {
+        readFile();
         final String onVal = "0B 01 FF 00 0000 00 0000";
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = this.getLayoutInflater();
@@ -185,31 +340,31 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
                 int timeTime = (hourTime*60*60)+(minuteTime*60);
                 if(id == rightwork.getId()){
-                    String right = "0A 04 FF"
-                            +" 82 012C 03FF 03FF"
-                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
-                            +" 80 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String right = "0A 04 FF "
+                            +"82 012C 03FF 03FF"
+                            +" 93 "+decToHex(timeTime-OFFSET_RIGHT).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000 "
+                            +"00 "+decToHex(timeTime-OFFSET_SUPINR).substring(4)+" 0000 0000";
                     setSending(right);
                     setSending(onVal);
                 }else if(id == leftwork.getId()){
-                    String left = "0A 04 FF"
-                            +" 42 012C 03FF 03FF"
-                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                    String left = "0A 04 FF "
+                            +"42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-OFFSET_LEFT).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
                             +" 40 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                            +" 00 "+decToHex(timeTime-OFFSET_SUPINR).substring(4)+" 0000 0000";
                     setSending(left);
                     setSending(onVal);
                 }else if(id == bothwork.getId()){
-                    String both = "0A 08 FF"
-                            +" 42 012C 03FF 03FF"
-                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                    String both = "0A 08 FF "
+                            +"42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-OFFSET_LEFT).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
                             +" 40 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600)+" 0000 0000"
-                            +" 82 012C 03FF 03FF"
-                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 00 "+decToHex(timeTime-OFFSET_SUPINR)+" 0000 0000"
+                            +" 82 012C 03FF 03FF "
+                            +"93 "+decToHex(timeTime-OFFSET_RIGHT).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
                             +" 80 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600)+" 0000 0000";
+                            +" 00 "+decToHex(timeTime-OFFSET_RIGHT)+" 0000 0000";
                     setSending(both);
                     setSending(onVal);
                 }
@@ -226,28 +381,57 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     }
 //    0x02 0x0C 0x0E
     public void readFile(){
+    String[] filename = {"leftOffTime.txt","leftPressMain.txt","leftPressSide.txt",
+            "rightOffTime.txt","rightPressMain.txt","rightPressSide.txt","supineOffTime.txt"};
+    for(int i=0;i<filename.length;i++){
         try {
-            FileInputStream fileIn=getActivity().openFileInput("Pressure.txt");
+            FileInputStream fileIn=getActivity().openFileInput(filename[i]);
             InputStreamReader InputRead= new InputStreamReader(fileIn);
             BufferedReader br = new BufferedReader(InputRead);
-            StringBuilder sb = new StringBuilder();
-            String text;
-            String ab = null;
+            String lastline=null;
             while ((text = br.readLine()) != null){
-                System.out.println("[Pressure]" + text);
-                ab = text;
+//                    System.out.println("[Pressure]" + text);
+                lastline = text;
             }
             InputRead.close();
             ArrayList<String> press = new ArrayList<>();
-            for(String str : ab.split("\\s") ){
-                press.add(str);
+            for(String str : lastline.split("\\s") ){
+//                    System.out.println(str);
+                press.add(str.trim());
             }
-            PRESSURE_SIDE = press.get(2);
-            PRESSURE_MAIN = press.get(3);
+            if(press.size() != 1){
+                if(press.get(1).equals("supineOffTime") || press.get(1).equals("leftOffTime") || press.get(1).equals("rightOffTime")){
+                    if(press.get(1).equals("supineOffTime")){
+                        OFFSET_SUPINR = Integer.parseInt(press.get(0))*60;
+                    }else if(press.get(1).equals("leftOffTime")){
+                        OFFSET_LEFT = Integer.parseInt(press.get(0))*60;
+                    }else if(press.get(1).equals("rightOffTime")){
+                        OFFSET_RIGHT = Integer.parseInt(press.get(0))*60;
+                    }
+                }else{
+                    float x = Float.parseFloat(press.get(0));
+                    Integer a =  Math.round(1023*x/5);
+                    String hex = decToHex(a);
+                    System.out.println(x+" "+a+" "+hex.substring(4));
+                    if(press.get(1).equals("leftPressMain")){
+                        LEFT_PRESSURE_MAIN = hex.substring(4);
+                    }else if(press.get(1).equals("leftPressSide")){
+                        LEFT_PRESSURE_SIDE = hex.substring(4);
+                    }else if(press.get(1).equals("rightPressMain")){
+                        RIGHT_PRESSURE_MAIN=hex.substring(4);
+                    }else if(press.get(1).equals("rightPressSide")){
+                        RIGHT_PRESSURE_SIDE=hex.substring(4);
+                    }
+
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+}
     public static String decToHex(int dec) {
         StringBuilder hexBuilder = new StringBuilder(sizeOfIntInHalfBytes);
         hexBuilder.setLength(sizeOfIntInHalfBytes);
@@ -259,4 +443,14 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         }
         return hexBuilder.toString();
     }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(!isVisibleToUser){
+            thread1.interrupt();
+        }
+    }
+
+
 }

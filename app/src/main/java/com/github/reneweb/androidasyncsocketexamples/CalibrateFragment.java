@@ -57,6 +57,8 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     EditText ipAddress,portNumber;
     TextView status;
 
+    SettingFragment settingFragment = new SettingFragment();
+
 
 
 
@@ -72,6 +74,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
     public interface BackToTestListener{
         void PressBackButton(boolean bool);
+
 
 
     }
@@ -294,7 +297,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                             writeTofile(mes.trim() +" "+angle.getText().toString().trim()+" "+side,NOTES_RAW);
                             writeTofile(formatter.format(date)+" Pressure " + mes.trim() +" "+angle.getText().toString().trim()+" "+side,NOTES);
 
-                            //                            listener.UpdateSettingFragment(true);
+
                         }else if(from=="STOP"){
                             String senserVal = senserValue[1];
                             if(senserVal.charAt(0) == '-'){
@@ -307,6 +310,7 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                     }
                     String complete = "Completed";
                     AlertForTryAgain(complete);
+                    settingFragment.passdata(true);
                 }else{
                     writeTofile(formatter.format(date).toString()+" Error "+mes,NOTES);
                     String tryagain = "Can't get pressure please try again";
@@ -316,6 +320,8 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
             }
         });
     }
+
+
 
     private String PressureConvert(String text) {
         DecimalFormat df = new DecimalFormat("#.##");

@@ -6,10 +6,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,38 +24,38 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static android.content.Context.MODE_APPEND;
+
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
     Button startTime;
-    EditText leftPressSide,leftPressMain,leftOffTime,rightPressSide,rightPressMain,rightOffTime,supineOffTime;
+    public EditText leftPressSide,leftPressMain,leftOffTime,rightPressSide,rightPressMain,rightOffTime,supineOffTime;
     TextView timeStart;
     EditText ipAddress,portNumber;
     String PRESSURE_RAW="PressureRaw.txt";
     Boolean isStart = false;
-
-    public setEditTextListener listener;
-
-    public interface setEditTextListener{
-        void setEditTextChange(String string);
-    }
-    public void setListener(setEditTextListener listener){this.listener=listener;}
+    TestFragment testFragment ;
 
 
     public SettingFragment() {
-        // Required empty public constructor
+
     }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        System.out.println("Attachhhhhhhhhhh");
+
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,12 +63,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
 
-
+        testFragment = new TestFragment();
 
         setView(view);
-
         setEditText();
-
+        setTextChange();
         return view;
     }
 
@@ -76,6 +75,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         if(fileExist(PRESSURE_RAW) == true){
             ArrayList<String> data =  readPressureFile(PRESSURE_RAW);
             setValEditText(data);
+
         }
 
     }
@@ -98,20 +98,27 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                 }
             }
         }
+        setText(isRight,isLeft,RightLastSide,LeftLastSide);
+
+    }
+
+    private void setText(Boolean isRight, Boolean isLeft, String rightLastSide, String leftLastSide) {
         if(isRight != false){
             ArrayList<String> RightPress = new ArrayList<>();
-            for(String a: RightLastSide.split("\\s")){
+            for(String a: rightLastSide.split("\\s")){
                 RightPress.add(a);
             }
-            System.out.println("[SettingFragment] "+RightPress.get(1));
 
             rightPressSide.setText(PressureConvert(RightPress.get(1)));
+
+
             rightPressMain.setText(PressureConvert(RightPress.get(2)));
+
         }
         if(isLeft != false){
             ArrayList<String> LeftPress = new ArrayList<>();
 
-            for(String a: LeftLastSide.split("\\s")){
+            for(String a: leftLastSide.split("\\s")){
                 LeftPress.add(a);
 
             }
@@ -122,10 +129,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
 
 
-
-
-
     }
+
 
     private String PressureConvert(String text) {
         DecimalFormat df = new DecimalFormat("#.##");
@@ -178,16 +183,18 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setView(View view) {
+
         leftOffTime = view.findViewById(R.id.leftOffsetTime);
         leftPressMain = view.findViewById(R.id.leftPressureMain);
         leftPressSide=view.findViewById(R.id.leftPressureSide);
 
-        listener.setEditTextChange(leftPressMain.getText().toString());
+
+
         rightOffTime=view.findViewById(R.id.rightOffsetTime);
         rightPressMain=view.findViewById(R.id.rightPressureMain);
         rightPressSide=view.findViewById(R.id.rightPressureSide);
 
-        setTextChange();
+
 
         supineOffTime=view.findViewById(R.id.supineOffsetTime);
 
@@ -204,18 +211,133 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setTextChange() {
-        TextChange leftPressMainChange = new TextChange(leftPressMain);
+//        TextChange leftPressMainChange = new TextChange(leftPressMain,testFragment,"leftPressMain");
+        leftPressMain.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-        TextChange leftPressSideChange = new TextChange(leftPressSide);
+            }
 
-        TextChange rightPressMainChange = new TextChange(rightPressMain);
-        TextChange rightPressSideChange = new TextChange(rightPressSide);
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"leftPressMain","leftPressMain.txt");
 
-        TextChange leftOffTimeChange = new TextChange(leftOffTime);
-        TextChange rightOffTimeChange = new TextChange(rightOffTime);
+            }
+        });
+
+//        TextChange leftPressSideChange = new TextChange(leftPressSide, testFragment,"leftPressSide");
+        leftPressSide.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"leftPressSide","leftPressSide.txt");
+            }
+        });
+
+//        TextChange rightPressMainChange = new TextChange(rightPressMain, testFragment,"rightPressMain");
+        rightPressMain.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"rightPressMain","rightPressMain.txt");
+            }
+        });
+//        TextChange rightPressSideChange = new TextChange(rightPressSide, testFragment,"rightPressSide");
+        rightPressSide.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"rightPressSide","rightPressSide.txt");
+            }
+        });
+
+//        TextChange leftOffTimeChange = new TextChange(leftOffTime, testFragment,"leftOffTime");
+        leftOffTime.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"leftOffTime","leftOffTime.txt");
+            }
+        });
+//        TextChange rightOffTimeChange = new TextChange(rightOffTime, testFragment,"rightOffTime");
+        rightOffTime.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"rightOffTime","rightOffTime.txt");
+            }
+        });
+
+//        TextChange supineOffTimeChange = new TextChange(supineOffTime,testFragment,"supineOffTime");
+        supineOffTime.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                writeToFile(s.toString(),"supineOffTime","supineOffTime.txt");
+            }
+        });
     }
+
+
 
     @Override
     public void onClick(View v) {
@@ -267,11 +389,31 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         System.out.println("[SettingFragment] 55555555555555555555555555555'");
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser) {
+//            System.out.println("passdata"+isVisibleToUser);
+//            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+//        }
+//    }
+    public void writeToFile(String s,String s1,String file){
+        FileOutputStream fos = null;
+        String data = s.toString()+" "+s1+ "\n";
+        try {
+            fos = getActivity().openFileOutput(file, MODE_APPEND);
+            fos.write(data.getBytes());
+        }
+        catch (Throwable t) {
+
+        }
+    }
+    public void passdata(boolean bool){
+        FragmentManager manager ;
+        manager = getFragmentManager();
+
+        if(bool){System.out.println("passdata"+bool);
+            manager.beginTransaction().detach(this).attach(this).commitNow();
         }
     }
 

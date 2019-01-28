@@ -63,10 +63,13 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         this.listener = listener;
     }
 
+
+
     public interface IpAndPortListener{
-        void ipAndportChange(String ip);
+        void sendDataBack(String ip);
 
     }
+
 
 
     @Override
@@ -128,7 +131,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         final PagerAdapter adapter = new PageAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
-
+        viewPager.setOffscreenPageLimit(3);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
