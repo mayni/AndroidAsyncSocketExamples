@@ -61,7 +61,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
-                android:text="Countdown"/>
+                android:textStyle="bold"
+                android:text="Mode : "/>
+            <TextView
+                android:id="@+id/modeShow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text=" - "/>
+            <TextView
+                android:id="@+id/timer"
+                android:layout_marginStart="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="Stop in ..."/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -99,7 +113,8 @@
                 android:backgroundTint="@color/indigo"
                 android:background="@drawable/round_button"
                 android:textColor="#FFFFFF"
-                android:text="EMERgency"/>
+                android:textSize="30sp"
+                android:text="off"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -112,6 +127,7 @@
                 android:textSize="12sp"
                 android:backgroundTint="#6681EA"
                 android:textColor="#FFFFFF"
+
                 android:text="calibrate "/>
         </LinearLayout>
     </LinearLayout>

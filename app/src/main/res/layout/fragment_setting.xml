@@ -22,13 +22,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="time"/>
-        <Button
+            android:text="08:00"/>
+        <Switch
             android:id="@+id/startBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="start"/>
+            android:checked="false"
+            android:textOff="Off"
+            android:textOn="On"/>
+
 
     </LinearLayout>
     <LinearLayout

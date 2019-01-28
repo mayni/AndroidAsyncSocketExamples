@@ -90,11 +90,8 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     Integer hourTime=0,minuteTime =0;
 
-<<<<<<< HEAD
     EditText iptest,porttest;
-=======
     EditText ipAddress,portNumber;
->>>>>>> d45c44c3cf3b44d0fb8e415a6d17121d255c7ea9
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)

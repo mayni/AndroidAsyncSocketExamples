@@ -86,6 +86,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
         if(ex != null) {
             ///////////////////////////////////////////////////////
             System.out.println("[Client] Faillllllllllllllllll" );
+            listener.checkWifi(ex);
             socket.close();
 //            throw new RuntimeException(ex);
         }
@@ -113,6 +114,7 @@ public class Client implements ConnectivityReceiver.ConnectivityReceiverListener
 //                    listener.recMessage(mes);
 //                }
                 listener.recMessage(mes);
+                listener.checkWifi(null);
 
                 socket.close();
             }

@@ -10,6 +10,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -26,8 +28,11 @@ import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,12 +57,25 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     private Button findIp;
     private EditText ip,port;
     final List<String> lists = new ArrayList<String>();
+    String time = " ";
+
+    Boolean changed = false;
+
+    private Switch toggle;
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
 
     WifiManager wifi;
     WifiManager wifiManager;
     String networkSSID = "DESKTOP-5HK7N4N 2635";
     String networkPass = "580610684";
+
+     Boolean checkToggle = false;
+
+    private SettingFragment settingFragment;
+    private UserFragment userFragment;
+
 
     public IpAndPortListener listener;
     String it;
@@ -66,9 +84,19 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         this.listener = listener;
     }
 
+    public void passDataToActivity(boolean b) {
+        checkToggle = true;
+        System.out.println("[Main]: checcccccckTogggle "+ b);
+    }
+
+    public void carryTo(String string, Boolean changed) {
+        time = string;
+        this.changed = changed;
+        System.out.println("[Main] : timeeeeeeee + " +time);
+    }
+
     public interface IpAndPortListener{
         void ipAndportChange(String ip);
-
     }
 
     @Override
@@ -77,8 +105,8 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         setContentView(R.layout.activity_combine);
         System.out.println("[Main] : createeeeeee");
 
-
-
+        
+        closeKeyboard();
 
         status = findViewById(R.id.statusBed);
         findIp = findViewById(R.id.findIp);
@@ -86,7 +114,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         ip = findViewById(R.id.ipBed);
         port = findViewById(R.id.port);
 
-//
+
 
         wifi =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         Timer myTimer;
@@ -96,11 +124,18 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
                 checkWifi();
                 System.out.println("[Main]: startttt connect");
             }
-        }, 0, 600000);
+        }, 0, 30000);
 
         if (getConnection()){
             getipAddress();
         }
+
+//        mHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                startTime.setChecked(false);
+//            }
+//        });
 
 
 
@@ -108,10 +143,11 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setTitle("Mattress");
 
+
+
         Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupViewPager();
-
 
 
       
@@ -120,6 +156,8 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
 
 
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected  void onResume(){
@@ -139,13 +177,27 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         final PagerAdapter adapter = new PageAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(3);
+        settingFragment = (SettingFragment) ((PageAdapter) adapter).getItem(2);
+        userFragment = (UserFragment) ((PageAdapter) adapter).getItem(0);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                if (!time.equals(" ")){
+                    userFragment.fragmentUserLogs.sendTosetText(time,changed,getIntent());
+                }
+                if (tab.getText() == "USER"  && checkToggle != null){
+                    System.out.println("[Main]: Tabbbbb +" + checkToggle );
+                    if (checkToggle){
+                        settingFragment.passDataToFragment(time);
+                        if (!time.equals(" ")){
+                            userFragment.fragmentUserLogs.sendTosetText(time,changed,getIntent());
+                        }
+                    }
+                }
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -195,14 +247,8 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
     }
 
 
-
-
     public void checkWifi(){
         System.out.println("[Main] : checkwiiiiifiiii");
-//        thread = new Thread() {
-//            @Override
-//            public void run() {
-//
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... voids) {
@@ -367,5 +413,11 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         return ip.getText().toString();
     }
 
-
+    private void closeKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 }

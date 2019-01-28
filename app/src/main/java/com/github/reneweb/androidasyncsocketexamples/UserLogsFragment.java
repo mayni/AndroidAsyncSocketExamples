@@ -1,12 +1,17 @@
 package com.github.reneweb.androidasyncsocketexamples;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,20 +19,39 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.reneweb.androidasyncsocketexamples.R;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
-    TextView status;
+    TextView status,modeShow;
+    TextView timer;
     EditText ipAddress,portNumber;
+    CombineActivity combineActivity;
+    String keepString = " ";
+
+    ArrayList<String> arrayList = new ArrayList<>();
+
+    Thread t;
+
+    Boolean checked = false;
 
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
 
@@ -43,16 +67,141 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     public CalibratePressOnListener listener;
     Integer hourTime=0,minuteTime =0;
 
-
     public UserLogsFragment() {
 
     }
+
+    public void sendTosetText(String time, Boolean changed, Intent intent) {
+        keepString = time;
+        this.checked = changed;
+        System.out.println("[Main] : im hereeeeeeeee " + keepString + checked);
+
+//        theardForTime();
+    }
+
+    public void setActivity(FragmentActivity activity) {
+        combineActivity = (CombineActivity) activity;
+    }
+
+
+
     public interface CalibratePressOnListener{
         void isCalibratePressOn(boolean bool);
     }
 
     public void setListener(CalibratePressOnListener listener) {
         this.listener = listener;
+    }
+
+    private void readTimeFile(){
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = getActivity().openFileInput("time.txt");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String lastLine = null;
+            String text;
+            while ((text = bufferedReader.readLine()) != null){
+                lastLine = text;
+            }
+            for (String m:lastLine.split("\\s")){
+                arrayList.add(m.trim());
+            }
+            inputStreamReader.close();
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeToFile2(){
+        FileOutputStream file1 = null;
+        String data = "08:00"+" "+"false";
+        try {
+            file1 = getActivity().openFileOutput("time.txt", MODE_PRIVATE);
+            file1.write(data.getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void theardForTime(){
+//        timer.setText("55555555555555555555555");
+//        if (checked){
+
+//    }
+        t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+//                        System.out.println("[Main] : thearddddd starttttt" +  getTargetFragment());
+                        Thread.sleep(1000);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new AsyncTask<Void, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+
+                                        readTimeFile();
+                                        System.out.println("[hhhh] : ssssssss111" + arrayList.get(0)+ arrayList.get(1)) ;
+
+                                        return null;
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Void aVoid) {
+                                        super.onPostExecute(aVoid);
+
+//                                        if (arrayList.get(1) == "true"){
+                                            timer.setText(arrayList.get(0));
+//                                        }
+
+                                    }
+                                }.execute();
+                            }
+                        });
+
+//                            new AsyncTask<Void, Void, String>() {
+//                                @Override
+//                                protected String doInBackground(Void... voids) {
+//                                    String mes = keepString;
+//                                    return mes;
+//                                }
+//
+//                                @Override
+//                                protected void onProgressUpdate(Void... values) {
+////                                    if (check) {
+//                                        super.onProgressUpdate(values);
+////                                    }
+//                                }
+//
+//                                @Override
+//                                protected void onPostExecute(String s) {
+//                                    super.onPostExecute(s);
+//                                    timer.setTextColor(Color.RED);
+//                                    timer.setText(s);
+//
+//                                }
+//                            }.execute();
+
+
+                    }
+                } catch (InterruptedException e) {
+
+                }
+            }
+        };
+        t.start();
     }
 
 
@@ -66,13 +215,25 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_logs,container,false);
-//        View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+
+//        Bundle bundle = this.getArguments();
+//
+//        if(bundle != null){
+////           combineActivity = bundle.getString("key");
+//        }
+
+//        System.out.println("[Main] : timeeeeeeeeeee " + timerStop.getText().toString());
         setView(view);
         setOnClick();
+        writeToFile2();
+//        timeUser.setOnFocusChangeListener(this);
+        theardForTime();
 //        setSending();
 
         return view;
     }
+
+
 
     private void setSending(final String msg) {
         final String ip = ipAddress.getText().toString();
@@ -102,7 +263,6 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
             }
 
         }.execute();
-
     }
 
     private void setOnClick() {
@@ -123,6 +283,10 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         status = getActivity().findViewById(R.id.statusBed);
         ipAddress = getActivity().findViewById(R.id.ipBed);
         portNumber = getActivity().findViewById(R.id.port);
+        timer = view.findViewById(R.id.timer);
+//        timer.setText(keepString);
+        modeShow = view.findViewById(R.id.modeShow);
+
     }
 
 
@@ -136,7 +300,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         }else if(v.getId() == calibratework.getId()){
             listener.isCalibratePressOn(true);
         }else if(v.getId() == emergencywork.getId()){
-            setSending("EE");
+            setSending("0B 00 FF 00 0000 00 0000");
+            modeShow.setText(" - ");
         }
     }
 
@@ -186,14 +351,17 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                     String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     setSending(right);
                     setSending(onVal);
+                    modeShow.setText("Right");
                 }else if(id == leftwork.getId()){
                     String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     setSending(left);
                     setSending(onVal);
+                    modeShow.setText("Left");
                 }else if(id == bothwork.getId()){
                     String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
                     setSending(both);
                     setSending(onVal);
+                    modeShow.setText("Both");
                 }
 //                setSending(onVal);
             }
@@ -241,4 +409,26 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         }
         return hexBuilder.toString();
     }
+
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+//        combineActivity =(CombineActivity) activity;
+        System.out.println("[Main] : Attttachhhhh");
+
+    }
+//
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if(isVisibleToUser){ // fragment is visible
+//            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+//
+//        }
+//    }
+
+
+
+
 }

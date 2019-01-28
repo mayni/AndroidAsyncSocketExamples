@@ -12,6 +12,7 @@ public class UserFragment extends Fragment {
     FragmentManager manager;
     UserLogsFragment fragmentUserLogs = new UserLogsFragment();
     CalibrateFragment fragmentCalibrate = new CalibrateFragment();
+    final CombineActivity combineActivity = (CombineActivity) getActivity();
 
 
     public UserFragment() {
@@ -25,6 +26,10 @@ public class UserFragment extends Fragment {
         manager = getChildFragmentManager();
         manager.beginTransaction().add(R.id.FRAGMENT_PLACEHOLDER, fragmentUserLogs,"fragmentUserLogs").commit();
 
+        fragmentUserLogs.setActivity(getActivity());
+
+
+
         Bundle arguments = new Bundle();
         arguments.putString("PAGE","USER");
         fragmentCalibrate.setArguments(arguments);
@@ -33,6 +38,9 @@ public class UserFragment extends Fragment {
             @Override
             public void isCalibratePressOn(boolean bool) {
                 if(bool == true){
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("key", String.valueOf(getActivity())); // Put anything what you want
+//                    fragmentUserLogs.setArguments(bundle);
                     manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").commit();
                 }
             }
@@ -41,12 +49,16 @@ public class UserFragment extends Fragment {
             @Override
             public void PressBackButton(boolean bool) {
                 if(bool == true){
+
                     manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").commit();
                 }
             }
         });
 
+
+
         return inflater.inflate(R.layout.fragment_user, container, false);
     }
+
 
 }
