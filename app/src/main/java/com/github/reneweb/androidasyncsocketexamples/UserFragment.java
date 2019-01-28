@@ -44,6 +44,9 @@ public class UserFragment extends Fragment {
                     manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").commit();
                 }
             }
+
+
+
         });
 
         return inflater.inflate(R.layout.fragment_user, container, false);

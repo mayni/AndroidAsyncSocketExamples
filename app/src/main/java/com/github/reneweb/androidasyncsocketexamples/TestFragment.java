@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Set;
+
 public class TestFragment extends Fragment implements View.OnClickListener {
 
     FragmentManager manager;
@@ -16,6 +18,9 @@ public class TestFragment extends Fragment implements View.OnClickListener {
     TestDirectFragment fragmentDirect = new TestDirectFragment();
     PressureFragment fragmentPressure = new PressureFragment();
     CalibrateFragment fragmentCalibrate = new CalibrateFragment();
+
+
+
 
     public TestFragment() {
 
@@ -27,6 +32,8 @@ public class TestFragment extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
     }
 
     @Override
@@ -37,18 +44,21 @@ public class TestFragment extends Fragment implements View.OnClickListener {
 
         Bundle arguments = new Bundle();
         arguments.putString("PAGE","TEST");
+
         fragmentCalibrate.setArguments(arguments);
+
+
 
         fragmentTest.setListener(new TestLogsFragment.DirectControllistener() {
             @Override
             public void DirectControlOnclick(boolean bool,String string) {
                 if(bool == true){
                     if(string == "direct"){
-                        manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentDirect,"fragmentDirect").commit();
+                        manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentDirect,"fragmentDirect").addToBackStack("fragmentTest").commit();
                     }else if(string == "pressure"){
-                        manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentPressure,"fragmentPressure").commit();
+                        manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentPressure,"fragmentPressure").addToBackStack("fragmentTest").commit();
                     }else if(string == "calibrate"){
-                        manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").commit();
+                        manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").addToBackStack("fragmentTest").commit();
                     }
 
                 }
@@ -58,7 +68,7 @@ public class TestFragment extends Fragment implements View.OnClickListener {
             @Override
             public void PressBackButton(boolean bool) {
                 if(bool == true){
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").addToBackStack("fragmentDirect").commit();
                 }
             }
 
@@ -74,7 +84,7 @@ public class TestFragment extends Fragment implements View.OnClickListener {
             @Override
             public void PressBackButton(boolean bool) {
                 if(bool == true){
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").addToBackStack("fragmentPressure").commit();
                 }
 
             }
@@ -83,10 +93,14 @@ public class TestFragment extends Fragment implements View.OnClickListener {
             @Override
             public void PressBackButton(boolean bool) {
                 if(bool == true){
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER, fragmentTest,"fragmentTest").addToBackStack("fragmentCalibrate").commit();
                 }
             }
+
+
+
         });
+
 
         return inflater.inflate(R.layout.fragment_test, container, false);
     }

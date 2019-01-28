@@ -32,6 +32,12 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     Button rightwork,leftwork,bothwork,emergencywork,calibratework;
 
     String PRESSURE_SIDE = "0000",PRESSURE_MAIN = "0000";
+    String LEFT_PRESSURE_SIDE = "0000",LEFT_PRESSURE_MAIN = "0000";
+    String RIGHT_PRESSURE_SIDE = "0000",RIGHT_PRESSURE_MAIN = "0000";
+    String OFFSET_LEFT = "0000";
+    String OFFSET_RIGHT = "0000";
+    String OFFSET_SUPINR = "0000";
+
     private static final int sizeOfIntInHalfBytes = 8;
     private static final int numberOfBitsInAHalfByte = 4;
     private static final int halfByte = 0x0F;
@@ -146,8 +152,6 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         LayoutInflater inflater = this.getLayoutInflater();
         View theView = inflater.inflate(R.layout.time_picker, null);
 
-
-        NumberPicker repeat = theView.findViewById(R.id.repeat);
         NumberPicker time = theView.findViewById(R.id.time1);
         NumberPicker time1 = theView.findViewById(R.id.time2);
 
@@ -158,8 +162,6 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         time1.setMaxValue(59);
         time1.setMinValue(0);
 
-        repeat.setMaxValue(20);
-        repeat.setMinValue(1);
 
 
 
@@ -177,21 +179,37 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                 minuteTime = newVal;
             }
         });
-//        builder.setTitle("Set time");
+        builder.setTitle("Set time");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 int timeTime = (hourTime*60*60)+(minuteTime*60);
                 if(id == rightwork.getId()){
-                    String right = "0A 04 FF 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String right = "0A 04 FF"
+                            +" 82 012C 03FF 03FF"
+                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     setSending(right);
                     setSending(onVal);
                 }else if(id == leftwork.getId()){
-                    String left = "0A 04 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                    String left = "0A 04 FF"
+                            +" 42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     setSending(left);
                     setSending(onVal);
                 }else if(id == bothwork.getId()){
-                    String both = "0A 08 FF 42 012C 03FF 03FF 63 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000"+" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+PRESSURE_SIDE+" "+PRESSURE_MAIN+" 40 0258 0000 0000 00 "+decToHex(timeTime-600)+" 0000 0000";
+                    String both = "0A 08 FF"
+                            +" 42 012C 03FF 03FF"
+                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 40 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600)+" 0000 0000"
+                            +" 82 012C 03FF 03FF"
+                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-600)+" 0000 0000";
                     setSending(both);
                     setSending(onVal);
                 }

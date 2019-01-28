@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.github.reneweb.androidasyncsocketexamples.call.TextChange;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
 import java.text.DateFormat;
@@ -52,6 +53,8 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     TextView wifiStatus,bedStatus,status;
 
+
+    EditText leftPressSide,rightPressSide,leftPressMain,rightPressMain,leftOffset,rightOffset,supineOffset;
     private RecyclerView recyclerView, recyclerViewRec ;
     private MainAdapter adapter, adapterRec ;
     private List<BaseItem> itemList, itemListRec ;
@@ -102,12 +105,19 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     private DirectControllistener listener;
     FragmentManager manager;
     UserLogsFragment userLogsFragment = new UserLogsFragment();
+    SettingFragment settingFragment = new SettingFragment();
 
     public TestLogsFragment() {
 
     }
+
+
+
+
+
     public interface DirectControllistener{
         void DirectControlOnclick(boolean bool,String string);
+
     }
     public void setListener(DirectControllistener listener) {
         this.listener = listener;
@@ -128,10 +138,23 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_logs, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+
         setView(view,view1);
+
+        manager = getFragmentManager();
+        manager.beginTransaction().attach(settingFragment).commit();
+        settingFragment.setListener(new SettingFragment.setEditTextListener() {
+            @Override
+            public void setEditTextChange(String string) {
+                System.out.println(string);
+            }
+        });
 
         ipAddress = getActivity().findViewById(R.id.ipBed);
         portNumber = getActivity().findViewById(R.id.port);
+
+
+
 
         setOnClick();
         setItemlist();
@@ -184,13 +207,15 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         wifiStatus = view.findViewById(R.id.wifiSatus);
         bedStatus = view.findViewById(R.id.status);
 
-
         status = view1.findViewById(R.id.statusBed);
         send = view.findViewById(R.id.sending);
 
-
-
-
+//        leftPressMain=view2.findViewById(R.id.leftPressureMain);
+//        leftPressSide=view2.findViewById(R.id.leftPressureSide);
+//        rightPressMain=view2.findViewById(R.id.rightPressureMain);
+//        rightPressSide=view2.findViewById(R.id.rightPressureSide);
+//        leftOffset=view2.findViewById(R.id.leftOffsetTime);
+//        rightOffset=view2.findViewById(R.id.rightOffsetTime);
 
 
         message =  view.findViewById(R.id.message);
@@ -201,6 +226,13 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         recyclerViewRec = view.findViewById(R.id.recyclerView1);
         recyclerViewRec.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         adapterRec = new MainAdapter();
+
+
+
+
+
+
+
 
     }
 
@@ -225,6 +257,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         Integer id = view.getId();
         if(view.getId() == rightwork.getId() || view.getId() == leftwork.getId() || view.getId() == bothwork.getId()){
 //            readFile();
+
             setTime(id);
 
         }else {
@@ -477,6 +510,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     private void setTime(final Integer id) {
 
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = this.getLayoutInflater();
         View theView = inflater.inflate(R.layout.time_picker, null);
@@ -512,11 +546,13 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+
+
                 if(id == rightwork.getId()){
                     String right = "0A 04 FF "
                             +"82 012C 03FF 03FF"
-                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
-                            +" 40 0258 0000 0000 "
+                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000 "
                             +"00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
                     message.setText(right);
                 }else if(id == leftwork.getId()){
@@ -532,8 +568,9 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                             +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
                             +" 40 0258 0000 0000"
                             +" 00 "+decToHex(timeTime-600)+" 0000 0000"
-                            +" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
-                            +" 40 0258 0000 0000"
+                            +" 82 012C 03FF 03FF "
+                            +"93 "+decToHex(timeTime-300).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000"
                             +" 00 "+decToHex(timeTime-600)+" 0000 0000";
                     message.setText(both);
                 }

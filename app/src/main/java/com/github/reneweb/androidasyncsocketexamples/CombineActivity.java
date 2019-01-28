@@ -68,6 +68,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
 
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +128,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         final PagerAdapter adapter = new PageAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

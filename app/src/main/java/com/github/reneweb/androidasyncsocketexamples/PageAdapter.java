@@ -14,16 +14,19 @@ public class PageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        UserFragment tab1 = new UserFragment();
+        SettingFragment tab3 = new SettingFragment();
+        TestFragment tab2 = new TestFragment();
 
         switch (position) {
             case 0:
-                UserFragment tab1 = new UserFragment();
+
                 return tab1;
             case 1:
-                TestFragment tab2 = new TestFragment();
+
                 return tab2;
             case 2:
-                SettingFragment tab3 = new SettingFragment();
+
                 return tab3;
             default:
                 return null;
