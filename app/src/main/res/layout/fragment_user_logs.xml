@@ -64,6 +64,7 @@
             android:gravity="center"
             android:layout_height="50dp">
             <TextView
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
@@ -77,11 +78,12 @@
                 android:text=" - "/>
             <TextView
                 android:id="@+id/timer"
+                android:visibility="invisible"
                 android:layout_marginStart="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
-                android:text="Stop in ..."/>
+                android:text=""/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

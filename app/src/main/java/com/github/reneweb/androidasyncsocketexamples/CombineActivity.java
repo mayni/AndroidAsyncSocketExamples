@@ -89,10 +89,9 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         System.out.println("[Main]: checcccccckTogggle "+ b);
     }
 
-    public void carryTo(String string, Boolean changed) {
-        time = string;
+    public void carryTo(Boolean changed) {
         this.changed = changed;
-        System.out.println("[Main] : timeeeeeeee + " +time);
+        System.out.println("[Main] : timeeeeeeee + " +changed);
     }
 
     public interface IpAndPortListener {
@@ -108,7 +107,6 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         System.out.println("[Main] : createeeeeee");
 
         
-        closeKeyboard();
 
         status = findViewById(R.id.statusBed);
         findIp = findViewById(R.id.findIp);
@@ -117,6 +115,7 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         port = findViewById(R.id.port);
 
 
+        closeKeyboard();
 
         wifi =(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         Timer myTimer;
@@ -194,10 +193,11 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
                     System.out.println("[Main]: Tabbbbb +" + checkToggle );
                     if (checkToggle){
                         settingFragment.passDataToFragment(time);
-                        if (!time.equals(" ")){
-                            userFragment.fragmentUserLogs.sendTosetText(time,changed,getIntent());
-                        }
+                        userFragment.fragmentUserLogs.sendTosetText(time,changed,getIntent());
+
                     }
+                }else {
+                    userFragment.fragmentUserLogs.sendTosetText(time,changed,getIntent());
                 }
             }
             @Override

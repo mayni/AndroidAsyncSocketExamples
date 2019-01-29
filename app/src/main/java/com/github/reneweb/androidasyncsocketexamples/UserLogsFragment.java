@@ -85,9 +85,12 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
     }
 
     public void sendTosetText(String time, Boolean changed, Intent intent) {
-        keepString = time;
+//        keepString = time;
         this.checked = changed;
         System.out.println("[Main] : im hereeeeeeeee " + keepString + checked);
+        if(changed==true){
+//            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+        }
 
 //        theardForTime();
     }
@@ -166,7 +169,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                                     protected Void doInBackground(Void... voids) {
 
                                         readTimeFile();
-                                        System.out.println("[hhhh] : ssssssss111" + arrayList.get(0)+ arrayList.get(1)) ;
+//                                        System.out.println("[hhhh] : ssssssss111" + arrayList.get(0)+ arrayList.get(1)) ;
 
                                         return null;
                                     }
@@ -177,6 +180,8 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
 
 //                                        if (arrayList.get(1) == "true"){
                                             timer.setText(arrayList.get(0));
+//                                        }else {
+//                                            timer.setText(" ");
 //                                        }
 
                                     }
@@ -238,7 +243,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
 //        System.out.println("[Main] : timeeeeeeeeeee " + timerStop.getText().toString());
         setView(view);
         setOnClick();
-        writeToFile2();
+//        writeToFile2();
 //        timeUser.setOnFocusChangeListener(this);
         theardForTime();
         setBag();
@@ -259,6 +264,10 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
                 try {
                     while (!isInterrupted()) {
                         Thread.sleep(10000);
+
+
+
+
 
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -425,6 +434,7 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         leftwork.setOnClickListener(this);
         bothwork.setOnClickListener(this);
         calibratework.setOnClickListener(this);
+
         emergencywork.setOnClickListener(this);
     }
 
@@ -639,6 +649,9 @@ public class UserLogsFragment extends Fragment implements View.OnClickListener {
         super.setUserVisibleHint(isVisibleToUser);
         if(!isVisibleToUser){
             thread1.interrupt();
+
+        }else {
+            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
     }
 

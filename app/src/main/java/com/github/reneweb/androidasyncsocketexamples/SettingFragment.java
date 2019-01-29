@@ -93,6 +93,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
         setView(view);
         timeStart.setOnClickListener(this);
+
         setEditText();
 
         setTextChange();
@@ -103,7 +104,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
     private void passDataToUSerFragment(){
 //        2131296536        2131296258
-        combineActivity.carryTo(timeStart.getText().toString(),startTime.isChecked());
+//        combineActivity.carryTo(timeStart.getText().toString(),startTime.isChecked());
 
 
 //        userLogsFragment.sendForSetText();
@@ -394,7 +395,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==timeStart.getId()){
+        if(v.getId()== timeStart.getId()){
+
             Calendar mcurrentTime = Calendar.getInstance();
             final int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
             int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -409,7 +411,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
                     timeStart.setText( hourStop + ":" + minStop);
                     keepString = hourStop + ":"+minStop;
                     changed = true;
-                    writeToFile2(keepString, String.valueOf(startTime.isChecked()));
+                    System.out.println("[ttt]" + keepString +" "+startTime.isChecked());
+                    writeToFile2(keepString, startTime.isChecked());
                 }
             }, hour, minute, true);//Yes 24 hour time
             mTimePicker.setTitle("Select Time");
@@ -418,7 +421,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 
 
         }else if(v.getId()==startTime.getId()){ // btn start
-
+            System.out.println("[ttt]");
 
 
 
@@ -426,10 +429,12 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 //                startTime.setText("START");
                 System.out.println("checccccccckkkkk false");
                 keep = false;
+
 //                    isStart=false;
             }else {
 //                startTime.setText("STOP");
-                writeToFile2(timeStart.getText().toString(), "true");
+                combineActivity.carryTo(startTime.isChecked());
+                writeToFile2(timeStart.getText().toString(), true);
                 System.out.println("checccccccckkkkk trueeee");
 //                passDataToUSerFragment();
                 t = new Thread() {
@@ -547,12 +552,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
 //        }
 //    }
 
-    public void writeToFile2(String s,String check){
+    public void writeToFile2(String s,boolean check){
         FileOutputStream file1 = null;
         String data = s.toString()+" "+check;
         try {
             file1 = getActivity().openFileOutput("time.txt", MODE_PRIVATE);
             file1.write(data.getBytes());
+            file1.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

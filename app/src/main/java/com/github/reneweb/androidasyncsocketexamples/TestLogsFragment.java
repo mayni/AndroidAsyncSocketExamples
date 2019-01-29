@@ -369,7 +369,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                Client client = new Client(iptest.getText().toString(),  Integer.parseInt(porttest.getText().toString()), text);
+                Client client = new Client(ip,  p, text);
                 client.setListener(new Client.clientMessageRecListener() {
                     @Override
                     public void recMessage(final String mes) {
