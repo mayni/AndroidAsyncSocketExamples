@@ -41,7 +41,7 @@ public class UserFragment extends Fragment {
 //                    Bundle bundle = new Bundle();
 //                    bundle.putString("key", String.valueOf(getActivity())); // Put anything what you want
 //                    fragmentUserLogs.setArguments(bundle);
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentCalibrate,"fragmentCalibrate").addToBackStack("fragmentUserLogs").commit();
                 }
             }
         });
@@ -50,7 +50,7 @@ public class UserFragment extends Fragment {
             public void PressBackButton(boolean bool) {
                 if(bool == true){
 
-                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").commit();
+                    manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").addToBackStack("fragmentCalibrate").commit();
                 }
             }
 

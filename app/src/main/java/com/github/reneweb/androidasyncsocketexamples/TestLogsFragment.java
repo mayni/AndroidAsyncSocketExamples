@@ -582,11 +582,11 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                             +"42 012C 03FF 03FF"
                             +" 63 "+decToHex(timeTime-OFFSET_LEFT).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
                             +" 40 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-OFFSET_SUPINR)+" 0000 0000"
+                            +" 00 "+decToHex(timeTime-OFFSET_SUPINR).substring(4)+" 0000 0000"
                             +" 82 012C 03FF 03FF "
                             +"93 "+decToHex(timeTime-OFFSET_RIGHT).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
                             +" 80 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-OFFSET_RIGHT)+" 0000 0000";
+                            +" 00 "+decToHex(timeTime-OFFSET_RIGHT).substring(4)+" 0000 0000";
                     message.setText(both);
                 }
                 dialog.dismiss();
