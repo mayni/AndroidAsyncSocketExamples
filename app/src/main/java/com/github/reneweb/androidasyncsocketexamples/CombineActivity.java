@@ -95,8 +95,10 @@ public class CombineActivity extends AppCompatActivity implements ConnectivityRe
         System.out.println("[Main] : timeeeeeeee + " +time);
     }
 
-    public interface IpAndPortListener{
+    public interface IpAndPortListener {
         void ipAndportChange(String ip);
+
+
     }
 
     @Override

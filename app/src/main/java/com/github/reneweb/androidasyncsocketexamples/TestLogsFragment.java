@@ -28,14 +28,24 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.github.reneweb.androidasyncsocketexamples.call.TextChange;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static android.content.Context.MODE_APPEND;
+import static android.content.Context.SYSTEM_HEALTH_SERVICE;
 
 public class TestLogsFragment extends Fragment implements View.OnClickListener {
     final List<String> lists = new ArrayList<String>();
@@ -44,14 +54,16 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     private static MainActivity instance;
     Button directcontrol, calibratework, rightwork, leftwork, bothwork ,checkmodework , clearwork ,readpressurework ,emergencywork , detail,
             wifibtn,onwork,send;
-    String LEFT_PRESSURE_SIDE = "0000",LEFT_PRESSURE_MAIN = "0000";
+    public String LEFT_PRESSURE_SIDE ,LEFT_PRESSURE_MAIN ;
     String RIGHT_PRESSURE_SIDE = "0000",RIGHT_PRESSURE_MAIN = "0000";
-    String OFFSET_LEFT = "0000";
-    String OFFSET_RIGHT = "0000";
-    String OFFSET_SUPINR = "0000";
+    Integer OFFSET_LEFT = 0;
+    Integer OFFSET_RIGHT = 0;
+    Integer OFFSET_SUPINR = 0;
 
     TextView wifiStatus,bedStatus,status;
 
+
+    EditText leftPressSide,rightPressSide,leftPressMain,rightPressMain,leftOffset,rightOffset,supineOffset;
     private RecyclerView recyclerView, recyclerViewRec ;
     private MainAdapter adapter, adapterRec ;
     private List<BaseItem> itemList, itemListRec ;
@@ -80,7 +92,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     Integer time = 0;
 
     private List<ScanResult> wifiList;
-    String[] val;
+
 
     ///// ------------------------------------ NETWORK CREDENTIALS
     String networkSSID = "TP-Link_1316";
@@ -93,6 +105,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     EditText iptest,porttest;
     EditText ipAddress,portNumber;
 
+    String valRightMain,valRightSide,valLeftMain,valLeftSide,valOffLeft,valOffRight,valOffSupine;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint({"StaticFieldLeak", "WrongViewCast"})
@@ -102,24 +115,32 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
     private DirectControllistener listener;
     FragmentManager manager;
-    UserLogsFragment userLogsFragment = new UserLogsFragment();
 
     public TestLogsFragment() {
 
+
     }
+
+
+
+
     public interface DirectControllistener{
         void DirectControlOnclick(boolean bool,String string);
+
     }
     public void setListener(DirectControllistener listener) {
         this.listener = listener;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
 
     }
@@ -129,6 +150,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_logs, container, false);
         View view1 = inflater.inflate(R.layout.activity_combine,container,false);
+
         setView(view,view1);
 
         ipAddress = getActivity().findViewById(R.id.ipBed);
@@ -138,8 +160,23 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         setItemlist();
         setWiFi();
 
+        TestFragment testFragment = new TestFragment();
+
+
         return view;
     }
+
+
+    public void displayReceivedData(String message)
+    {
+        System.out.println(message);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
     private void setWiFi(){
 //        wifi =(WifiManager)
 //                getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -185,13 +222,15 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         wifiStatus = view.findViewById(R.id.wifiSatus);
         bedStatus = view.findViewById(R.id.status);
 
-
         status = view1.findViewById(R.id.statusBed);
         send = view.findViewById(R.id.sending);
 
-
-
-
+//        leftPressMain=view2.findViewById(R.id.leftPressureMain);
+//        leftPressSide=view2.findViewById(R.id.leftPressureSide);
+//        rightPressMain=view2.findViewById(R.id.rightPressureMain);
+//        rightPressSide=view2.findViewById(R.id.rightPressureSide);
+//        leftOffset=view2.findViewById(R.id.leftOffsetTime);
+//        rightOffset=view2.findViewById(R.id.rightOffsetTime);
 
 
         message =  view.findViewById(R.id.message);
@@ -202,6 +241,13 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         recyclerViewRec = view.findViewById(R.id.recyclerView1);
         recyclerViewRec.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         adapterRec = new MainAdapter();
+
+
+
+
+
+
+
 
     }
 
@@ -226,6 +272,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
         Integer id = view.getId();
         if(view.getId() == rightwork.getId() || view.getId() == leftwork.getId() || view.getId() == bothwork.getId()){
 //            readFile();
+
             setTime(id);
 
         }else {
@@ -477,6 +524,7 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
 
 
     private void setTime(final Integer id) {
+        readFile();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = this.getLayoutInflater();
@@ -513,29 +561,32 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+
+
                 if(id == rightwork.getId()){
                     String right = "0A 04 FF "
                             +"82 012C 03FF 03FF"
-                            +" 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
-                            +" 40 0258 0000 0000 "
-                            +"00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                            +" 93 "+decToHex(timeTime-OFFSET_RIGHT).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000 "
+                            +"00 "+decToHex(timeTime-OFFSET_SUPINR).substring(4)+" 0000 0000";
                     message.setText(right);
                 }else if(id == leftwork.getId()){
                     String left = "0A 04 FF "
                             +"42 012C 03FF 03FF"
-                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 63 "+decToHex(timeTime-OFFSET_LEFT).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
                             +" 40 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600).substring(4)+" 0000 0000";
+                            +" 00 "+decToHex(timeTime-OFFSET_SUPINR).substring(4)+" 0000 0000";
                     message.setText(left);
                 }else if(id == bothwork.getId()){
                     String both = "0A 08 FF "
                             +"42 012C 03FF 03FF"
-                            +" 63 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
+                            +" 63 "+decToHex(timeTime-OFFSET_LEFT).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
                             +" 40 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600)+" 0000 0000"
-                            +" 82 012C 03FF 03FF 93 "+decToHex(timeTime-300).substring(4)+" "+LEFT_PRESSURE_SIDE+" "+LEFT_PRESSURE_MAIN
-                            +" 40 0258 0000 0000"
-                            +" 00 "+decToHex(timeTime-600)+" 0000 0000";
+                            +" 00 "+decToHex(timeTime-OFFSET_SUPINR)+" 0000 0000"
+                            +" 82 012C 03FF 03FF "
+                            +"93 "+decToHex(timeTime-OFFSET_RIGHT).substring(4)+" "+RIGHT_PRESSURE_SIDE+" "+RIGHT_PRESSURE_MAIN
+                            +" 80 0258 0000 0000"
+                            +" 00 "+decToHex(timeTime-OFFSET_RIGHT)+" 0000 0000";
                     message.setText(both);
                 }
                 dialog.dismiss();
@@ -559,5 +610,64 @@ public class TestLogsFragment extends Fragment implements View.OnClickListener {
     private void setDirectControl() {
         listener.DirectControlOnclick(true,"direct");
     }
+    public void readFile(){
+        String[] filename = {"leftOffTime.txt","leftPressMain.txt","leftPressSide.txt",
+                "rightOffTime.txt","rightPressMain.txt","rightPressSide.txt","supineOffTime.txt"};
+        for(int i=0;i<filename.length;i++){
+            try {
+                FileInputStream fileIn=getActivity().openFileInput(filename[i]);
+                InputStreamReader InputRead= new InputStreamReader(fileIn);
+                BufferedReader br = new BufferedReader(InputRead);
+                String lastline=null;
+                while ((text = br.readLine()) != null){
+//                    System.out.println("[Pressure]" + text);
+                    lastline = text;
+                }
+                InputRead.close();
+                ArrayList<String> press = new ArrayList<>();
+                for(String str : lastline.split("\\s") ){
+//                    System.out.println(str);
+                    press.add(str.trim());
+                }
+                if(press.size() != 1){
+                    if(press.get(1).equals("supineOffTime") || press.get(1).equals("leftOffTime") || press.get(1).equals("rightOffTime")){
+                        if(press.get(1).equals("supineOffTime")){
+                            OFFSET_SUPINR = Integer.parseInt(press.get(0))*60;
+                        }else if(press.get(1).equals("leftOffTime")){
+                            OFFSET_LEFT = Integer.parseInt(press.get(0))*60;
+                        }else if(press.get(1).equals("rightOffTime")){
+                            OFFSET_RIGHT = Integer.parseInt(press.get(0))*60;
+                        }
+                    }else{
+                        float x = Float.parseFloat(press.get(0));
+                        Integer a =  Math.round(1023*x/5);
+                        String hex = decToHex(a);
+                        System.out.println(x+" "+a+" "+hex.substring(4));
+                        if(press.get(1).equals("leftPressMain")){
+                            LEFT_PRESSURE_MAIN = hex.substring(4);
+                        }else if(press.get(1).equals("leftPressSide")){
+                            LEFT_PRESSURE_SIDE = hex.substring(4);
+                        }else if(press.get(1).equals("rightPressMain")){
+                            RIGHT_PRESSURE_MAIN=hex.substring(4);
+                        }else if(press.get(1).equals("rightPressSide")){
+                            RIGHT_PRESSURE_SIDE=hex.substring(4);
+                        }
 
+                    }
+                }
+
+
+//                if(press.size() != 1){
+//                    if(!filename[i].equals(filename[0]) || !filename[i].equals(filename[3]) || !filename[i].equals(filename[6])){
+//
+//                    }
+//
+//                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

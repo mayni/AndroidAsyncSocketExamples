@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/statusBag"
                 android:layout_width="match_parent"
                 android:textAlignment="center"
                 android:layout_height="wrap_content"
@@ -27,29 +28,34 @@
             android:layout_width="match_parent"
             android:gravity="center"
             android:layout_height="150dp">
+
             <Button
+                android:id="@+id/secondBag"
                 android:layout_width="35dp"
                 android:layout_height="130dp"
-                android:text="1"
                 android:layout_margin="3dp"
+                android:text="1"
                 android:background="@drawable/bag_bed"/>
             <Button
+                android:id="@+id/thirdBag"
                 android:layout_width="35dp"
                 android:layout_height="130dp"
                 android:layout_margin="3dp"
                 android:text="2"
                 android:background="@drawable/bag_bed"/>
             <Button
+                android:id="@+id/forthBag"
                 android:layout_width="35dp"
                 android:layout_height="130dp"
                 android:layout_margin="3dp"
                 android:text="3"
                 android:background="@drawable/bag_bed"/>
             <Button
+                android:id="@+id/firstBag"
                 android:layout_width="35dp"
                 android:layout_height="130dp"
-                android:layout_margin="3dp"
                 android:text="4"
+                android:layout_margin="3dp"
                 android:background="@drawable/bag_bed"/>
 
         </LinearLayout>

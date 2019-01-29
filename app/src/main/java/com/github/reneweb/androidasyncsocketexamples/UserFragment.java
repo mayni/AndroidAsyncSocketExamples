@@ -53,6 +53,10 @@ public class UserFragment extends Fragment {
                     manager.beginTransaction().replace(R.id.FRAGMENT_PLACEHOLDER,fragmentUserLogs,"fragmentUserLogs").commit();
                 }
             }
+
+
+
+
         });
 
 

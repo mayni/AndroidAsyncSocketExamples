@@ -25,7 +25,12 @@ import android.widget.Toast;
 import com.github.reneweb.androidasyncsocketexamples.call.CallToTCP;
 import com.github.reneweb.androidasyncsocketexamples.tcp.Client;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +57,10 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     EditText ipAddress,portNumber;
     TextView status;
 
+    SettingFragment settingFragment = new SettingFragment();
+
+
+
 
     Toolbar toolbar;
 
@@ -60,11 +69,14 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
     public  BackToTestListener listener;
 
     public CalibrateFragment() {
-        // Required empty public constructor
+
     }
 
     public interface BackToTestListener{
         void PressBackButton(boolean bool);
+
+
+
     }
     public void setListener(BackToTestListener listener) {
         this.listener = listener;
@@ -85,6 +97,9 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calibrate,container,false);
         View view1 =inflater.inflate(R.layout.activity_combine,container,false);
+
+
+
 
         toolbar =  view.findViewById(R.id.toolbar);
 
@@ -243,11 +258,11 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                     }
 
                     if(data.get(1).equals("60") || data.get(1).equals("63")){
-                        System.out.println("[CalibrateFragment] 60" );
+//                        System.out.println("[CalibrateFragment] 60" );
                         getPressure(from,"LEFT");
 
                     }else if(data.get(1).equals("90") || data.get(1).equals("93")){
-                        System.out.println("[CalibrateFragment] 90");
+//                        System.out.println("[CalibrateFragment] 90");
                         getPressure(from,"RIGHT");
                     }else{
                         AlertForTryAgain("Please check your pump or valve before calibrate");
@@ -278,20 +293,24 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
                             for(String a: mes.split("\\s")){
                                 System.out.println(a);
                             }
-                            writeTofile(mes +" "+angle.getText().toString()+" "+side,NOTES_RAW);
-                            writeTofile(formatter.format(date).toString()+" Pressure " + mes +" "+angle.getText().toString()+" "+side,NOTES);
+
+                            writeTofile(mes.trim() +" "+angle.getText().toString().trim()+" "+side,NOTES_RAW);
+                            writeTofile(formatter.format(date)+" Pressure " + mes.trim() +" "+angle.getText().toString().trim()+" "+side,NOTES);
+
+
                         }else if(from=="STOP"){
                             String senserVal = senserValue[1];
                             if(senserVal.charAt(0) == '-'){
                                 senserVal = senserVal.substring(1);
                             }
-                            writeTofile(mes +" "+senserVal+" "+side,NOTES_RAW);
-                            writeTofile(formatter.format(date).toString()+" Pressure " + mes +" "+senserVal+" "+side,NOTES);
+                            writeTofile(mes.trim() +" "+senserVal.trim()+" "+side,NOTES_RAW);
+                            writeTofile(formatter.format(date)+" Pressure " + mes.trim() +" "+senserVal.trim()+" "+side,NOTES);
                         }
 
                     }
                     String complete = "Completed";
                     AlertForTryAgain(complete);
+                    settingFragment.passdata(true);
                 }else{
                     writeTofile(formatter.format(date).toString()+" Error "+mes,NOTES);
                     String tryagain = "Can't get pressure please try again";
@@ -300,61 +319,22 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
 
             }
         });
-//        new AsyncTask<Void,Void,Void>(){
-//            String pressure = null;
-//            Exception error = null;
-//            @Override
-//            protected Void doInBackground(Void... voids) {
-//
-//                try {
-//                    Client client = new Client(ip,port,"01");
-////                    Thread.sleep(32000);
-//                    client.setListener( new Client.clientMessageRecListener() {
-//
-//                        @Override
-//                        public void checkConnection(Exception e) {
-//                            error = e;
-//                            if(error != null){
-//                                final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-//                                System.out.println("Calibrate checkConnection " + e) ;
-//
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void checkWifi(Exception e) {
-//
-//                        }
-//
-//                        @Override
-//                        public void recMessage(String mes) {
-//                            System.out.println("Calibrate recMessage " + mes) ;
-//                            pressure =mes;
-//                            if(pressure != null){
-//                                writeTofile("Pressure " + pressure );
-//                            }
-//                        }
-//                    });
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(Void aVoid) {
-//                System.out.println("onPostExecutezz");
-//
-//            }
-//        }.execute();
-
-//        Toast.makeText(this,"Completed saved pressure",Toast.LENGTH_LONG).show();
-
-
-
     }
+
+
+
+    private String PressureConvert(String text) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        Integer ADC = Integer.parseInt(text,16);
+        float result = (float) ((5-0)/(1.0*1023)*(ADC-(0.0*1023)));
+        System.out.println("[CalibrateFragment] "+String.valueOf(df.format(result)));
+
+        return String.valueOf(df.format(result));
+
+//        (5-0)/(0.8*1023)*(ADC-(0.1*1023));
+    }
+
+
     private void PleaseWaitDialog(){
 
         dialogLoading = new ProgressDialog(getActivity());
@@ -381,12 +361,12 @@ public class CalibrateFragment extends Fragment implements View.OnClickListener 
         });
     }
     private void writeTofile(String dat,String file) {
+//        System.out.println(dat);
         FileOutputStream fos = null;
         String data = dat + "\n";
         try {
             fos = getActivity().openFileOutput(file, MODE_APPEND);
             fos.write(data.getBytes());
-
             Toast.makeText(getActivity(), "Saved to " + getContext().getFilesDir().getAbsolutePath() + "/" + NOTES, Toast.LENGTH_LONG).show();
         }
         catch (Throwable t) {
